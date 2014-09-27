@@ -5,9 +5,9 @@ int power7 = 25;
 const int potPin = 10;
 
  // constants, but must be tuned! (start at 0)
- const float Kp = 0.0016; //.006;
- const float Ki = 0.00016; //.0000000006;
- const float Kd = 0.008;
+ const float Kp = 0.01; //0.0016; //.006;
+ const float Ki = 0.0001; //0.00016; //.0000000006;
+ const float Kd = 0.02;
  
  float lastError = 0; // stored from previous value.
  float errorSum = 0;  // sum of errors
@@ -40,7 +40,11 @@ void sendOutput(float output) {
 }
 
 float scaleOutput (float output) {
-  return abs(100*output);
+  float result = 75+abs(255*output);
+  Serial.print("scaled: ");
+  Serial.print(result);  
+  Serial.println("\t"); 
+  return result;
 }
 
 void rotateLeft(float output) {
@@ -79,17 +83,21 @@ void setPID(int setpointDegrees) {
   Serial.print("\t"); 
   delay(10); // prevent spamming
   
-  sendOutput(output); // send output
-  
+  if (abs(currentError) > 2)
+    sendOutput(output); // send output
+  else
+    sendOutput(0);
   // increment errorSum if not too big
-  if (count < 100)
+  if (count < 100) {
     errorSum += currentError;
+    count = 0;
+  }
   else
     errorSum = currentError;
   count ++;
   Serial.print("errorSum: ");
   Serial.print(errorSum);  
-  Serial.println("\t"); 
+  Serial.print("\t"); 
     
   // set last error equal to this
   lastError = currentError;
@@ -97,7 +105,7 @@ void setPID(int setpointDegrees) {
 
 void loop() 
 { 
-  setPID(45);
+  setPID(127);
 //  unsigned long int startTime = millis();
 //  while (millis() - startTime < 4000) {
 ////    Serial.println(analogRead(10));
