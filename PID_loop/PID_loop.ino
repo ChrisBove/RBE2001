@@ -5,9 +5,9 @@ int power7 = 25;
 const int potPin = 10;
 
  // constants, but must be tuned! (start at 0)
- const float Kp = 0.0000006;
- const float Ki = 0.0000000006;
- const float Kd = 0.3;
+ const float Kp = 0.0016; //.006;
+ const float Ki = 0.00016; //.0000000006;
+ const float Kd = 0.008;
  
  float lastError = 0; // stored from previous value.
  float errorSum = 0;  // sum of errors
@@ -25,28 +25,32 @@ void setup()
 } 
  
 void sendOutput(float output) {
-  if (abs(output) > 0.5) {
+  if (abs(output) > 0.15) {
   if (output < 0) {
     
-    rotateLeft();
+    rotateLeft(scaleOutput(output));
   }
   else {
     
-    rotateRight();
+    rotateRight(scaleOutput(output));
   }
   }
   else
   freeze();
 }
 
-void rotateLeft() {
-  analogWrite(power7, 0);
-  analogWrite(power2, 150);
+float scaleOutput (float output) {
+  return abs(100*output);
 }
 
-void rotateRight() {
+void rotateLeft(float output) {
+  analogWrite(power7, 0);
+  analogWrite(power2, output);
+}
+
+void rotateRight(float output) {
   analogWrite(power2, 0);
-  analogWrite(power7, 150);
+  analogWrite(power7, output);
 }
 
 void freeze() {
@@ -54,26 +58,38 @@ void freeze() {
   analogWrite(power7, 0);
 }
 
-void setPID(int setpoint) {
-  int desPos = setpoint;  // desired input right pos, left negative
-  int potPos = analogRead(potPin);  // sensor input
+int analogToDegrees(float analogVal) {
+  // have 1024 ticks to 270 degrees
+  return (analogVal*0.263671875); // that's degrees 0-270
+}
+
+void setPID(int setpointDegrees) {
+  int desPos = setpointDegrees;  // desired input right pos, left negative
+  int curPos = analogToDegrees(analogRead(potPin));  // sensor input
   
-  int currentError = desPos - potPos; // calculate the current error
-  
+  int currentError = desPos - curPos; // calculate the current error
+  Serial.print("currentError: ");
+  Serial.print(currentError);
+  Serial.print("\t");  
   // do output calculation - the main thing!
   float output = Kp*(currentError) + Ki*(errorSum) + Kd*(currentError-lastError);
   
   Serial.print("Output: ");
-  Serial.println(output);
+  Serial.print(output);
+  Serial.print("\t"); 
   delay(10); // prevent spamming
   
   sendOutput(output); // send output
   
   // increment errorSum if not too big
-  if (count < 1000)
+  if (count < 100)
     errorSum += currentError;
   else
     errorSum = currentError;
+  count ++;
+  Serial.print("errorSum: ");
+  Serial.print(errorSum);  
+  Serial.println("\t"); 
     
   // set last error equal to this
   lastError = currentError;
@@ -81,15 +97,22 @@ void setPID(int setpoint) {
 
 void loop() 
 { 
-  unsigned long int startTime = millis();
-  while (millis() - startTime < 1000) {
-    setPID(300);
-  }
-  
-  startTime = millis();
-  while(millis() - startTime < 1000) {
-    setPID(150);
-  }
+  setPID(45);
+//  unsigned long int startTime = millis();
+//  while (millis() - startTime < 4000) {
+////    Serial.println(analogRead(10));
+//    setPID(450);
+//  }
+//  
+//  errorSum = 0;
+//  lastError = 0;
+//  count = 0;
+//  
+//  startTime = millis();
+//  while(millis() - startTime < 4000) {
+////    Serial.println(analogRead(10));
+//    setPID(100);
+//  }
   
 //  int desPos = 300;  // desired input right pos, left negative
 //  int potPos = analogRead(potPin);  // sensor input
