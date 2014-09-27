@@ -25,7 +25,7 @@ void setup()
 } 
  
 void sendOutput(float output) {
-  if (abs(output) > 0.15) {
+  if (abs(output) > 0) {
   if (output < 0) {
     
     rotateLeft(scaleOutput(output));
