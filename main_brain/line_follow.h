@@ -7,12 +7,17 @@ class LineFollow {
     LineFollow(int leftPort, int middlePort, int rightPort, int backPort);
     
     struct LineSensors {
-      int left;
-      int middle;
-      int right;
-      int back;
+      bool left;
+      bool middle;
+      bool right;
+      bool back;
     };
     
+    void updateSensorData();
+    void setThreshold(int value);
+    int doLineFollowTillCross();
+    int allOnCross();
+    int makeBinNumber();
   private:
   
     // VARIABLES
@@ -22,7 +27,10 @@ class LineFollow {
     int _rightPort; 
     int _backPort;
     
+    int _white = 200; // white is less than
+    
     LineSensors currentSensors;
+    
 };
 
 #endif
