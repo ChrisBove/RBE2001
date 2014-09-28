@@ -14,9 +14,14 @@ class DriveTrain
 {
   public:
     DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInverted);
-    void MoveMotors(int leftVal, int rightVal);
-    
     void AttachMotors();
+    
+    void MoveMotors(int leftVal, int rightVal);
+    void turnLeft();
+    void turnRight();
+    void halt();
+    void forward();
+    
     
   private:
     
@@ -32,6 +37,9 @@ class DriveTrain
     //inititialize the motor drive constants to "stopped"
     int _leftDrive = 90;  
     int _rightDrive = 90;
+    
+    int leftStop = 90;
+    int rightStop = 90;
     
     int leftOffset = 0;
     int rightOffset = 0;

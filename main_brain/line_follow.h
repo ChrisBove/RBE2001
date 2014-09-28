@@ -1,6 +1,8 @@
 #ifndef line_follow_h
 #define line_follow_h
 
+#include "drive_train.h"
+
 class LineFollow {
   
   public:
@@ -15,9 +17,16 @@ class LineFollow {
     
     void updateSensorData();
     void setThreshold(int value);
-    int doLineFollowTillCross();
+    int doLineFollowTillCross(DriveTrain& driving);
     int allOnCross();
     int makeBinNumber();
+    
+    int lSpeed;
+    int rSpeed;
+    void turnLeft();
+    void turnRight();
+    void halt();
+    void forward();
   private:
   
     // VARIABLES
@@ -28,6 +37,8 @@ class LineFollow {
     int _backPort;
     
     int _white = 200; // white is less than
+    
+    int state = 2;
     
     LineSensors currentSensors;
     
