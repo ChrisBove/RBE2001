@@ -13,8 +13,10 @@
 class DriveTrain
 {
   public:
-    DriveTrain(int leftPin, int rightPin, bool leftInverted, bool rightInverted);
+    DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInverted);
     void MoveMotors(int leftVal, int rightVal);
+    
+    void AttachMotors();
     
   private:
     
@@ -28,8 +30,8 @@ class DriveTrain
     const int debug = true;  // enables/disables debug prints
     
     //inititialize the motor drive constants to "stopped"
-    int leftdrive = 90;  
-    int rightdrive = 90;
+    int _leftDrive = 90;  
+    int _rightDrive = 90;
     
     int leftOffset = 0;
     int rightOffset = 0;

@@ -6,19 +6,19 @@
 #include <PPM.h>
 
 #include "drive_train.h"
-#include "VexController.h"
+#include "vex_controller.h"
 
 Controller controller(2);
-DriveTrain driveTrain(7, 6, true, false);
+DriveTrain driveTrain(7, 6, 1, 0);
 
 void setup() {
-  // put setup calls here
   
+  driveTrain.AttachMotors();
 
 }
 
 void loop() {
-  // put main loop calls here
   
   driveTrain.MoveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
+
 }

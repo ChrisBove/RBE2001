@@ -1,5 +1,5 @@
-#ifndef VexController_h
-#define VexController_h
+#ifndef vex_controller_h
+#define vex_controller_h
 
 #include "PPM.h"
 
