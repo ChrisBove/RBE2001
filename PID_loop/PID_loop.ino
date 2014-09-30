@@ -1,13 +1,13 @@
 #include <Servo.h> 
  
-int power2 = 24;
-int power7 = 25; 
+int power2 = 13;
+int power7 = 12; 
 const int potPin = 10;
 
  // constants, but must be tuned! (start at 0)
- const float Kp = 0.01; //0.0016; //.006;
- const float Ki = 0.0001; //0.00016; //.0000000006;
- const float Kd = 0.02;
+ const float Kp = 0.00001; //0.0016; //.006;
+ const float Ki = 0.00000005; //0.00001; //0.00016; //.0000000006;
+ const float Kd = 0.0001;
  
  float lastError = 0; // stored from previous value.
  float errorSum = 0;  // sum of errors
@@ -40,7 +40,7 @@ void sendOutput(float output) {
 }
 
 float scaleOutput (float output) {
-  float result = 75+abs(255*output);
+  float result = 65+abs(255*output);
   Serial.print("scaled: ");
   Serial.print(result);  
   Serial.println("\t"); 
