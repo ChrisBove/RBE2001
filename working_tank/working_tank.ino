@@ -21,6 +21,8 @@ void loop(){
  //this loop will occurr continuously - delivering the PWM commands from the controller to the motors.
  leftdrive = ppm.getChannel(3); //retreive the data from channel 3 on the controller
  rightdrive = ppm.getChannel(2); //retreive the data from channel 2 on the controller
+ 
+// Serial.println(ppm.getChannel(2));  Stick forward is a value near 0
 
  left.write(180-leftdrive);  //drive the left motor corresponding to the controller
  right.write(rightdrive); //drive the left motor corresponding to the controller
