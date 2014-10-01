@@ -16,13 +16,13 @@ LineFollow follow(0, 1, 2, 3);
 
 void setup() {
   
-  driveTrain.AttachMotors();
+  driveTrain.attachMotors();
   driveTrain.halt();
 }
 
 void loop() {
   if(!((controller.getControllerChannel(5)) > 130 || (controller.getControllerChannel(5) < 50)) )
-    driveTrain.MoveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
+    driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
   else
   {
     follow.doLineFollowTillCross(driveTrain);

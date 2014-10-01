@@ -21,8 +21,6 @@ class LineFollow {
     int allOnCross();
     int makeBinNumber();
     
-    int lSpeed;
-    int rSpeed;
     void turnLeft();
     void turnRight();
     void halt();
@@ -35,6 +33,9 @@ class LineFollow {
     int _middlePort; 
     int _rightPort; 
     int _backPort;
+    
+    int lSpeed;
+    int rSpeed;
     
     int _white = 200; // white is less than
     

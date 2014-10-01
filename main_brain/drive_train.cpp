@@ -20,12 +20,12 @@ DriveTrain::DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInv
     
 }
 
-void DriveTrain::AttachMotors() {
+void DriveTrain::attachMotors() {
   left.attach(_leftPin);
   right.attach(_rightPin);
 }
 
-void DriveTrain::MoveMotors(int leftVal, int rightVal) {
+void DriveTrain::moveMotors(int leftVal, int rightVal) {
   _leftDrive = leftVal;
   _rightDrive = rightVal;
   left.write(leftOffset - _leftDrive);

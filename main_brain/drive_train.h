@@ -14,9 +14,9 @@ class DriveTrain
 {
   public:
     DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInverted);
-    void AttachMotors();
+    void attachMotors();
     
-    void MoveMotors(int leftVal, int rightVal);
+    void moveMotors(int leftVal, int rightVal);
     void turnLeft();
     void turnRight();
     void halt();
