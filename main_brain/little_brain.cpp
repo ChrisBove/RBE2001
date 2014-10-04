@@ -4,4 +4,7 @@ LittleBrain::LittleBrain() {
   
 }
 
+void LittleBrain::think(int state) {
+  
+}
 
