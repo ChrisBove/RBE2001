@@ -6,7 +6,8 @@
 class Button {
   public:
     Button(int pin);
-    void attachButton();
+    void setupButton();
+    bool isBumped();
     
   private:
     int _pin;
