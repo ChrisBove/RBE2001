@@ -21,6 +21,7 @@ class DriveTrain
     void turnRight();
     void halt();
     void forward();
+    void turn(int lval, int rval);
     
     
   private:
