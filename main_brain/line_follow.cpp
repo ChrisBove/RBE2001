@@ -88,7 +88,9 @@ int LineFollow::allOnCross() {
 }
 
 int LineFollow::stopOnCrossing(DriveTrain& driving, int number) {
-  int currentRun = doLineFollow(driving);
+  int currentRun = 0;
+  if (sumCrossings < number)
+    currentRun = doLineFollow(driving);
   if (currentRun == 1 && lastRun == 1) {
     // don't count this one, we're still on the same line
     // TODO - double check for noise - going on and off quickly
