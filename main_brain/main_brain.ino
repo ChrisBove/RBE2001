@@ -24,21 +24,34 @@ void setup() {
 }
 
 void loop() {
-
+  static int isInitialized = false;
+  static int weMadeIt = false;
+  static int result = 0;
     if(!((controller.getControllerChannel(5)) > 130 || (controller.getControllerChannel(5) < 50)) ) {
       driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
       follow.resetCrossCount();
+      isInitialized = false;
+      weMadeIt = false;
+      result = 0;
     }
     else
     {
 //      if (!frontBumper.isBumped())
 //      follow.doLineFollowTillCross(driveTrain);
 //      else driveTrain.halt();
-
-       if (follow.stopOnCrossing(driveTrain, 3) == 0)
-        ; // wait until we make it
+      if (!weMadeIt)
+        result = follow.stopOnCrossing(driveTrain, 3);
+      
+      if (result == 0)
+        weMadeIt = false; // wait until we make it
       else {
-        // we made it! YAAAAAAY!
+        // we made it!
+        weMadeIt = true;
+        if(!isInitialized) {
+          driveTrain.setTime();
+          isInitialized = true;
+        }
+        driveTrain.turn45(true); // turn right
     }
     
 //    if(!((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) ) {
