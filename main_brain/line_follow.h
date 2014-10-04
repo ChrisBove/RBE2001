@@ -8,16 +8,11 @@ class LineFollow {
   public:
     LineFollow(int leftPort, int middlePort, int rightPort, int backPort);
     
-    struct LineSensors {
-      bool left;
-      bool middle;
-      bool right;
-      bool back;
-    };
     
     void updateSensorData();
     void setThreshold(int value);
     int doLineFollowTillCross(DriveTrain& driving);
+    int doLineFollow(DriveTrain& driving);
     int allOnCross();
     int makeBinNumber();
     
@@ -25,6 +20,17 @@ class LineFollow {
     void turnRight();
     void halt();
     void forward();
+    
+    // number is the crossing to stop on
+    int stopOnCrossing(DriveTrain& driving, int number);
+    void resetCrossCount();
+    
+    struct LineSensors {
+      bool left;
+      bool middle;
+      bool right;
+      bool back;
+    };
   private:
   
     // VARIABLES
@@ -41,6 +47,8 @@ class LineFollow {
     
     int state = 2;
     
+    int sumCrossings = 0;
+    int lastRun = 0;
     LineSensors currentSensors;
     
 };
