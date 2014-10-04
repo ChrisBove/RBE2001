@@ -56,3 +56,22 @@ void DriveTrain::turn(int lval, int rval) {
   left.write(lval);
   right.write(rval);
 }
+
+void DriveTrain::setTime() {
+  startTime = millis();
+}
+
+bool DriveTrain::turn45(bool isRight) {
+  int timeLapse = millis() - startTime;
+  if (timeLapse <= 200) {
+    if (isRight)
+      turnRight();
+    else
+      turnLeft();
+    return false;
+  }
+  else {
+    halt();
+    return true;
+  }
+}

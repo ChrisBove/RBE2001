@@ -22,6 +22,8 @@ class DriveTrain
     void halt();
     void forward();
     void turn(int lval, int rval);
+    bool turn45(bool isRight);
+    void setTime();
     
     
   private:
@@ -45,6 +47,7 @@ class DriveTrain
     int leftOffset = 0;
     int rightOffset = 0;
     
+    int startTime = 0;
 };
 
 #endif
