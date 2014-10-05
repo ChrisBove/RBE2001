@@ -5,9 +5,9 @@ Button::Button(int pin) {
 }
 
 void Button::setupButton() {
-  pinMode(_pin, INPUT);
+  pinMode(_pin, INPUT_PULLUP);
 }
 
 bool Button::isBumped() {
-  return digitalRead(_pin);
+  return !digitalRead(_pin);
 }
