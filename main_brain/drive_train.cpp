@@ -20,12 +20,12 @@ DriveTrain::DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInv
     
 }
 
-void DriveTrain::AttachMotors() {
+void DriveTrain::attachMotors() {
   left.attach(_leftPin);
   right.attach(_rightPin);
 }
 
-void DriveTrain::MoveMotors(int leftVal, int rightVal) {
+void DriveTrain::moveMotors(int leftVal, int rightVal) {
   _leftDrive = leftVal;
   _rightDrive = rightVal;
   left.write(leftOffset - _leftDrive);
@@ -34,11 +34,11 @@ void DriveTrain::MoveMotors(int leftVal, int rightVal) {
 
 void DriveTrain::turnLeft(){
   left.write(100); // should be slower or backwards
-  right.write(65);
+  right.write(75);
 }
 
 void DriveTrain::turnRight() {
-  left.write(125);
+  left.write(115);
   right.write(80);
 }
 
@@ -48,6 +48,30 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  left.write(120);
-  right.write(50); 
+  left.write(115);
+  right.write(65); 
+}
+
+void DriveTrain::turn(int lval, int rval) {
+  left.write(lval);
+  right.write(rval);
+}
+
+void DriveTrain::setTime() {
+  startTime = millis();
+}
+
+bool DriveTrain::turn45(bool isRight) {
+  int timeLapse = millis() - startTime;
+  if (timeLapse <= 400) {
+    if (isRight)
+      turn(110, 110);
+    else
+      turn(70, 70);
+    return false;
+  }
+  else {
+    halt();
+    return true;
+  }
 }

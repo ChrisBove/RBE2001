@@ -14,13 +14,16 @@ class DriveTrain
 {
   public:
     DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInverted);
-    void AttachMotors();
+    void attachMotors();
     
-    void MoveMotors(int leftVal, int rightVal);
+    void moveMotors(int leftVal, int rightVal);
     void turnLeft();
     void turnRight();
     void halt();
     void forward();
+    void turn(int lval, int rval);
+    bool turn45(bool isRight);
+    void setTime();
     
     
   private:
@@ -44,6 +47,7 @@ class DriveTrain
     int leftOffset = 0;
     int rightOffset = 0;
     
+    int startTime = 0;
 };
 
 #endif
