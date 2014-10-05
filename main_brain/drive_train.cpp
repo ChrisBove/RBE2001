@@ -34,11 +34,11 @@ void DriveTrain::moveMotors(int leftVal, int rightVal) {
 
 void DriveTrain::turnLeft(){
   left.write(100); // should be slower or backwards
-  right.write(75);
+  right.write(70);
 }
 
 void DriveTrain::turnRight() {
-  left.write(115);
+  left.write(110);
   right.write(80);
 }
 
@@ -48,8 +48,8 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  left.write(115);
-  right.write(65); 
+  left.write(110);
+  right.write(70); 
 }
 
 void DriveTrain::turn(int lval, int rval) {
