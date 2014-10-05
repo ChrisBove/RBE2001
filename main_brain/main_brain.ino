@@ -78,9 +78,12 @@ void loop() {
       
       crossingCount = 0;
       for (int i = 0; i < 4; i++) {
-        if (btSlave.storageArray[i] == 0)
+        if (btSlave.storageArray[i] == 0){
           crossingCount = i + 1; // find closest open storage tube
+          break;
+        }
       }
+      follow.resetCrossCount();
       if (crossingCount == 0) {
         Serial.println("We couldn't find an open tube!");
         brain.thoughtState = LittleBrain::TELEOP;
