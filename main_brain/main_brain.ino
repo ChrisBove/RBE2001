@@ -51,7 +51,7 @@ void loop() {
   btSlave.update();
   isBumped = frontBumper.isBumped();
   // STOP! If we hit the button, switch back to teleop
-  if(!((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
+  if(((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
     brain.thoughtState = LittleBrain::TELEOP;
   
   // enter state machine
@@ -90,25 +90,22 @@ void loop() {
       break;
       
     case LittleBrain::LINE_FOLLOW_CROSSING:
-      if (!weMadeIt)
-        result = follow.stopOnCrossing(driveTrain, crossingCount);
-      else {
+      result = follow.stopOnCrossing(driveTrain, crossingCount);
+
+      if (result == 1)
         brain.thoughtState = LittleBrain::INIT_TURN;
-      }
-      if (result == 0)
-        weMadeIt = false; // wait until we make it
 
       break;
       
     case LittleBrain::INIT_TURN:
       driveTrain.setTime();
       brain.thoughtState = LittleBrain::TURN;
-      
+      break;
     case LittleBrain::TURN:
-      result = driveTrain.turn45(false); // turn right
+      result = driveTrain.turn45(false); // turn left
       
       if (result == 1)
-        brain.thoughtState = LittleBrain::TURN;
+        brain.thoughtState = LittleBrain::LINE_FOLLOW_TO_PEG;
       break;
     
     case LittleBrain::LINE_FOLLOW_TO_PEG:
