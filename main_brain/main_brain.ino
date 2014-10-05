@@ -31,6 +31,7 @@ BluetoothSlave btSlave;
   int result = 0;
   
   int crossingCount = 0;
+  bool isBumped = false;
 
 void setup() {
   driveTrain.attachMotors();
@@ -48,7 +49,7 @@ void setup() {
 void loop() {
   // do updates
   btSlave.update();
-  
+  isBumped = frontBumper.isBumped();
   // STOP! If we hit the button, switch back to teleop
   if(!((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
     brain.thoughtState = LittleBrain::TELEOP;
@@ -75,13 +76,48 @@ void loop() {
       // assume we're starting at 1 and 1 side of the field
       btSlave.updateArrays();
       
+      crossingCount = 0;
       for (int i = 0; i < 4; i++) {
+        if (btSlave.storageArray[i] == 0)
+          crossingCount = i + 1; // find closest open storage tube
+      }
+      if (crossingCount == 0) {
+        Serial.println("We couldn't find an open tube!");
+        brain.thoughtState = LittleBrain::TELEOP;
+        break;
       }
       brain.thoughtState = LittleBrain::LINE_FOLLOW_CROSSING;
       break;
+      
     case LittleBrain::LINE_FOLLOW_CROSSING:
+      if (!weMadeIt)
+        result = follow.stopOnCrossing(driveTrain, crossingCount);
+      else {
+        brain.thoughtState = LittleBrain::INIT_TURN;
+      }
+      if (result == 0)
+        weMadeIt = false; // wait until we make it
+
+      break;
       
+    case LittleBrain::INIT_TURN:
+      driveTrain.setTime();
+      brain.thoughtState = LittleBrain::TURN;
       
+    case LittleBrain::TURN:
+      result = driveTrain.turn45(false); // turn right
+      
+      if (result == 1)
+        brain.thoughtState = LittleBrain::TURN;
+      break;
+    
+    case LittleBrain::LINE_FOLLOW_TO_PEG:
+      if (!isBumped)
+        follow.doLineFollow(driveTrain);
+      else {
+        driveTrain.halt();
+        brain.thoughtState = LittleBrain::TELEOP;
+      }
       break;
       
     default:
@@ -93,32 +129,32 @@ void loop() {
   }
   // drive to case - drive to 
 
-    if(!((controller.getControllerChannel(5)) > 130 || (controller.getControllerChannel(5) < 50)) ) {
-      driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
-      follow.resetCrossCount();
-      isInitialized = false;
-      weMadeIt = false;
-      result = 0;
-    }
-    else
-    {
-//      if (!frontBumper.isBumped())
-//      follow.doLineFollowTillCross(driveTrain);
-//      else driveTrain.halt();
-      if (!weMadeIt)
-        result = follow.stopOnCrossing(driveTrain, 3);
-      
-      if (result == 0)
-        weMadeIt = false; // wait until we make it
-      else {
-        // we made it!
-        weMadeIt = true;
-        if(!isInitialized) {
-          driveTrain.setTime();
-          isInitialized = true;
-        }
-        driveTrain.turn45(true); // turn right
-    }
+//    if(!((controller.getControllerChannel(5)) > 130 || (controller.getControllerChannel(5) < 50)) ) {
+//      driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
+//      follow.resetCrossCount();
+//      isInitialized = false;
+//      weMadeIt = false;
+//      result = 0;
+//    }
+//    else
+//    {
+////      if (!frontBumper.isBumped())
+////      follow.doLineFollowTillCross(driveTrain);
+////      else driveTrain.halt();
+//      if (!weMadeIt)
+//        result = follow.stopOnCrossing(driveTrain, 3);
+//      
+//      if (result == 0)
+//        weMadeIt = false; // wait until we make it
+//      else {
+//        // we made it!
+//        weMadeIt = true;
+//        if(!isInitialized) {
+//          driveTrain.setTime();
+//          isInitialized = true;
+//        }
+//        driveTrain.turn45(true); // turn right
+//    }
     
 //    if(!((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) ) {
 //      follow.resetCrossCount();
@@ -131,7 +167,7 @@ void loop() {
 //        // we made it! YAAAAAAY!
 //        
 //      }
-    }
+//    }
 }
 
 /*
