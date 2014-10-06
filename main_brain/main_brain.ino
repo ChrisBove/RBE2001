@@ -150,7 +150,8 @@ void loop() {
       
       
     case LittleBrain::LINE_FOLLOW_CROSSING:
-      result = follow.stopOnCrossing(driveTrain, crossingCount, LineFollow::BACKWARD);
+      // add 1 to crossing count to account for the first rack
+      result = follow.stopOnCrossing(driveTrain, crossingCount + 1, LineFollow::BACKWARD);
 
       if (result == 1)
         brain.thoughtState = LittleBrain::INIT_TURN;
