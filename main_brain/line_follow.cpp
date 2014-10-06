@@ -41,23 +41,17 @@ int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
   static int state;
   if (allOnCross() != 1) {
     if (currentSensors.left && !currentSensors.middle && !currentSensors.right){
-      if (dir == FORWARD)
-        driving.turnLeft();// turn left
-      else
-        driving.turnRight();
+      driving.turnLeft(dir);// turn left
       state = 0;
     }
     else {
       if (!currentSensors.left && !currentSensors.middle && currentSensors.right) {
-        if (dir == FORWARD)
-          driving.turnRight();// turn right
-        else
-          driving.turnLeft();
+        driving.turnRight(dir);// turn right
         state = 1;
       }
       else {
         if(!currentSensors.left && currentSensors.middle && !currentSensors.right) {
-        if (dir == FORWARD)
+        if (dir == DriveTrain::FORWARD)
           driving.forward();// go forward
         else
           driving.reverse();
@@ -68,20 +62,20 @@ int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
           switch(state) {
             case 0:
 //              driving.turnLeft();
-              if (dir == FORWARD)
+              if (dir == DriveTrain::FORWARD)
                 driving.turn(80, 75);
               else
                 driving.turn(110, 100);
               break;
             case 1:
 //              driving.turnRight();
-              if (dir == FORWARD)
+              if (dir == DriveTrain::FORWARD)
                 driving.turn(110, 100);
               else
                 driving.turn(80, 75);
               break;
             case 2:
-              if (dir == FORWARD)  
+              if (dir == DriveTrain::FORWARD)  
                 driving.forward();
               else
                 driving.reverse();

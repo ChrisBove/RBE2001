@@ -27,7 +27,6 @@ class LineFollow {
       bool back;
     };
     
-    enum dirTravel {FORWARD, BACKWARD};
   private:
   
     // VARIABLES
