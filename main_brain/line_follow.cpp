@@ -62,17 +62,19 @@ int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
           switch(state) {
             case 0:
 //              driving.turnLeft();
-              if (dir == DriveTrain::FORWARD)
-                driving.turn(80, 75);
-              else
-                driving.turn(110, 100);
+                driving.sharpTurnLeft(dir);
+//              if (dir == DriveTrain::FORWARD)
+//                driving.turn(80, 75);
+//              else
+//                driving.turn(110, 100);
               break;
             case 1:
 //              driving.turnRight();
-              if (dir == DriveTrain::FORWARD)
-                driving.turn(110, 100);
-              else
-                driving.turn(80, 75);
+              driving.sharpTurnRight(dir);
+//              if (dir == DriveTrain::FORWARD)
+//                driving.turn(110, 100);
+//              else
+//                driving.turn(80, 75);
               break;
             case 2:
               if (dir == DriveTrain::FORWARD)  
