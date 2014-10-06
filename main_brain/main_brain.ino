@@ -17,7 +17,7 @@
 #include "bluetooth_slave.h"
 #include "little_brain.h"
 
-LittleBrain brain(LittleBrain::WAIT_FOR_BUTTON);
+LittleBrain brain(LittleBrain::TELEOP);
 Controller controller(2);
 DriveTrain driveTrain(7, 6, 1, 0);
 
@@ -30,11 +30,13 @@ BluetoothSlave btSlave;
   int isInitialized = false;
   int weMadeIt = false;
   int result = 0;
+  int reactorNum = 1;
   
   int crossingCount = 0;
   bool isBumped = false;
   bool stopBumped = false;
   bool stopChanged = false;
+  bool isFirstBoot = true;
 
 void setup() {
   driveTrain.attachMotors();
@@ -47,7 +49,7 @@ void setup() {
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
   Timer1.attachInterrupt(timer1ISR);           // ...and specify the timer ISR
   btSlave.setupBluetooth();
-  
+//  Serial.begin(115200);
 }
 
 void loop() {
@@ -58,29 +60,33 @@ void loop() {
   // TODO - check for halt messages from field
   
   // -- respond to buttons ---
-  // STOP! If we hit the button, switch back to teleop
-//  if(((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
-  if ((stopBumped && (brain.thoughtState != LittleBrain::WAIT_FOR_BUTTON)) || ((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50))) {
-    brain.thoughtState = LittleBrain::WAIT_FOR_BUTTON;
+  // Stop button stuff, if hit for the first time, start things
+  if (isFirstBoot && stopBumped) {
+    btSlave.goTime();
+    brain.thoughtState = LittleBrain::TELEOP;
     stopChanged = true;
+    isFirstBoot = false;
+  }
+  // otherwise, this is an e-stop
+  else if (!isFirstBoot && stopBumped && stopChanged) {
+    isFirstBoot = true;
+    stopBumped = false;
+    stopChanged = false;
+  }
+//  else
+//    if(stopBumped && !stopChanged) {
+//      driveTrain.halt();
+//      isFirstBoot = true;
+//      stopChanged = false;
+//    }
+  if (!isFirstBoot && ((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50))) {
+    brain.thoughtState = LittleBrain::TELEOP;
   }
   // enter state machine
-  switch(brain.thoughtState) {
-    
-    case LittleBrain::WAIT_FOR_BUTTON:
-
-      driveTrain.halt();
-      // TODO fix this from being true right after getting a reset
-      // don't move till start button is pressed
-      if (stopBumped && !stopChanged)
-        brain.thoughtState = LittleBrain::TELEOP;
-      else
-        stopChanged = false;
-      break;
-      
+  if(!isFirstBoot)
+  switch(brain.thoughtState) {      
       
     case LittleBrain::TELEOP:
-      btSlave.goTime();
       reinitialize();
       driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
       
@@ -117,8 +123,9 @@ void loop() {
       
       
     case LittleBrain::TURN_AROUND:
-      driveTrain.turn180(true); // do a right turn
-      brain.thoughtState = LittleBrain:: CHOOSE_STORAGE_RACK;
+      result = driveTrain.turn180(false);  // do a right turn
+      if (result)
+        brain.thoughtState = LittleBrain::CHOOSE_STORAGE_RACK;
       break;
       
       
@@ -160,7 +167,7 @@ void loop() {
     case LittleBrain::TURN:
       result = driveTrain.turn45(false); // turn left
       
-      if (result == 1)
+      if (result)
         brain.thoughtState = LittleBrain::LINE_FOLLOW_TO_PEG;
       break;
     
