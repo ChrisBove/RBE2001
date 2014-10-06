@@ -60,7 +60,7 @@ void loop() {
   // -- respond to buttons ---
   // STOP! If we hit the button, switch back to teleop
 //  if(((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
-  if (stopBumped && brain.thoughtState != LittleBrain::WAIT_FOR_BUTTON) {
+  if ((stopBumped && (brain.thoughtState != LittleBrain::WAIT_FOR_BUTTON)) || ((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50))) {
     brain.thoughtState = LittleBrain::WAIT_FOR_BUTTON;
     stopChanged = true;
   }
@@ -86,12 +86,42 @@ void loop() {
       
       if(((controller.getControllerChannel(5)) > 130 || (controller.getControllerChannel(5) < 50)) )
       {
-        brain.thoughtState = LittleBrain::CHOOSE_STORAGE_RACK;
+        brain.thoughtState = LittleBrain::GRAB;
       }
       // TODO check other buttons to determine next step
       break;
     
     
+    case LittleBrain::GRAB:
+      
+      brain.thoughtState = LittleBrain::EXTRACT;
+      break;
+      
+      
+    case LittleBrain::EXTRACT:
+      
+      brain.thoughtState = LittleBrain::BACKUP;
+      break;
+      
+      
+    case LittleBrain::BACKUP:
+    
+      brain.thoughtState = LittleBrain::INIT_180;
+      break;
+      
+      
+    case LittleBrain::INIT_180:
+      driveTrain.setTime();
+      brain.thoughtState = LittleBrain::TURN_AROUND;
+      break;
+      
+      
+    case LittleBrain::TURN_AROUND:
+      driveTrain.turn180(true); // do a right turn
+      brain.thoughtState = LittleBrain:: CHOOSE_STORAGE_RACK;
+      break;
+      
+      
     case LittleBrain::CHOOSE_STORAGE_RACK:
       // assume we're starting at 1 and 1 side of the field
       btSlave.updateArrays();
