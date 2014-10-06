@@ -34,6 +34,7 @@ BluetoothSlave btSlave;
   int crossingCount = 0;
   bool isBumped = false;
   bool stopBumped = false;
+  bool stopChanged = false;
 
 void setup() {
   driveTrain.attachMotors();
@@ -59,24 +60,27 @@ void loop() {
   // -- respond to buttons ---
   // STOP! If we hit the button, switch back to teleop
 //  if(((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
-  if (stopBumped && brain.thoughtState != LittleBrain::WAIT_FOR_BUTTON)
+  if (stopBumped && brain.thoughtState != LittleBrain::WAIT_FOR_BUTTON) {
     brain.thoughtState = LittleBrain::WAIT_FOR_BUTTON;
-  
-  
+    stopChanged = true;
+  }
   // enter state machine
   switch(brain.thoughtState) {
     
     case LittleBrain::WAIT_FOR_BUTTON:
-      btSlave.goTime();
+
       driveTrain.halt();
       // TODO fix this from being true right after getting a reset
       // don't move till start button is pressed
-      if (stopBumped)
+      if (stopBumped && !stopChanged)
         brain.thoughtState = LittleBrain::TELEOP;
+      else
+        stopChanged = false;
       break;
       
       
     case LittleBrain::TELEOP:
+      btSlave.goTime();
       reinitialize();
       driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
       
