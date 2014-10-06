@@ -23,6 +23,7 @@ DriveTrain driveTrain(7, 6, 1, 0);
 
 LineFollow follow(0, 1, 2, 3);
 Button frontBumper(22);
+Button stopBumper(23);
 BluetoothSlave btSlave;
 
 // saddening globals
@@ -32,12 +33,14 @@ BluetoothSlave btSlave;
   
   int crossingCount = 0;
   bool isBumped = false;
+  bool stopBumped = false;
 
 void setup() {
   driveTrain.attachMotors();
   driveTrain.halt();
   
   frontBumper.setupButton();
+  stopBumper.setupButton();
   
     // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
@@ -50,16 +53,29 @@ void loop() {
   // do updates
   btSlave.update();
   isBumped = frontBumper.isBumped();
+  stopBumped = stopBumper.isBumped();
+  // TODO - check for halt messages from field
+  
+  // -- respond to buttons ---
   // STOP! If we hit the button, switch back to teleop
-  if(((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
-    brain.thoughtState = LittleBrain::TELEOP;
+//  if(((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) )
+  if (stopBumped && brain.thoughtState != LittleBrain::WAIT_FOR_BUTTON)
+    brain.thoughtState = LittleBrain::WAIT_FOR_BUTTON;
+  
   
   // enter state machine
   switch(brain.thoughtState) {
+    
     case LittleBrain::WAIT_FOR_BUTTON:
       btSlave.goTime();
-      brain.thoughtState = LittleBrain::TELEOP;
+      driveTrain.halt();
+      // TODO fix this from being true right after getting a reset
+      // don't move till start button is pressed
+      if (stopBumped)
+        brain.thoughtState = LittleBrain::TELEOP;
       break;
+      
+      
     case LittleBrain::TELEOP:
       reinitialize();
       driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
@@ -71,11 +87,10 @@ void loop() {
       // TODO check other buttons to determine next step
       break;
     
+    
     case LittleBrain::CHOOSE_STORAGE_RACK:
-      
       // assume we're starting at 1 and 1 side of the field
       btSlave.updateArrays();
-      
       crossingCount = 0;
       for (int i = 0; i < 4; i++) {
         if (btSlave.storageArray[i] == 0){
@@ -92,6 +107,7 @@ void loop() {
       brain.thoughtState = LittleBrain::LINE_FOLLOW_CROSSING;
       break;
       
+      
     case LittleBrain::LINE_FOLLOW_CROSSING:
       result = follow.stopOnCrossing(driveTrain, crossingCount);
 
@@ -100,16 +116,20 @@ void loop() {
 
       break;
       
+      
     case LittleBrain::INIT_TURN:
       driveTrain.setTime();
       brain.thoughtState = LittleBrain::TURN;
       break;
+      
+      
     case LittleBrain::TURN:
       result = driveTrain.turn45(false); // turn left
       
       if (result == 1)
         brain.thoughtState = LittleBrain::LINE_FOLLOW_TO_PEG;
       break;
+    
     
     case LittleBrain::LINE_FOLLOW_TO_PEG:
       if (!isBumped)
@@ -119,6 +139,7 @@ void loop() {
         brain.thoughtState = LittleBrain::TELEOP;
       }
       break;
+      
       
     default:
       brain.thoughtState = LittleBrain::TELEOP;
