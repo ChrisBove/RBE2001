@@ -11,18 +11,13 @@ class LineFollow {
     
     void updateSensorData();
     void setThreshold(int value);
-    int doLineFollowTillCross(DriveTrain& driving);
-    int doLineFollow(DriveTrain& driving);
+    int doLineFollowTillCross(DriveTrain& driving, int dir);
+    int doLineFollow(DriveTrain& driving, int dir);
     int allOnCross();
     int makeBinNumber();
     
-    void turnLeft();
-    void turnRight();
-    void halt();
-    void forward();
-    
     // number is the crossing to stop on
-    int stopOnCrossing(DriveTrain& driving, int number);
+    int stopOnCrossing(DriveTrain& driving, int number, int dir);
     void resetCrossCount();
     
     struct LineSensors {
@@ -31,6 +26,8 @@ class LineFollow {
       bool right;
       bool back;
     };
+    
+    enum dirTravel {FORWARD, BACKWARD};
   private:
   
     // VARIABLES

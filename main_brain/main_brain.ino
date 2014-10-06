@@ -106,12 +106,12 @@ void loop() {
       
     case LittleBrain::EXTRACT:
       
-      brain.thoughtState = LittleBrain::BACKUP;
+      brain.thoughtState = LittleBrain::CHOOSE_STORAGE_RACK;
       break;
       
       
     case LittleBrain::BACKUP:
-    
+      
       brain.thoughtState = LittleBrain::INIT_180;
       break;
       
@@ -150,7 +150,7 @@ void loop() {
       
       
     case LittleBrain::LINE_FOLLOW_CROSSING:
-      result = follow.stopOnCrossing(driveTrain, crossingCount);
+      result = follow.stopOnCrossing(driveTrain, crossingCount, LineFollow::BACKWARD);
 
       if (result == 1)
         brain.thoughtState = LittleBrain::INIT_TURN;
@@ -165,7 +165,10 @@ void loop() {
       
       
     case LittleBrain::TURN:
-      result = driveTrain.turn45(false); // turn left
+      if (reactorNum == 1)
+        result = driveTrain.turn45(false); // turn left
+      else
+        result = driveTrain.turn45(true);
       
       if (result)
         brain.thoughtState = LittleBrain::LINE_FOLLOW_TO_PEG;
@@ -174,7 +177,7 @@ void loop() {
     
     case LittleBrain::LINE_FOLLOW_TO_PEG:
       if (!isBumped)
-        follow.doLineFollow(driveTrain);
+        follow.doLineFollow(driveTrain, LineFollow::FORWARD);
       else {
         driveTrain.halt();
         brain.thoughtState = LittleBrain::TELEOP;
