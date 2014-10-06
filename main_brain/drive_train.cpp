@@ -75,3 +75,18 @@ bool DriveTrain::turn45(bool isRight) {
     return true;
   }
 }
+
+bool DriveTrain::turn180(bool isRight) {
+  int timeLapse = millis() - startTime;
+  if (timeLapse <= 800) {
+    if (isRight)
+      turn(110, 110);
+    else
+      turn(70, 70);
+    return false;
+  }
+  else {
+    halt();
+    return true;
+  }
+}

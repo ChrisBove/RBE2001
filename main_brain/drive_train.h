@@ -23,6 +23,7 @@ class DriveTrain
     void forward();
     void turn(int lval, int rval);
     bool turn45(bool isRight);
+    bool turn180(bool isRight);
     void setTime();
     
     
