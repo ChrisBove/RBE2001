@@ -12,3 +12,11 @@ Controller::Controller(int pin) {
 int Controller::getControllerChannel(int channel) {
   return ppm.getChannel(channel);
 }
+
+bool Controller::isUpPressed(int channel) {
+  return ppm.getChannel(channel) > 130;
+}
+
+bool Controller::isDownPressed(int channel) {
+  return ppm.getChannel(channel) < 50;
+}
