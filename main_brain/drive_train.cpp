@@ -52,6 +52,11 @@ void DriveTrain::forward() {
   right.write(70); 
 }
 
+void DriveTrain::reverse() {
+  left.write(70);
+  right.write(110); 
+}
+
 void DriveTrain::turn(int lval, int rval) {
   left.write(lval);
   right.write(rval);
