@@ -95,7 +95,7 @@ void loop() {
         brain.thoughtState = LittleBrain::GRAB;
       }
       else if (controller.isDownPressed(5))
-        brain.thoughtState = LittleBrain::REVERSE_TO_CENTER;
+        brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
       // TODO check other buttons to determine next step
       break;
     
@@ -186,6 +186,13 @@ void loop() {
         driveTrain.halt();
         brain.thoughtState = LittleBrain::TELEOP;
       }
+      break;
+      
+    case LittleBrain::REVERSE_FROM_SUPPLY:
+      result = follow.stopOnCrossing(driveTrain, 2, LineFollow::BACKWARD);
+
+      if (result == 1)
+        brain.thoughtState = LittleBrain::TELEOP;
       break;
       
       
