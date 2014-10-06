@@ -106,13 +106,15 @@ void loop() {
       
     case LittleBrain::EXTRACT:
       
-      brain.thoughtState = LittleBrain::CHOOSE_STORAGE_RACK;
+      brain.thoughtState = LittleBrain::BACKUP;
       break;
       
       
     case LittleBrain::BACKUP:
-      
-      brain.thoughtState = LittleBrain::INIT_180;
+      result = follow.stopOnCrossing(driveTrain, 1, LineFollow::BACKWARD);
+
+      if (result == 1)
+        brain.thoughtState = LittleBrain::INIT_180;
       break;
       
       
@@ -150,8 +152,7 @@ void loop() {
       
       
     case LittleBrain::LINE_FOLLOW_CROSSING:
-      // add 1 to crossing count to account for the first rack
-      result = follow.stopOnCrossing(driveTrain, crossingCount + 1, LineFollow::BACKWARD);
+      result = follow.stopOnCrossing(driveTrain, crossingCount, LineFollow::FORWARD);
 
       if (result == 1)
         brain.thoughtState = LittleBrain::INIT_TURN;
