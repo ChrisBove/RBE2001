@@ -79,7 +79,7 @@ void loop() {
 //      isFirstBoot = true;
 //      stopChanged = false;
 //    }
-  if (!isFirstBoot && ((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50))) {
+  if (!isFirstBoot && controller.isUpPressed(6)) {
     brain.thoughtState = LittleBrain::TELEOP;
   }
   // enter state machine
@@ -90,10 +90,12 @@ void loop() {
       reinitialize();
       driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
       
-      if(((controller.getControllerChannel(5)) > 130 || (controller.getControllerChannel(5) < 50)) )
+      if(controller.isUpPressed(5))
       {
         brain.thoughtState = LittleBrain::GRAB;
       }
+      else if (controller.isDownPressed(5))
+        brain.thoughtState = LittleBrain::REVERSE_TO_CENTER;
       // TODO check other buttons to determine next step
       break;
     
