@@ -32,14 +32,41 @@ void DriveTrain::moveMotors(int leftVal, int rightVal) {
   right.write(_rightDrive);
 }
 
-void DriveTrain::turnLeft(){
-  left.write(100); // should be slower or backwards
-  right.write(70);
+void DriveTrain::turnLeft(int dir){
+  if (dir == FORWARD) {
+    left.write(105); // should be slower or backwards
+    right.write(70);
+  }
+  else { // reverse turn right
+    left.write(80); // should be slower or backwards
+    right.write(120);
+  }
 }
 
-void DriveTrain::turnRight() {
-  left.write(110);
-  right.write(80);
+void DriveTrain::turnRight(int dir) {
+  if (dir == FORWARD) {
+    left.write(110);
+    right.write(80);
+  }
+  else { // reverse turn left
+    left.write(75);
+    right.write(105);
+  }
+}
+
+void DriveTrain::sharpTurnLeft (int dir) {
+  if (dir == FORWARD)
+    turn(80, 75);
+//  else 
+//    turn(75, 85); // reverse sharp turn RIGHT
+}
+
+void DriveTrain::sharpTurnRight(int dir) {
+  if (dir == FORWARD)
+    turn(110, 100);
+//  else
+//    turn(105, 120); // reverse sharp turn left
+
 }
 
 void DriveTrain::halt(){
@@ -48,8 +75,13 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  left.write(110);
+  left.write(110); // 110, 80 is actually forward
   right.write(70); 
+}
+
+void DriveTrain::reverse() {
+  left.write(78);
+  right.write(110); 
 }
 
 void DriveTrain::turn(int lval, int rval) {
@@ -61,6 +93,7 @@ void DriveTrain::setTime() {
   startTime = millis();
 }
 
+// returns 1 when the turn is done
 bool DriveTrain::turn45(bool isRight) {
   int timeLapse = millis() - startTime;
   if (timeLapse <= 400) {
@@ -68,6 +101,23 @@ bool DriveTrain::turn45(bool isRight) {
       turn(110, 110);
     else
       turn(70, 70);
+    return false;
+  }
+  else {
+    halt();
+    return true;
+  }
+}
+
+bool DriveTrain::turn180(bool isRight) {
+  int timeLapse = millis() - startTime;
+  if (timeLapse <= 950) {
+    if (isRight) {
+      turn(110, 110);
+    }
+    else {
+      turn(70, 70);
+    }
     return false;
   }
   else {

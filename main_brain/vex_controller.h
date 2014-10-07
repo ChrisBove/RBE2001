@@ -7,6 +7,8 @@ class Controller {
   public:
     Controller(int pin);
     int getControllerChannel(int channel);
+    bool isUpPressed(int channel);
+    bool isDownPressed(int channel);
   private:
     
 };

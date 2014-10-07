@@ -17,13 +17,19 @@ class DriveTrain
     void attachMotors();
     
     void moveMotors(int leftVal, int rightVal);
-    void turnLeft();
-    void turnRight();
+    void turnLeft(int dir);
+    void turnRight(int dir);
+    void sharpTurnLeft(int dir);
+    void sharpTurnRight(int dir);
     void halt();
     void forward();
+    void reverse();
     void turn(int lval, int rval);
     bool turn45(bool isRight);
+    bool turn180(bool isRight);
     void setTime();
+    
+    enum dirTravel {FORWARD, BACKWARD};
     
     
   private:

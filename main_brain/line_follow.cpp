@@ -28,31 +28,33 @@ void LineFollow::updateSensorData() {
 //  if (currentSensors.left
 //}
 
-int LineFollow::doLineFollowTillCross(DriveTrain& driving) {
-  int result = doLineFollow(driving);
+int LineFollow::doLineFollowTillCross(DriveTrain& driving, int dir) {
+  int result = doLineFollow(driving, dir);
   if (result == 1)
     driving.halt();
   return result;
   
 }
 
-int LineFollow::doLineFollow(DriveTrain& driving) {
+int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
   updateSensorData();
   static int state;
   if (allOnCross() != 1) {
     if (currentSensors.left && !currentSensors.middle && !currentSensors.right){
-      driving.turnLeft();// turn left
+      driving.turnLeft(dir);// turn left
       state = 0;
     }
     else {
       if (!currentSensors.left && !currentSensors.middle && currentSensors.right) {
-        driving.turnRight();// turn right
+        driving.turnRight(dir);// turn right
         state = 1;
       }
       else {
         if(!currentSensors.left && currentSensors.middle && !currentSensors.right) {
-        
-        driving.forward();// go forward
+        if (dir == DriveTrain::FORWARD)
+          driving.forward();// go forward
+        else
+          driving.reverse();
         state = 2;
         }
         else{
@@ -60,14 +62,25 @@ int LineFollow::doLineFollow(DriveTrain& driving) {
           switch(state) {
             case 0:
 //              driving.turnLeft();
-              driving.turn(80, 75);
+                driving.sharpTurnLeft(dir);
+//              if (dir == DriveTrain::FORWARD)
+//                driving.turn(80, 75);
+//              else
+//                driving.turn(110, 100);
               break;
             case 1:
 //              driving.turnRight();
-              driving.turn(110, 100);
+              driving.sharpTurnRight(dir);
+//              if (dir == DriveTrain::FORWARD)
+//                driving.turn(110, 100);
+//              else
+//                driving.turn(80, 75);
               break;
             case 2:
-              driving.forward();
+              if (dir == DriveTrain::FORWARD)  
+                driving.forward();
+              else
+                driving.reverse();
               break;
             default:
               state = 2;
@@ -87,10 +100,10 @@ int LineFollow::allOnCross() {
   
 }
 
-int LineFollow::stopOnCrossing(DriveTrain& driving, int number) {
+int LineFollow::stopOnCrossing(DriveTrain& driving, int number, int dir) {
   int currentRun = 0;
   if (sumCrossings < number)
-    currentRun = doLineFollow(driving);
+    currentRun = doLineFollow(driving, dir);
   if (currentRun == 1 && lastRun == 1) {
     // don't count this one, we're still on the same line
     // TODO - double check for noise - going on and off quickly
