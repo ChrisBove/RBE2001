@@ -153,6 +153,7 @@ void loop() {
       // assume we're starting at 1 and 1 side of the field
       btSlave.updateArrays();
       crossingCount = 0;
+
       if (reactorNum == 1)
         for (int i = 0; i < 4; i++) {
           if (btSlave.storageArray[i] == 0){
@@ -167,6 +168,7 @@ void loop() {
             break;
           }
         }
+
       follow.resetCrossCount();
       if (crossingCount == 0) {
         Serial.println("We couldn't find an open tube!");
