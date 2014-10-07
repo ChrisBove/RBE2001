@@ -276,7 +276,10 @@ void loop() {
       
     case LittleBrain::REFUEL_REACTOR:
         // TODO manip movements
-        reactorNum = 2;
+        if (reactorNum == 1)
+          reactorNum = 2;
+        else
+          reactorNum = 1;
         brain.thoughtState = LittleBrain::TELEOP;
       break;
       
