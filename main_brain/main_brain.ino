@@ -35,11 +35,12 @@
 #include "button.h"
 #include "bluetooth_slave.h"
 #include "little_brain.h"
+#include "gripper.h"
 
 LittleBrain brain(LittleBrain::TELEOP);
 Controller controller(2);
 DriveTrain driveTrain(7, 6, 1, 0);
-
+Gripper gripper(8,9);
 LineFollow follow(0, 1, 2, 3);
 Button frontBumper(22);
 Button stopBumper(23);
