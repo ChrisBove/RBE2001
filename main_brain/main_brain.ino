@@ -1,3 +1,22 @@
+/*
+
+
+        STO    1    2    3    4
+               |    |    |    |
+          -----+----+----+----+----
+               |    |    |    |
+          |    |    |    |    |    |
+  REAC 1 -+----+----+----+----+----+- REAC 2           
+          |    |    |    |    |    |
+               |    |    |    |
+          -----+----+----+----+----
+               |    |    |    |        
+        SUP    1    2    3    4
+
+
+*/
+
+
 // ***** INCLUDED LIBRARIEIS *******
 
 // put them here...
@@ -72,13 +91,9 @@ void loop() {
     isFirstBoot = true;
     stopBumped = false;
     stopChanged = false;
+    driveTrain.halt();
   }
-//  else
-//    if(stopBumped && !stopChanged) {
-//      driveTrain.halt();
-//      isFirstBoot = true;
-//      stopChanged = false;
-//    }
+
   if (!isFirstBoot && controller.isUpPressed(6)) {
     brain.thoughtState = LittleBrain::TELEOP;
   }
@@ -95,7 +110,7 @@ void loop() {
         brain.thoughtState = LittleBrain::GRAB;
       }
       else if (controller.isDownPressed(5))
-        brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
+        brain.thoughtState = LittleBrain::GET_NEW_ROD;
       // TODO check other buttons to determine next step
       break;
     
@@ -138,12 +153,20 @@ void loop() {
       // assume we're starting at 1 and 1 side of the field
       btSlave.updateArrays();
       crossingCount = 0;
-      for (int i = 0; i < 4; i++) {
-        if (btSlave.storageArray[i] == 0){
-          crossingCount = i + 1; // find closest open storage tube
-          break;
+      if (reactorNum == 1)
+        for (int i = 0; i < 4; i++) {
+          if (btSlave.storageArray[i] == 0){
+            crossingCount = i + 1; // find closest open storage tube
+            break;
+          }
         }
-      }
+      else
+        for (int i = 3; i >=0; i--) {
+          if (btSlave.storageArray[i] == 0){
+            crossingCount = i + 1; // find closest open storage tube
+            break;
+          }
+        }
       follow.resetCrossCount();
       if (crossingCount == 0) {
         Serial.println("We couldn't find an open tube!");
@@ -189,64 +212,79 @@ void loop() {
       }
       break;
       
-    case LittleBrain::REVERSE_FROM_SUPPLY:
-      result = follow.stopOnCrossing(driveTrain, 2, DriveTrain::BACKWARD);
-
-      if (result == 1)
-        brain.thoughtState = LittleBrain::TELEOP;
+      // SEQUENCE FOR GETTING THINGS TO THE REACTOR
+      // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
+    case LittleBrain::GET_NEW_ROD: 
+      // TODO
+      brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
       break;
       
+    case LittleBrain::REVERSE_FROM_SUPPLY:
+      result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD);
+
+      if (result == 1)
+        brain.thoughtState = LittleBrain::PREP_180;
+      break;
+      
+     case LittleBrain::PREP_180:
+      driveTrain.setTime();
+      brain.thoughtState = LittleBrain::DO_180;
+      break;
+      
+    case LittleBrain::DO_180:
+      result = driveTrain.turn180(false);  // do a right turn
+      if (result) {
+        brain.thoughtState = LittleBrain::GET_TO_CENTER;
+        follow.resetCrossCount();
+      break;
+      
+    case LittleBrain::GET_TO_CENTER:
+      result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD);
+
+      if (result == 1)
+        brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
+      break;
+    
+      
+    case LittleBrain::INIT_TURN_TO_REACTOR:
+      driveTrain.setTime();
+      brain.thoughtState = LittleBrain::TURN_TO_REACTOR;
+      break;
+      
+      
+    case LittleBrain::TURN_TO_REACTOR:
+      if (reactorNum == 1)
+        result = driveTrain.turn45(false); // turn left
+      else
+        result = driveTrain.turn45(true);
+      
+      if (result)
+        brain.thoughtState = LittleBrain::GET_TO_REACTOR;
+      break;
+      
+      
+    case LittleBrain::GET_TO_REACTOR:
+      if (!isBumped)
+        follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
+      else {
+        driveTrain.halt();
+        brain.thoughtState = LittleBrain::REFUEL_REACTOR;
+      }
+      break;
+      
+    case LittleBrain::REFUEL_REACTOR:
+        // TODO manip movements
+        reactorNum = 2;
+        brain.thoughtState = LittleBrain::TELEOP;
+      break;
       
     default:
       brain.thoughtState = LittleBrain::TELEOP;
       break;
-  // in teleop, just do teleop until a button is pressed to do something
-  
-  // in each other case, do something else
+
   }
-  // drive to case - drive to 
-
-//    if(!((controller.getControllerChannel(5)) > 130 || (controller.getControllerChannel(5) < 50)) ) {
-//      driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
-//      follow.resetCrossCount();
-//      isInitialized = false;
-//      weMadeIt = false;
-//      result = 0;
-//    }
-//    else
-//    {
-////      if (!frontBumper.isBumped())
-////      follow.doLineFollowTillCross(driveTrain);
-////      else driveTrain.halt();
-//      if (!weMadeIt)
-//        result = follow.stopOnCrossing(driveTrain, 3);
-//      
-//      if (result == 0)
-//        weMadeIt = false; // wait until we make it
-//      else {
-//        // we made it!
-//        weMadeIt = true;
-//        if(!isInitialized) {
-//          driveTrain.setTime();
-//          isInitialized = true;
-//        }
-//        driveTrain.turn45(true); // turn right
-//    }
-    
-//    if(!((controller.getControllerChannel(6)) > 130 || (controller.getControllerChannel(6) < 50)) ) {
-//      follow.resetCrossCount();
-//    }
-//    else
-//    {
-//      if (follow.stopOnCrossing(driveTrain, 3) == 0)
-//        ; // wait until we make it
-//      else {
-//        // we made it! YAAAAAAY!
-//        
-//      }
-//    }
 }
-
+}
 /*
  * ISR for timer1
  */
