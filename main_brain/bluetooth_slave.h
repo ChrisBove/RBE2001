@@ -30,6 +30,9 @@ class BluetoothSlave {
     bool storageArray[4];
     bool supplyArray[4];
     
+    bool stopMovement = false;
+    bool resumeMovement = true;
+    
   private:
     void sendHighRadiation();
     void sendLowRadiation();

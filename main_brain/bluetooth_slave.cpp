@@ -90,6 +90,17 @@ void BluetoothSlave::update() {
         supplyData = data1[0];                 // extract and save the supply-related data (the byte bitmask)
         break;
       // TODO - add other cases for other data
+      case 0x04:
+        // stop movement case!
+        resumeMovement = false;
+        stopMovement = true;
+        break;
+      case 0x05:
+        // resume movement case!
+        resumeMovement = true;
+        stopMovement = false;
+        break;
+        
       default:                                 // ignore other types of messages
         break;
       }
