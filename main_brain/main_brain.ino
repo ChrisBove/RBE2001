@@ -80,7 +80,10 @@ void loop() {
   isBumped = frontBumper.isBumped();  // update bumper states
   stopBumped = stopBumper.isBumped();
   // TODO - check for halt messages from field
-  
+  if (btSlave.stopMovement) 
+    driveTrain.shouldMove = false;
+  else if (btSlave.resumeMovement)
+    driveTrain.shouldMove = true;
   // -- respond to buttons ---
   // Stop button stuff, if hit for the first time, start things
   if (isFirstBoot && stopBumped) {

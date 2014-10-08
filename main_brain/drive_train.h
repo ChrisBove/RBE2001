@@ -31,6 +31,7 @@ class DriveTrain
     
     enum dirTravel {FORWARD, BACKWARD};
     
+    bool shouldMove = true;
     
   private:
     
