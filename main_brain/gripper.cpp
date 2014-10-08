@@ -4,7 +4,6 @@
 #include <Servo.h>
 
 Gripper::Gripper(gripperState state ) {
-  thoughtState = state;
 }
 
 Gripper::Gripper(int gripServo, int rackServo) {
@@ -23,16 +22,39 @@ void Gripper::setReactTime() {
   reactTime = millis();
 }
 
-bool workArm(int state) {
-  switch (state) {
-    case Gripper::INIT_CGRIP:
+bool Gripper::closeTheGrip() {
+  switch (grippyStateClose) {
+    case INIT_CLOSE_GRIP:
       setReactTime();
+      grippyStateClose = CLOSE_GRIP;
+      return false;
       break;
-    case Gripper::CGRIP:
+    case CLOSE_GRIP:
       bool result = closeGrip();
       if (result) {
-        break;
+        grippyStateClose = INIT_CLOSE_GRIP;
+        return true;
       }
+      return false;
+      break;
+  }
+}
+
+bool Gripper::retractTheGrip() {
+  switch (grippyStateRetract) {
+    case INIT_RETRACT:
+      setReactTime();
+      grippyStateRetract = RETRACT;
+      return false;
+      break;
+    case RETRACT:
+      bool result = retract();
+      if (result) {
+        grippyStateRetract = INIT_RETRACT;
+        return true;
+      }
+      return false;
+      break;
   }
 }
 
@@ -63,11 +85,11 @@ bool Gripper::openGrip() {
   return true;
 }
 
-bool closeGrip() {
+bool Gripper::closeGrip() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 500) {
     grip.write(145);
-    return true;
+    return false;
   }
-  return false;
+  return true;
 }

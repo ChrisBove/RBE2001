@@ -64,6 +64,8 @@ void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
   
+  gripper.attachMotors();
+  
   frontBumper.setupButton();  // setup bumper buttons
   stopBumper.setupButton();
   
@@ -132,16 +134,18 @@ void loop() {
       // ASSUMPTION: the robot is positioned along the line facing the reactor (East west line in between reactors).
       // reactor tube should be between fork
       case LittleBrain::GRAB:
-        
+        if(gripper.closeTheGrip()){
         brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
+        }
         break;
         
       
       // this extracts the rod from the reactor, moving the fourbar to the vertical position after the rod is vert. moved.
       case LittleBrain::EXTRACT:
-        
+        if(gripper.retractTheGrip()){
         follow.resetCrossCount(); // reset the cross count for our next state
         brain.thoughtState = LittleBrain::BACKUP;
+        }
         break;
         
       // backs the robot up in BACKWARD line following until it hits the first cross

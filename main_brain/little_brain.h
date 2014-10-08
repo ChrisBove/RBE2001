@@ -9,7 +9,7 @@ class LittleBrain {
     LittleBrain(littleBrainState state);
     void think(int state);
     
-    littleBrainState thoughtState = WAIT_FOR_BUTTON;
+    littleBrainState thoughtState;
   private:
     
 };

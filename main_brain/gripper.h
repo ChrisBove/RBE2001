@@ -7,21 +7,25 @@
 
 class Gripper {
   public:
-  enum gripperState {WAIT_FOR_INSTRUCT, INIT_CGRIP, CGRIP, INIT_RETRACT1, RETRACT, INIT_EXTEND, EXTEND, INIT_OGRIP1, OGRIP1, INIT_CGRIP2, CGRIP2, INIT_RETRACT2};
+  enum gripperState {WAIT_FOR_INSTRUCT, INIT_CLOSE_GRIP, CLOSE_GRIP, INIT_RETRACT, RETRACT, INIT_EXTEND, EXTEND, INIT_OPEN_GRIP, OPEN_GRIP};
   Gripper(gripperState state);
     
-    gripperState thoughtState = INIT_CGRIP;
+    gripperState grippyStateClose = INIT_CLOSE_GRIP;
+    gripperState grippyStateRetract = INIT_RETRACT;
     
     Gripper(int gripServo, int rackServo);
     void attachMotors();
+    bool closeTheGrip();
+    bool retractTheGrip();
+    bool extendTheGrip();
+    bool openTheGrip();
     bool extend();
     bool retract();
     bool openGrip();
-//    bool closeGrip();
+    bool closeGrip();
     void setReactTime();
     
   private:
-  bool closeGrip();
     Servo rack;
     Servo grip;
     int _gripServo;
