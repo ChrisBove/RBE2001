@@ -39,6 +39,7 @@ void BluetoothSlave::doTimerInterrupt() {
   // we are here because the timer expired and generated an interrupt
   tickCount++;                                 // increment the 100ms tick counter
   hbCount++;                                   // increment the heartbeat counter
+  
   if (tickCount == 10) {                       // do the following once a second
     tickCount = 0;                             // reset the tick counter
     elapsedTime++;			       // increment the elapsed time counter (in seconds)
@@ -93,14 +94,14 @@ void BluetoothSlave::sendHighRadiation() {
     btmaster.sendPkt(pkt, sz);                 // send to the field computer
 }
 
-byte BluetoothSlave::getStorage() {
-  return storageData;
+void BluetoothSlave::sendLowRadiation() {
+    // example of sending a radiation alert message (new fuel rod)
+//    delay(20);                                 // wait a little while so we don't spam the field control computer
+    pcol.setDst(0x00);			       // this will be a broadcast message
+    data1[0] = 0x2C;                           // indicate a depleted fuel rod
+    sz = pcol.createPkt(0x03, data1, pkt);     // create a packet using the radiation alert type ID (1 byte of data used this time)
+    btmaster.sendPkt(pkt, sz);                 // send to the field computer
 }
-
-byte BluetoothSlave::getSupply() {
-  return supplyData;
-}
-
 
 /*              STORAGE SIDE
     ARRAY  0    1    2    3
