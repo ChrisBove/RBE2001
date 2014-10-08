@@ -79,11 +79,13 @@ void loop() {
   btSlave.update();  // check for messages and send needed messages
   isBumped = frontBumper.isBumped();  // update bumper states
   stopBumped = stopBumper.isBumped();
-  // TODO - check for halt messages from field
+  
+  // check for halt messages from field
   if (btSlave.stopMovement) 
     driveTrain.shouldMove = false;
   else if (btSlave.resumeMovement)
     driveTrain.shouldMove = true;
+    
   // -- respond to buttons ---
   // Stop button stuff, if hit for the first time, start things
   if (isFirstBoot && stopBumped) {
@@ -183,10 +185,10 @@ void loop() {
             }
           }
         else // else, search the array from a different direction
-          for (int i = 3; i >=0; i--) {
+          for (int i = 0; i < 4; i++) {
             // TODO check this value
             if (btSlave.storageArray[i] == 0){
-              crossingCount = i + 1; // find closest open storage tube
+              crossingCount = (i - 4) *-1; // find closest open storage tube
               break;
             }
           }
