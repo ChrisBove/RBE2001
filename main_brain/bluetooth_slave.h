@@ -20,15 +20,20 @@ class BluetoothSlave {
     void goTime();
     void timer1ISR();
     void doTimerInterrupt();
-    void sendHighRadiation();
-    void sendLowRadiation();
+
     void updateArrays();
     void update();
+    
+    void setRadLow(bool enable);
+    void setRadHigh(bool enable);
     
     bool storageArray[4];
     bool supplyArray[4];
     
   private:
+    void sendHighRadiation();
+    void sendLowRadiation();
+    
     // set up module-wide variables
     // these are 'volatile' as they are referenced in as well as outside of ISRs
     volatile unsigned char tickCount;              // elapsed time in ticks (timer interrupts)
@@ -38,6 +43,9 @@ class BluetoothSlave {
     volatile boolean sendHB;                       // flag indicating it is time to send a heartbeat message
     volatile boolean sendRad;                      // flag indicating it is time to send a radiation message
     volatile boolean go;                           // flag indicating it is OK to start transmitting messages
+    
+    bool enableRadHigh = false;
+    bool enableRadLow = false;
     
     // these need to be module-wide variables (so they persist across iterations of loop()
     byte storageData;                              // holds the bitmask for the storage tubes
