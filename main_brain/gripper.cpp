@@ -58,6 +58,24 @@ bool Gripper::retractTheGrip() {
   }
 }
 
+bool Gripper::extendTheGrip() {
+  switch (grippyStateExtend) {
+    case INIT_EXTEND:
+    setReactTime();
+    grippyStateExtend = EXTEND;
+    return false;
+    break;
+    case EXTEND:
+    bool result = extend();
+    if (result) {
+      grippyStateExtend = INIT_EXTEND;
+      return true;
+    }
+    return false;
+    break;
+  }
+}
+
 bool Gripper::extend() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 1000) {

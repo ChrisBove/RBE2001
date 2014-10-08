@@ -12,6 +12,8 @@ class Gripper {
     
     gripperState grippyStateClose = INIT_CLOSE_GRIP;
     gripperState grippyStateRetract = INIT_RETRACT;
+    gripperState grippyStateExtend = INIT_EXTEND;
+    gripperState grippyStateOpen = INIT_OPEN_GRIP;
     
     Gripper(int gripServo, int rackServo);
     void attachMotors();
