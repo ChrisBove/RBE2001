@@ -24,6 +24,7 @@ void BluetoothSlave::setupBluetooth() {
   hbCount = 0;
   elapsedTime = 0;
   sendHB = false;
+  sendRad = false;
   
   pinMode(onboardLED, OUTPUT);
   digitalWrite(onboardLED, LOW);
@@ -39,14 +40,18 @@ void BluetoothSlave::doTimerInterrupt() {
   // we are here because the timer expired and generated an interrupt
   tickCount++;                                 // increment the 100ms tick counter
   hbCount++;                                   // increment the heartbeat counter
-  
-  if (tickCount == 10) {                       // do the following once a second
+  radCount++;                                  // increment radiation counter
+  if (tickCount >= 10) {                       // do the following once a second
     tickCount = 0;                             // reset the tick counter
     elapsedTime++;			       // increment the elapsed time counter (in seconds)
   }
-  if (hbCount == 20) {                         // do the following every other second
+  if (hbCount >= 20) {                         // do the following every other second
     hbCount = 0;                               // reset the heartbeat counter
     sendHB = true;                             // note it is time to send a heartbeat message
+  }
+  if (radCount >= 25) {
+    radCount = 0;
+    sendRad = true;
   }
 }
 
@@ -61,6 +66,13 @@ void BluetoothSlave::update() {
     sz = pcol.createPkt(0x07, data1, pkt);     // create a packet using the heartbeat type ID (there is no data)
     btmaster.sendPkt(pkt, sz);                 // send to the field computer
 
+  }
+  else if (sendRad && go) {
+    sendRad = false;
+    if (enableRadHigh)
+      sendHighRadiation();
+    if (enableRadLow)
+      sendLowRadiation();
   }
   
   // time to read messages
@@ -78,6 +90,17 @@ void BluetoothSlave::update() {
         supplyData = data1[0];                 // extract and save the supply-related data (the byte bitmask)
         break;
       // TODO - add other cases for other data
+      case 0x04:
+        // stop movement case!
+        resumeMovement = false;
+        stopMovement = true;
+        break;
+      case 0x05:
+        // resume movement case!
+        resumeMovement = true;
+        stopMovement = false;
+        break;
+        
       default:                                 // ignore other types of messages
         break;
       }
@@ -85,9 +108,22 @@ void BluetoothSlave::update() {
   }
 }
 
+void BluetoothSlave::setRadLow(bool enable) {
+  if (enable)
+    enableRadLow = true;
+  else
+    enableRadLow = false;
+}
+
+void BluetoothSlave::setRadHigh(bool enable) {
+  if (enable)
+    enableRadHigh = true;
+  else
+    enableRadHigh = false;
+}
+
 void BluetoothSlave::sendHighRadiation() {
     // example of sending a radiation alert message (new fuel rod)
-//    delay(20);                                 // wait a little while so we don't spam the field control computer
     pcol.setDst(0x00);			       // this will be a broadcast message
     data1[0] = 0xFF;                           // indicate a new fuel rod
     sz = pcol.createPkt(0x03, data1, pkt);     // create a packet using the radiation alert type ID (1 byte of data used this time)
@@ -95,8 +131,7 @@ void BluetoothSlave::sendHighRadiation() {
 }
 
 void BluetoothSlave::sendLowRadiation() {
-    // example of sending a radiation alert message (new fuel rod)
-//    delay(20);                                 // wait a little while so we don't spam the field control computer
+    // send a message for a low radiation alert
     pcol.setDst(0x00);			       // this will be a broadcast message
     data1[0] = 0x2C;                           // indicate a depleted fuel rod
     sz = pcol.createPkt(0x03, data1, pkt);     // create a packet using the radiation alert type ID (1 byte of data used this time)

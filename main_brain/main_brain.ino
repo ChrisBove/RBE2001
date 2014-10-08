@@ -79,8 +79,13 @@ void loop() {
   btSlave.update();  // check for messages and send needed messages
   isBumped = frontBumper.isBumped();  // update bumper states
   stopBumped = stopBumper.isBumped();
-  // TODO - check for halt messages from field
   
+  // check for halt messages from field
+  if (btSlave.stopMovement) 
+    driveTrain.shouldMove = false;
+  else if (btSlave.resumeMovement)
+    driveTrain.shouldMove = true;
+    
   // -- respond to buttons ---
   // Stop button stuff, if hit for the first time, start things
   if (isFirstBoot && stopBumped) {
@@ -113,7 +118,7 @@ void loop() {
       // switch based on stored state in brain
       // this is teleop, from here, the next autonomous action is taken
       case LittleBrain::TELEOP:
-        reinitialize(); // reinitialize globals (scroll way, way down)
+        reinitialize(); // reinitialize globals and turn off rad alerts (scroll way, way down)
         // update the drivetrain with input from the controller
         driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
         // if the up button on channel 5 is pressed, switch to grab state
@@ -131,7 +136,7 @@ void loop() {
       // ASSUMPTION: the robot is positioned along the line facing the reactor (East west line in between reactors).
       // reactor tube should be between fork
       case LittleBrain::GRAB:
-        
+        btSlave.setRadLow(true);
         brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
         break;
         
@@ -180,10 +185,10 @@ void loop() {
             }
           }
         else // else, search the array from a different direction
-          for (int i = 3; i >=0; i--) {
+          for (int i = 0; i < 4; i++) {
             // TODO check this value
             if (btSlave.storageArray[i] == 0){
-              crossingCount = i + 1; // find closest open storage tube
+              crossingCount = (i - 4) *-1; // find closest open storage tube
               break;
             }
           }
@@ -248,6 +253,7 @@ void loop() {
       // uses the gripper to get the new rod from the supply
       case LittleBrain::GET_NEW_ROD: 
         // TODO
+        btSlave.setRadHigh(true);
         brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
         break;
       
@@ -340,4 +346,6 @@ void timer1ISR() {
 void reinitialize() {
       follow.resetCrossCount();
       result = 0;
+      btSlave.setRadLow(false);
+      btSlave.setRadHigh(false);
 }

@@ -26,44 +26,43 @@ void DriveTrain::attachMotors() {
 }
 
 void DriveTrain::moveMotors(int leftVal, int rightVal) {
-  _leftDrive = leftVal;
-  _rightDrive = rightVal;
-  left.write(leftOffset - _leftDrive);
-  right.write(_rightDrive);
+  if(shouldMove) {
+    left.write(leftOffset - leftVal);
+    right.write(rightVal);
+  }
+  else
+    halt();
 }
 
 void DriveTrain::turnLeft(int dir){
   if (dir == FORWARD) {
-    left.write(105); // should be slower or backwards
-    right.write(70);
+    moveMotors(105, 70);
+    // left should be slower or backwards
   }
   else { // reverse turn right
-    left.write(80); // should be slower or backwards
-    right.write(120);
+    moveMotors(80, 120);
   }
 }
 
 void DriveTrain::turnRight(int dir) {
   if (dir == FORWARD) {
-    left.write(110);
-    right.write(80);
+    moveMotors(110, 80);
   }
   else { // reverse turn left
-    left.write(75);
-    right.write(105);
+    moveMotors(75, 80);
   }
 }
 
 void DriveTrain::sharpTurnLeft (int dir) {
   if (dir == FORWARD)
-    turn(80, 75);
+    moveMotors(80, 75);
 //  else 
 //    turn(75, 85); // reverse sharp turn RIGHT
 }
 
 void DriveTrain::sharpTurnRight(int dir) {
   if (dir == FORWARD)
-    turn(110, 100);
+    moveMotors(110, 100);
 //  else
 //    turn(105, 120); // reverse sharp turn left
 
@@ -75,13 +74,11 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  left.write(110); // 110, 80 is actually forward
-  right.write(70); 
+  moveMotors(110, 70); // 110, 80 is actually forward
 }
 
 void DriveTrain::reverse() {
-  left.write(78);
-  right.write(110); 
+  moveMotors(78, 110); // true reverse!
 }
 
 void DriveTrain::turn(int lval, int rval) {
