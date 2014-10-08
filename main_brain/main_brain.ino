@@ -113,7 +113,7 @@ void loop() {
       // switch based on stored state in brain
       // this is teleop, from here, the next autonomous action is taken
       case LittleBrain::TELEOP:
-        reinitialize(); // reinitialize globals (scroll way, way down)
+        reinitialize(); // reinitialize globals and turn off rad alerts (scroll way, way down)
         // update the drivetrain with input from the controller
         driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
         // if the up button on channel 5 is pressed, switch to grab state
@@ -131,7 +131,7 @@ void loop() {
       // ASSUMPTION: the robot is positioned along the line facing the reactor (East west line in between reactors).
       // reactor tube should be between fork
       case LittleBrain::GRAB:
-        
+        btSlave.setRadLow(true);
         brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
         break;
         
@@ -248,6 +248,7 @@ void loop() {
       // uses the gripper to get the new rod from the supply
       case LittleBrain::GET_NEW_ROD: 
         // TODO
+        btSlave.setRadHigh(true);
         brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
         break;
       
@@ -340,4 +341,6 @@ void timer1ISR() {
 void reinitialize() {
       follow.resetCrossCount();
       result = 0;
+      btSlave.setRadLow(false);
+      btSlave.setRadHigh(false);
 }
