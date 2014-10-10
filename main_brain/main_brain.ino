@@ -59,6 +59,10 @@ bool stopBumped = false;   // for the stop button, true if pressed
 bool stopChanged = false;  // flag for servicing stop button presses
 bool isFirstBoot = true;   // flag if this is the first boot
 
+int lastState = LittleBrain::TELEOP;    // stores last state.
+bool wasClosed = false;
+bool wasExtended = false;
+
 // ***** SETUP *****
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
@@ -78,6 +82,7 @@ void setup() {
 // ***** LOOP *****
 
 void loop() {
+  delay(5);
   // do updates each loop! MUST BE RUN!!!
   btSlave.update();  // check for messages and send needed messages
   isBumped = frontBumper.isBumped();  // update bumper states
@@ -98,12 +103,12 @@ void loop() {
     isFirstBoot = false;   // this is no longer the first boot
   }
   // otherwise, this is an e-stop, so reset stuff and stop stuff
-  else if (!isFirstBoot && stopBumped && stopChanged) {
-    isFirstBoot = true;
-    stopBumped = false;
-    stopChanged = false;
-    driveTrain.halt();
-  }
+//  else if (!isFirstBoot && stopBumped && stopChanged) {
+//    isFirstBoot = true;
+//    stopBumped = false;
+//    stopChanged = false;
+//    driveTrain.halt();
+//  }
   // if the controller button is pressed at any time, revert to Teleop! (this is like an e-stop)
   if (!isFirstBoot && controller.isUpPressed(6)) {
     brain.thoughtState = LittleBrain::TELEOP;
@@ -132,6 +137,28 @@ void loop() {
         // otherwise, if the down is pressed on channel 5, start moving the gripper to grab the new rod.
         else if (controller.isDownPressed(5))
           brain.thoughtState = LittleBrain::GET_NEW_ROD;
+        // otherwise, if the down is pressed on channel 5, start moving the gripper to grab the new rod.
+        
+        // if button down pressed, toggle gripper position
+//        if (controller.isDownPressed(5) && wasClosed) {
+//          gripper.openTheGrip();
+//          wasClosed = false;
+//        }
+//        else if (controller.isDownPressed(5) && !wasClosed) {
+//          gripper.closeTheGrip();
+//          wasClosed = true;
+//        }
+//          
+//        if (controller.isDownPressed(6) && !wasExtended) {
+//          gripper.extendTheGrip();
+//          wasExtended = true;
+//        }
+//        else if (controller.isDownPressed(6) && wasExtended) {
+//          gripper.retractTheGrip();
+//          wasExtended = false;
+//        }
+          
+          
         // TODO check other buttons to determine next step if needed
         break;
 
@@ -248,20 +275,65 @@ void loop() {
         // insert the rod into storage
       case LittleBrain::INSERT_STORAGE:
         // TODO add this gripper code
-        brain.thoughtState = LittleBrain::TELEOP; // next loop does teleop
+        result = gripper.extendTheGrip();
+        if (result) {
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_0; // next loop does teleop
+        }
         break;
 
-
+      case LittleBrain::DOUBLE_TAP_0:
+        result = gripper.openTheGrip();
+        if(result)
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_1;
+        break;
+      
+      case LittleBrain::DOUBLE_TAP_1:
+        result = gripper.retractTheGrip();
+        if(result)
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_2;
+        break;
+        
+      case LittleBrain::DOUBLE_TAP_2:
+        result = gripper.closeTheGrip();
+        if (result)
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_3;
+        break;
+        
+      case LittleBrain::DOUBLE_TAP_3:
+        result = gripper.extendTheGrip();
+        if(result) {
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_4;
+        }
+        break;
+        
+       case LittleBrain::DOUBLE_TAP_4:
+        result = gripper.openTheGrip();
+        if(result) {
+          brain.thoughtState = LittleBrain::TELEOP;
+          lastState = brain.thoughtState;
+          btSlave.setRadLow(false);
+        }
+        break;
 
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
         // uses the gripper to get the new rod from the supply
       case LittleBrain::GET_NEW_ROD:
-        // TODO
-        btSlave.setRadHigh(true);
-        brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
+        result = gripper.closeTheGrip();
+        if (result) {
+          btSlave.setRadHigh(true);
+          brain.thoughtState = LittleBrain::GET_NEW_ROD_1;
+        }
         break;
+        
+        
+      case LittleBrain::GET_NEW_ROD_1:
+        result = gripper.retractTheGrip();
+        if (result) 
+          brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
+        break;
+        
 
         // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
@@ -317,21 +389,36 @@ void loop() {
           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
         else {
           driveTrain.halt();
-          brain.thoughtState = LittleBrain::REFUEL_REACTOR;
+          brain.thoughtState = LittleBrain::REFUEL_REACTOR_0;
         }
         break;
 
         // refuel the reactor using the gripper
+        
+      case LittleBrain::REFUEL_REACTOR_0:
+        result = gripper.extendTheGrip();
+        if (result)
+          brain.thoughtState = LittleBrain::REFUEL_REACTOR_1;
+        break;
+        
+      case LittleBrain::REFUEL_REACTOR_1:
+        result = gripper.openTheGrip();
+        if (result)
+          brain.thoughtState = LittleBrain::REFUEL_REACTOR;
+        break;
+        
+        
       case LittleBrain::REFUEL_REACTOR:
-        // TODO manip movements
+        lastState = brain.thoughtState;
         // if we are on the first reactor, switch us to 2 for the next run
         if (reactorNum == 1)
           reactorNum = 2;
         // otherwise, go back to 1 in case we need to re do it
         else
           reactorNum = 1;
-        // TODO - when manip movements done, turn off radiation messages and go to teleop
+        // when manip movements done, turn off radiation messages and go to teleop
         brain.thoughtState = LittleBrain::TELEOP;
+        btSlave.setRadHigh(false);
         break;
 
         // this should never execute
@@ -352,6 +439,4 @@ void timer1ISR() {
 void reinitialize() {
   follow.resetCrossCount();
   result = 0;
-  btSlave.setRadLow(false);
-  btSlave.setRadHigh(false);
 }
