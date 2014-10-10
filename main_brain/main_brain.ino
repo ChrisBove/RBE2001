@@ -228,7 +228,6 @@ void loop() {
 
         follow.resetCrossCount();
         if (crossingCount == 0) {
-          Serial.println("We couldn't find an open tube!");
           brain.thoughtState = LittleBrain::TELEOP; // revert to teleop
           break;
         }
