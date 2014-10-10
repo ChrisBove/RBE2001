@@ -56,10 +56,15 @@ void BluetoothSlave::doTimerInterrupt() {
 }
 
 void BluetoothSlave::update() {
-
-  if (sendHB && go) {                          // execute if GO flag is set and it's time to generate a heartbeat message
+  noInterrupts();
+  bool tempSendHB = sendHB;
+  bool tempSendRad = sendRad;
+  interrupts();
+  
+  if (tempSendHB && go) {                          // execute if GO flag is set and it's time to generate a heartbeat message
+    noInterrupts();
     sendHB = false;                            // clear the heartbeat flag
-
+    interrupts();
     // generate and send the heartbeat message    
     digitalWrite(onboardLED, !digitalRead(onboardLED));  // flip the state of the HB LED
     pcol.setDst(0x00);			       // this will be a broadcast message
@@ -67,8 +72,11 @@ void BluetoothSlave::update() {
     btmaster.sendPkt(pkt, sz);                 // send to the field computer
 
   }
-  else if (sendRad && go) {
+  else if (tempSendRad && go) {
+    noInterrupts();
     sendRad = false;
+    interrupts();
+    
     if (enableRadHigh)
       sendHighRadiation();
     if (enableRadLow)
