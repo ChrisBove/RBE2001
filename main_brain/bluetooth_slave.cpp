@@ -80,7 +80,7 @@ void BluetoothSlave::update() {
 
   // attempt to read a message (packet)
   // the only messages returned are those that are broadcast or sent specifically to this robot
-  if (btmaster.readPacket(pkt)) {              // if we have received a message
+  if (go && btmaster.readPacket(pkt)) {              // if we have received a message
     if (pcol.getData(pkt, data1, type)) {      // see if we can extract the type and data
       switch (type) {                          // process the message based on the type
       case 0x01:                               // received a storage tube message
