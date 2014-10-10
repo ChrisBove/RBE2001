@@ -103,12 +103,12 @@ void loop() {
     isFirstBoot = false;   // this is no longer the first boot
   }
   // otherwise, this is an e-stop, so reset stuff and stop stuff
-//  else if (!isFirstBoot && stopBumped && stopChanged) {
-//    isFirstBoot = true;
-//    stopBumped = false;
-//    stopChanged = false;
-//    driveTrain.halt();
-//  }
+  else if (!isFirstBoot && stopBumped && stopChanged) {
+    isFirstBoot = true;
+    stopBumped = false;
+    stopChanged = false;
+    driveTrain.halt();
+  }
   // if the controller button is pressed at any time, revert to Teleop! (this is like an e-stop)
   if (!isFirstBoot && controller.isUpPressed(6)) {
     brain.thoughtState = LittleBrain::TELEOP;
