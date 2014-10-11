@@ -18,7 +18,7 @@ class Arm {
     int goodness = 0;
   private:
     void rotateDown (float output, Button& frontLimit);
-    void rotateUp (float output);
+    void rotateUp (float output, Button& frontLimit);
     
     void sendOutput(float output, Button& frontLimit);
     float scaleOutput (float output);
@@ -27,9 +27,9 @@ class Arm {
     int _potPin;
     
      // constants for PID, casually tuned for system
-     const float Kp = 0.00001;
-     const float Ki = 0.00000005; 
-     const float Kd = 0.0001;
+     const float Kp = 0.0001;
+     const float Ki = 0.0000005; 
+     const float Kd = 0.001;
      
      // ****** GLOBALS ********
      float lastError = 0; // stored from previous value.
