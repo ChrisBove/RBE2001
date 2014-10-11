@@ -49,8 +49,10 @@ Gripper gripper(8, 9);
 LineFollow follow(0, 1, 2, 3);
 Button frontBumper(22);
 Button stopBumper(23);
+Button frontLimit(24);
+Button backLimit(25);
 BluetoothSlave btSlave;
-Arm robotArm(10, 4);
+Arm robotArm(10, 4, frontLimit, backLimit);
 
 // saddening globals
 int result = 0;            // used over and over again for temporarily storing results of functions
@@ -69,7 +71,10 @@ bool wasExtended = false;
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
-
+  
+  frontLimit.setupButton();
+  backLimit.setupButton();
+  
   gripper.attachMotors();
   robotArm.setupArm();
 

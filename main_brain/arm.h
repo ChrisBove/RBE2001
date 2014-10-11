@@ -2,11 +2,12 @@
 #define arm_h
 
 #include <Servo.h>
+#include "button.h"
 
 class Arm {
   
   public:
-    Arm(int motorPin, int potPin);
+    Arm(int motorPin, int potPin, Button& frontLimit, Button& backLimit);
     void setupArm();
     
   private:
