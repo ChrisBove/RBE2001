@@ -93,7 +93,7 @@ void DriveTrain::setTime() {
 // returns 1 when the turn is done
 bool DriveTrain::turn45(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 550) {
+  if (timeLapse <= 750) {
     if (isRight)
       turn(110, 110);
     else
@@ -108,7 +108,7 @@ bool DriveTrain::turn45(bool isRight) {
 
 bool DriveTrain::turn180(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 1350) {
+  if (timeLapse <= 1550) {
     if (isRight) {
       turn(110, 110);
     }
