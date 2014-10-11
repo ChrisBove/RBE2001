@@ -123,6 +123,35 @@ bool DriveTrain::turn180(bool isRight) {
   }
 }
 
+bool DriveTrain::turnAround(bool isRight) {
+  switch(turnState) {
+      case TURN_OFF_LINE:
+        if (isRight) {
+          turn(110, 110);
+        }
+        else {
+          turn(70, 70);
+        }
+        if (analogRead(1) < 200) // on white
+          turnState = TURN_TILL_LINE;
+         break;
+         
+       case TURN_TILL_LINE:
+         if (isRight) {
+           turn(110, 110);
+         }
+         else {
+           turn(70, 70);
+         }
+         if (analogRead(1) > 200) { // on black
+           turnState = TURN_OFF_LINE;
+           return true;
+         }
+         break;
+  }
+  return false;
+}
+
 bool DriveTrain::backupForTime() {
   int timeLapse = millis() - startTime;
   if (timeLapse <= 500) {
