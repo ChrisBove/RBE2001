@@ -17,6 +17,8 @@
         SUP    1    2    3    4
 
 
+
+      NOTE:  This code requires use of Arduino 1.5.8 or higher in order to compile.
 */
 
 
@@ -52,7 +54,7 @@ Button stopBumper(23);
 Button frontLimit(24);
 Button backLimit(25);
 BluetoothSlave btSlave;
-Arm robotArm(10, 4, frontLimit, backLimit);
+Arm robotArm(10, 4);
 
 // saddening globals
 int result = 0;            // used over and over again for temporarily storing results of functions
@@ -108,6 +110,7 @@ void loop() {
     brain.thoughtState = LittleBrain::TELEOP; // set the state to TELEOP
     stopChanged = true;    // flag a changed stop button
     isFirstBoot = false;   // this is no longer the first boot
+    robotArm.goDown(frontLimit);
   }
   // otherwise, this is an e-stop, so reset stuff and stop stuff
   else if (!isFirstBoot && stopBumped && stopChanged) {
@@ -183,6 +186,13 @@ void loop() {
         // this extracts the rod from the reactor, moving the fourbar to the vertical position after the rod is vert. moved.
       case LittleBrain::EXTRACT:
         if (gripper.retractTheGrip()) {
+          
+          brain.thoughtState = LittleBrain::EXTRACT_1;
+        }
+        break;
+        
+      case LittleBrain::EXTRACT_1:
+        if (robotArm.goUp(frontLimit)) {
           follow.resetCrossCount(); // reset the cross count for our next state
           brain.thoughtState = LittleBrain::BACKUP;
         }
