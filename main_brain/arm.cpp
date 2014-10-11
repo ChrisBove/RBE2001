@@ -37,7 +37,7 @@ void Arm::setPosition(int setPoint, Button& frontLimit) {
     goodness++;
     sendOutput(0, frontLimit);
   }
-  else if (abs(currentError) > 4 ) {
+  else if (abs(currentError) > 10 ) {
     sendOutput(output, frontLimit); // send output
     goodness = 0;
   }
@@ -99,7 +99,7 @@ bool Arm::isInPosition() {
 
 void Arm::rotateUp (float output, Button& frontLimit){
   if (!frontLimit.isBumped())
-    arm.write(120-output);
+    arm.write(70+output);
   else {
     arm.write(90);
     goodness++;
@@ -107,12 +107,12 @@ void Arm::rotateUp (float output, Button& frontLimit){
 }
 
 void Arm::rotateDown (float output, Button& frontLimit) {
-  arm.write(90+output);
+  arm.write(90-output);
 }
 
 
 bool Arm::goUp(Button& frontLimit) {
-  setPosition(690, frontLimit);
+  setPosition(696, frontLimit);
   return isInPosition();
 }
 
