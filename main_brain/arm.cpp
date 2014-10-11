@@ -12,6 +12,7 @@ Arm::Arm(int motorPin, int potPin) {
 void Arm::setupArm() {
   arm.attach(_motorPin);
   arm.write(90);
+//  Serial.begin(115200);
 }
 
 void Arm::setPosition(int setPoint, Button& frontLimit) {
@@ -20,7 +21,7 @@ void Arm::setPosition(int setPoint, Button& frontLimit) {
   
   int currentError = desPos - curPos; // calculate the current error
 //  Serial.print("currentError: "); // debug print
-  Serial.print(currentError);
+//  Serial.print(currentError);
 //  Serial.print("\t");  
   
   //////// do output calculation - the main thing! /////////
@@ -31,8 +32,12 @@ void Arm::setPosition(int setPoint, Button& frontLimit) {
 //  Serial.print("\t"); 
 //  delay(10); // prevent spamming serial
   
-  // if error is beyond 2 degrees, send new output
-  if (abs(currentError) > 2) {
+  // if we're trying to move down and we hit the switch,
+  if (currentError < 0 && frontLimit.isBumped()) {
+    goodness++;
+    sendOutput(0, frontLimit);
+  }
+  else if (abs(currentError) > 4 ) {
     sendOutput(output, frontLimit); // send output
     goodness = 0;
   }
@@ -64,7 +69,7 @@ void Arm::sendOutput(float output, Button& frontLimit) {
   if (abs(output) > 0) {
     // if output is negative, rotate up
     if (output < 0) {
-      rotateUp(scaleOutput(output));
+      rotateUp(scaleOutput(output), frontLimit);
     }
     else {
       // otherwise, go down
@@ -79,7 +84,7 @@ void Arm::sendOutput(float output, Button& frontLimit) {
 // scales a passed output to prevent motor stalls using PWM and analog write
 float Arm::scaleOutput (float output) {
   // adds a bit to prevent stall, scales to 255
-  float result = 5+abs(90*output);
+  float result = 10+abs(1000*output);
 //  Serial.print("scaled: "); // print for debug
 //  Serial.print(result);  
 //  Serial.println("\t"); 
@@ -92,27 +97,27 @@ bool Arm::isInPosition() {
   return false;
 }
 
-void Arm::rotateDown (float output, Button& limit){
-  if (!limit.isBumped())
-    arm.write(90-output);
+void Arm::rotateUp (float output, Button& frontLimit){
+  if (!frontLimit.isBumped())
+    arm.write(120-output);
   else {
     arm.write(90);
     goodness++;
   }
 }
 
-void Arm::rotateUp (float output) {
+void Arm::rotateDown (float output, Button& frontLimit) {
   arm.write(90+output);
 }
 
 
 bool Arm::goUp(Button& frontLimit) {
-  setPosition(696, frontLimit);
+  setPosition(690, frontLimit);
   return isInPosition();
 }
 
 bool Arm::goDown(Button& frontLimit) {
-  setPosition(342, frontLimit);
+  setPosition(330, frontLimit);
   return isInPosition();
 }
 // positive values put the arm down

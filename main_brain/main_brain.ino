@@ -110,7 +110,6 @@ void loop() {
     brain.thoughtState = LittleBrain::TELEOP; // set the state to TELEOP
     stopChanged = true;    // flag a changed stop button
     isFirstBoot = false;   // this is no longer the first boot
-    robotArm.goDown(frontLimit);
   }
   // otherwise, this is an e-stop, so reset stuff and stop stuff
   else if (!isFirstBoot && stopBumped && stopChanged) {
@@ -287,6 +286,7 @@ void loop() {
           brain.thoughtState = LittleBrain::INSERT_STORAGE; // next loop puts the rod in
         }
         break;
+        
 
         // insert the rod into storage
       case LittleBrain::INSERT_STORAGE:
@@ -405,6 +405,12 @@ void loop() {
           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
         else {
           driveTrain.halt();
+          brain.thoughtState = LittleBrain::LOWER_ARM;
+        }
+        break;
+        
+      case LittleBrain::LOWER_ARM:
+        if (robotArm.goDown(frontLimit)) {
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_0;
         }
         break;
