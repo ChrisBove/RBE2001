@@ -43,6 +43,8 @@
 #include "gripper.h"
 #include "arm.h"
 
+#define reactorNumLED 31
+
 // instantiate class objects
 LittleBrain brain(LittleBrain::TELEOP);
 Controller controller(2);
@@ -82,6 +84,9 @@ void setup() {
 
   frontBumper.setupButton();  // setup bumper buttons
   stopBumper.setupButton();
+  
+  pinMode(reactorNumLED, OUTPUT);
+  pinMode(reactorNumLED, HIGH);
 
   // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
@@ -147,7 +152,17 @@ void loop() {
         else if (controller.isDownPressed(5))
           brain.thoughtState = LittleBrain::GET_NEW_ROD;
         // otherwise, if the down is pressed on channel 5, start moving the gripper to grab the new rod.
-        
+        if(controller.isDownPressed(6)) {
+          if (reactorNum == 1) {
+            reactorNum = 2;
+            digitalWrite(reactorNumLED, LOW);
+          }
+          // otherwise, go back to 1 in case we need to re do it
+          else {
+            reactorNum = 1;
+            digitalWrite(reactorNumLED, HIGH);
+          }
+        }
         // if button down pressed, toggle gripper position
 //        if (controller.isDownPressed(5) && wasClosed) {
 //          gripper.openTheGrip();
