@@ -80,13 +80,13 @@ bool Gripper::openTheGrip() {
   switch (grippyStateOpen) {
     case INIT_OPEN_GRIP:
     setReactTime();
-    grippyStateClose = OPEN_GRIP;
+    grippyStateOpen = OPEN_GRIP;
     return false;
     break;
     case OPEN_GRIP:
     bool result = openGrip();
     if (result) {
-      grippyStateExtend = INIT_OPEN_GRIP;
+      grippyStateOpen = INIT_OPEN_GRIP;
       return true;
     }
     return false;
