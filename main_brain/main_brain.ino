@@ -86,7 +86,7 @@ void setup() {
   stopBumper.setupButton();
   
   pinMode(reactorNumLED, OUTPUT);
-  pinMode(reactorNumLED, HIGH);
+  digitalWrite(reactorNumLED, HIGH);
 
   // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
@@ -239,7 +239,7 @@ void loop() {
       case LittleBrain::CHOOSE_STORAGE_RACK:
         // assume we're starting at 1 and 1 side of the field
         btSlave.updateArrays(); // update our arrays
-        crossingCount = 0;      // reset crossing count
+        crossingCount = 1;      // reset crossing count
         // if reactor one, search array in one direction
         if (reactorNum == 1)
           for (int i = 0; i < 4; i++) {
@@ -258,10 +258,10 @@ void loop() {
           }
 
         follow.resetCrossCount();
-        if (crossingCount == 0) {
-          brain.thoughtState = LittleBrain::TELEOP; // revert to teleop
-          break;
-        }
+//        if (crossingCount == 0) {
+//          brain.thoughtState = LittleBrain::TELEOP; // revert to teleop
+//          break;
+//        }
         // done this case in one shot loop, so next loop do line crossing
         brain.thoughtState = LittleBrain::LINE_FOLLOW_CROSSING;
         break;
@@ -371,6 +371,13 @@ void loop() {
         result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD);
 
         if (result == 1)
+          brain.thoughtState = LittleBrain::REVERSE_AGAIN;
+        break;
+        
+      case LittleBrain::REVERSE_AGAIN:
+        result = driveTrain.backupABit();
+        
+        if (result)
           brain.thoughtState = LittleBrain::PREP_180;
         break;
 
