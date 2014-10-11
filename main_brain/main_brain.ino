@@ -82,7 +82,6 @@ void setup() {
 // ***** LOOP *****
 
 void loop() {
-  delay(5);
   // do updates each loop! MUST BE RUN!!!
   btSlave.update();  // check for messages and send needed messages
   isBumped = frontBumper.isBumped();  // update bumper states
