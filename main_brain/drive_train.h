@@ -29,10 +29,12 @@ class DriveTrain
     bool turn180(bool isRight);
     void setTime();
     bool backupABit();
+    bool turnAround(bool isRight);
     
     enum dirTravel {FORWARD, BACKWARD};
     enum ReverseState {INIT_BACKUP, BACKUP};
-    
+    enum turnAroundState {TURN_OFF_LINE, TURN_TILL_LINE};
+    turnAroundState turnState = TURN_OFF_LINE;
     ReverseState revState = INIT_BACKUP;
     
     bool shouldMove = true;
