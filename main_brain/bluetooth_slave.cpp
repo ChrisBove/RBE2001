@@ -29,6 +29,9 @@ void BluetoothSlave::setupBluetooth() {
   pinMode(onboardLED, OUTPUT);
   digitalWrite(onboardLED, LOW);
   
+  pinMode(radiationLED, OUTPUT);
+  digitalWrite(radiationLED, LOW);
+  
 }
 
 void BluetoothSlave::goTime() {
@@ -117,17 +120,25 @@ void BluetoothSlave::update() {
 }
 
 void BluetoothSlave::setRadLow(bool enable) {
-  if (enable)
+  if (enable) {
     enableRadLow = true;
-  else
+    digitalWrite(radiationLED, HIGH);
+  }
+  else {
     enableRadLow = false;
+    digitalWrite(radiationLED, LOW);
+  }
 }
 
 void BluetoothSlave::setRadHigh(bool enable) {
-  if (enable)
+  if (enable) {
     enableRadHigh = true;
-  else
+    digitalWrite(radiationLED, HIGH);
+  }
+  else {
     enableRadHigh = false;
+    digitalWrite(radiationLED, LOW);
+  }
 }
 
 void BluetoothSlave::sendHighRadiation() {
