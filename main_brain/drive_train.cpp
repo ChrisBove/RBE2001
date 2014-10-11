@@ -27,7 +27,7 @@ void DriveTrain::attachMotors() {
 
 void DriveTrain::moveMotors(int leftVal, int rightVal) {
   if(shouldMove) {
-    left.write(leftOffset - leftVal);
+    left.write(leftVal);
     right.write(rightVal);
   }
   else

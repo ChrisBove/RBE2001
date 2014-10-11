@@ -128,7 +128,7 @@ void loop() {
       case LittleBrain::TELEOP:
         reinitialize(); // reinitialize globals and turn off rad alerts (scroll way, way down)
         // update the drivetrain with input from the controller
-        driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
+        driveTrain.moveMotors(180- controller.getControllerChannel(3), controller.getControllerChannel(2) );
         // if the up button on channel 5 is pressed, switch to grab state
         if (controller.isUpPressed(5))
         {
