@@ -39,6 +39,7 @@
 #include "bluetooth_slave.h"
 #include "little_brain.h"
 #include "gripper.h"
+#include "arm.h"
 
 // instantiate class objects
 LittleBrain brain(LittleBrain::TELEOP);
@@ -49,6 +50,7 @@ LineFollow follow(0, 1, 2, 3);
 Button frontBumper(22);
 Button stopBumper(23);
 BluetoothSlave btSlave;
+Arm robotArm(10, 4);
 
 // saddening globals
 int result = 0;            // used over and over again for temporarily storing results of functions
@@ -69,6 +71,7 @@ void setup() {
   driveTrain.halt();         // stop the drivetrain motors
 
   gripper.attachMotors();
+  robotArm.setupArm();
 
   frontBumper.setupButton();  // setup bumper buttons
   stopBumper.setupButton();
