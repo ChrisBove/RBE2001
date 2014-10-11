@@ -98,18 +98,18 @@ bool Gripper::extend() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 1000) {
     rack.write(25);
-    return true;
+    return false;
   }
-  return false;
+  return true;
 }
 
 bool Gripper::retract() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 1000) {
     rack.write(150);
-    return true;
+    return false;
   }
-  return false;
+  return true;
 }
 
 bool Gripper::openGrip() {
