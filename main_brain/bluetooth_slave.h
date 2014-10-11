@@ -11,7 +11,7 @@
 
 #define teamNumber 21
 #define onboardLED 13
-#define radiationLED 22
+#define radiationLED 30
 
 class BluetoothSlave {
   
