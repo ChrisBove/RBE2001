@@ -195,16 +195,16 @@ bool DriveTrain::forwardForTime() {
 }
 
 bool DriveTrain::forwardABit() {
-  switch (revState) {
-    case INIT_BACKUP:
+  switch (forwardState) {
+    case INIT_FORWARD:
       setTime();
-      revState = BACKUP;
+      forwardState = RUN_FORWARD;
       return false;
       break;
-    case BACKUP:
+    case RUN_FORWARD:
       bool result = forwardForTime();
       if (result) {
-        revState = INIT_BACKUP;
+        forwardState = INIT_FORWARD;
         return true;
       }
       return false;
