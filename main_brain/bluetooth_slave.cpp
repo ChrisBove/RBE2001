@@ -103,13 +103,19 @@ void BluetoothSlave::update() {
       // TODO - add other cases for other data
       case 0x04:
         // stop movement case!
-        resumeMovement = false;
-        stopMovement = true;
+        // if the packet is addressed to our robot, process it!
+        if (pkt[4] == 0x12) {
+          resumeMovement = false;
+          stopMovement = true;
+        }
         break;
       case 0x05:
         // resume movement case!
-        resumeMovement = true;
-        stopMovement = false;
+        // if the packet is addressed to our robot, process it!
+        if (pkt[4] == 0x12) {
+          resumeMovement = true;
+          stopMovement = false;
+        }
         break;
         
       default:                                 // ignore other types of messages
