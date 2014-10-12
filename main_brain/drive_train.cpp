@@ -27,7 +27,7 @@ void DriveTrain::attachMotors() {
 
 void DriveTrain::moveMotors(int leftVal, int rightVal) {
   if(shouldMove) {
-    left.write(leftOffset - leftVal);
+    left.write(leftVal);
     right.write(rightVal);
   }
   else
@@ -78,7 +78,7 @@ void DriveTrain::forward() {
 }
 
 void DriveTrain::reverse() {
-  moveMotors(78, 110); // true reverse!
+  moveMotors(80, 110); // true reverse!
 }
 
 void DriveTrain::turn(int lval, int rval) {
@@ -93,7 +93,7 @@ void DriveTrain::setTime() {
 // returns 1 when the turn is done
 bool DriveTrain::turn45(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 400) {
+  if (timeLapse <= 550) {
     if (isRight)
       turn(110, 110);
     else
@@ -108,7 +108,7 @@ bool DriveTrain::turn45(bool isRight) {
 
 bool DriveTrain::turn180(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 950) {
+  if (timeLapse <= 1100) {
     if (isRight) {
       turn(110, 110);
     }
@@ -120,5 +120,94 @@ bool DriveTrain::turn180(bool isRight) {
   else {
     halt();
     return true;
+  }
+}
+
+bool DriveTrain::turnAround(bool isRight) {
+  switch(turnState) {
+      case TURN_OFF_LINE:
+        if (isRight) {
+          moveMotors(110, 110);
+        }
+        else {
+          moveMotors(70, 70);
+        }
+        if ((analogRead(0) < 200) && (analogRead(1) < 200) && (analogRead(2) < 200)) // ALL on white
+          turnState = TURN_TILL_LINE;
+         break;
+         
+       case TURN_TILL_LINE:
+         if (isRight) {
+           moveMotors(110, 110);
+         }
+         else {
+           moveMotors(70, 70);
+         }
+         if ((analogRead(0) > 200) || (analogRead(1) > 200) || (analogRead(2) > 200)) { // either on black
+           turnState = TURN_OFF_LINE;
+           return true;
+         }
+         break;
+  }
+  return false;
+}
+
+bool DriveTrain::backupForTime() {
+  int timeLapse = millis() - startTime;
+  if (timeLapse <= 650) {
+    reverse();
+    return false;
+  }
+  else {
+    halt();
+    return true;
+  }
+}
+
+bool DriveTrain::backupABit() {
+  switch (revState) {
+    case INIT_BACKUP:
+      setTime();
+      revState = BACKUP;
+      return false;
+      break;
+    case BACKUP:
+      bool result = backupForTime();
+      if (result) {
+        revState = INIT_BACKUP;
+        return true;
+      }
+      return false;
+      break;
+  }
+}
+
+bool DriveTrain::forwardForTime() {
+  int timeLapse = millis() - startTime;
+  if (timeLapse <= 650) {
+    moveMotors(110, 80);
+    return false;
+  }
+  else {
+    halt();
+    return true;
+  }
+}
+
+bool DriveTrain::forwardABit() {
+  switch (forwardState) {
+    case INIT_FORWARD:
+      setTime();
+      forwardState = RUN_FORWARD;
+      return false;
+      break;
+    case RUN_FORWARD:
+      bool result = forwardForTime();
+      if (result) {
+        forwardState = INIT_FORWARD;
+        return true;
+      }
+      return false;
+      break;
   }
 }

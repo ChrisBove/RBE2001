@@ -29,6 +29,9 @@ void BluetoothSlave::setupBluetooth() {
   pinMode(onboardLED, OUTPUT);
   digitalWrite(onboardLED, LOW);
   
+  pinMode(radiationLED, OUTPUT);
+  digitalWrite(radiationLED, LOW);
+  
 }
 
 void BluetoothSlave::goTime() {
@@ -56,10 +59,15 @@ void BluetoothSlave::doTimerInterrupt() {
 }
 
 void BluetoothSlave::update() {
-
-  if (sendHB && go) {                          // execute if GO flag is set and it's time to generate a heartbeat message
+  noInterrupts();
+  bool tempSendHB = sendHB;
+  bool tempSendRad = sendRad;
+  interrupts();
+  
+  if (tempSendHB && go) {                          // execute if GO flag is set and it's time to generate a heartbeat message
+    noInterrupts();
     sendHB = false;                            // clear the heartbeat flag
-
+    interrupts();
     // generate and send the heartbeat message    
     digitalWrite(onboardLED, !digitalRead(onboardLED));  // flip the state of the HB LED
     pcol.setDst(0x00);			       // this will be a broadcast message
@@ -67,8 +75,11 @@ void BluetoothSlave::update() {
     btmaster.sendPkt(pkt, sz);                 // send to the field computer
 
   }
-  else if (sendRad && go) {
+  else if (tempSendRad && go) {
+    noInterrupts();
     sendRad = false;
+    interrupts();
+    
     if (enableRadHigh)
       sendHighRadiation();
     if (enableRadLow)
@@ -80,7 +91,7 @@ void BluetoothSlave::update() {
 
   // attempt to read a message (packet)
   // the only messages returned are those that are broadcast or sent specifically to this robot
-  if (btmaster.readPacket(pkt)) {              // if we have received a message
+  if (go && btmaster.readPacket(pkt)) {              // if we have received a message
     if (pcol.getData(pkt, data1, type)) {      // see if we can extract the type and data
       switch (type) {                          // process the message based on the type
       case 0x01:                               // received a storage tube message
@@ -92,13 +103,19 @@ void BluetoothSlave::update() {
       // TODO - add other cases for other data
       case 0x04:
         // stop movement case!
-        resumeMovement = false;
-        stopMovement = true;
+        // if the packet is addressed to our robot, process it!
+        if (pkt[4] == 0x12) {
+          resumeMovement = false;
+          stopMovement = true;
+        }
         break;
       case 0x05:
         // resume movement case!
-        resumeMovement = true;
-        stopMovement = false;
+        // if the packet is addressed to our robot, process it!
+        if (pkt[4] == 0x12) {
+          resumeMovement = true;
+          stopMovement = false;
+        }
         break;
         
       default:                                 // ignore other types of messages
@@ -109,17 +126,25 @@ void BluetoothSlave::update() {
 }
 
 void BluetoothSlave::setRadLow(bool enable) {
-  if (enable)
+  if (enable) {
     enableRadLow = true;
-  else
+    digitalWrite(radiationLED, HIGH);
+  }
+  else {
     enableRadLow = false;
+    digitalWrite(radiationLED, LOW);
+  }
 }
 
 void BluetoothSlave::setRadHigh(bool enable) {
-  if (enable)
+  if (enable) {
     enableRadHigh = true;
-  else
+    digitalWrite(radiationLED, HIGH);
+  }
+  else {
     enableRadHigh = false;
+    digitalWrite(radiationLED, LOW);
+  }
 }
 
 void BluetoothSlave::sendHighRadiation() {

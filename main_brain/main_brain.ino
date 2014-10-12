@@ -17,6 +17,8 @@
         SUP    1    2    3    4
 
 
+
+      NOTE:  This code requires use of Arduino 1.5.8 or higher in order to compile.
 */
 
 
@@ -39,6 +41,9 @@
 #include "bluetooth_slave.h"
 #include "little_brain.h"
 #include "gripper.h"
+#include "arm.h"
+
+#define reactorNumLED 31
 
 // instantiate class objects
 LittleBrain brain(LittleBrain::TELEOP);
@@ -48,7 +53,10 @@ Gripper gripper(8, 9);
 LineFollow follow(0, 1, 2, 3);
 Button frontBumper(22);
 Button stopBumper(23);
+Button frontLimit(24);
+Button backLimit(25);
 BluetoothSlave btSlave;
+Arm robotArm(10, 4);
 
 // saddening globals
 int result = 0;            // used over and over again for temporarily storing results of functions
@@ -59,15 +67,26 @@ bool stopBumped = false;   // for the stop button, true if pressed
 bool stopChanged = false;  // flag for servicing stop button presses
 bool isFirstBoot = true;   // flag if this is the first boot
 
+int lastState = LittleBrain::TELEOP;    // stores last state.
+bool wasClosed = false;
+bool wasExtended = false;
+
 // ***** SETUP *****
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
-
+  
+  frontLimit.setupButton();
+  backLimit.setupButton();
+  
   gripper.attachMotors();
+  robotArm.setupArm();
 
   frontBumper.setupButton();  // setup bumper buttons
   stopBumper.setupButton();
+  
+  pinMode(reactorNumLED, OUTPUT);
+  digitalWrite(reactorNumLED, HIGH);
 
   // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
@@ -123,7 +142,7 @@ void loop() {
       case LittleBrain::TELEOP:
         reinitialize(); // reinitialize globals and turn off rad alerts (scroll way, way down)
         // update the drivetrain with input from the controller
-        driveTrain.moveMotors(controller.getControllerChannel(3), controller.getControllerChannel(2) );
+        driveTrain.moveMotors(180- controller.getControllerChannel(3), controller.getControllerChannel(2) );
         // if the up button on channel 5 is pressed, switch to grab state
         if (controller.isUpPressed(5))
         {
@@ -132,6 +151,20 @@ void loop() {
         // otherwise, if the down is pressed on channel 5, start moving the gripper to grab the new rod.
         else if (controller.isDownPressed(5))
           brain.thoughtState = LittleBrain::GET_NEW_ROD;
+        // otherwise, if the down is pressed on channel 5, start moving the gripper to grab the new rod.
+        if(controller.isDownPressed(6)) {
+          if (reactorNum == 1) {
+            reactorNum = 2;
+            digitalWrite(reactorNumLED, LOW);
+          }
+          // otherwise, go back to 1 in case we need to re do it
+          else {
+            reactorNum = 1;
+            digitalWrite(reactorNumLED, HIGH);
+          }
+        }
+          
+          
         // TODO check other buttons to determine next step if needed
         break;
 
@@ -140,6 +173,7 @@ void loop() {
         // reactor tube should be between fork
       case LittleBrain::GRAB:
         btSlave.setRadLow(true);
+        btSlave.setRadHigh(false);
         if (gripper.closeTheGrip()) {
           brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
         }
@@ -149,6 +183,13 @@ void loop() {
         // this extracts the rod from the reactor, moving the fourbar to the vertical position after the rod is vert. moved.
       case LittleBrain::EXTRACT:
         if (gripper.retractTheGrip()) {
+          
+          brain.thoughtState = LittleBrain::EXTRACT_1;
+        }
+        break;
+        
+      case LittleBrain::EXTRACT_1:
+        if (robotArm.goUp(frontLimit)) {
           follow.resetCrossCount(); // reset the cross count for our next state
           brain.thoughtState = LittleBrain::BACKUP;
         }
@@ -162,6 +203,14 @@ void loop() {
         if (result == 1)
           brain.thoughtState = LittleBrain::INIT_180;
         break;
+        
+      case LittleBrain::BACKUP_1:
+        result = driveTrain.backupABit();
+        
+        if (result)
+          brain.thoughtState = LittleBrain::INIT_180;
+        break;
+
 
         // initiates a 180 degree turn by setting the drivetrain clock timer.
       case LittleBrain::INIT_180:
@@ -181,7 +230,7 @@ void loop() {
       case LittleBrain::CHOOSE_STORAGE_RACK:
         // assume we're starting at 1 and 1 side of the field
         btSlave.updateArrays(); // update our arrays
-        crossingCount = 0;      // reset crossing count
+        crossingCount = 1;      // reset crossing count
         // if reactor one, search array in one direction
         if (reactorNum == 1)
           for (int i = 0; i < 4; i++) {
@@ -200,11 +249,10 @@ void loop() {
           }
 
         follow.resetCrossCount();
-        if (crossingCount == 0) {
-          Serial.println("We couldn't find an open tube!");
-          brain.thoughtState = LittleBrain::TELEOP; // revert to teleop
-          break;
-        }
+//        if (crossingCount == 0) {
+//          brain.thoughtState = LittleBrain::TELEOP; // revert to teleop
+//          break;
+//        }
         // done this case in one shot loop, so next loop do line crossing
         brain.thoughtState = LittleBrain::LINE_FOLLOW_CROSSING;
         break;
@@ -216,6 +264,15 @@ void loop() {
         if (result == 1)
           brain.thoughtState = LittleBrain::INIT_TURN;
         break;
+        
+      case LittleBrain::GO_A_BIT_FURTHER:
+        result = driveTrain.forwardABit();
+        
+        if (result)
+          brain.thoughtState = LittleBrain::INIT_TURN;
+        break;
+        
+
 
         // initiates a turn
       case LittleBrain::INIT_TURN:
@@ -244,32 +301,87 @@ void loop() {
           brain.thoughtState = LittleBrain::INSERT_STORAGE; // next loop puts the rod in
         }
         break;
+        
 
         // insert the rod into storage
       case LittleBrain::INSERT_STORAGE:
         // TODO add this gripper code
-        brain.thoughtState = LittleBrain::TELEOP; // next loop does teleop
+        result = gripper.extendTheGrip();
+        if (result) {
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_0; // next loop does teleop
+        }
         break;
 
-
+      case LittleBrain::DOUBLE_TAP_0:
+        result = gripper.openTheGrip();
+        if(result)
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_1;
+        break;
+      
+      case LittleBrain::DOUBLE_TAP_1:
+        result = gripper.retractTheGrip();
+        if(result)
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_2;
+        break;
+        
+      case LittleBrain::DOUBLE_TAP_2:
+        result = gripper.closeTheGrip();
+        if (result)
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_3;
+        break;
+        
+      case LittleBrain::DOUBLE_TAP_3:
+        result = gripper.extendTheGrip();
+        if(result) {
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_4;
+        }
+        break;
+        
+       case LittleBrain::DOUBLE_TAP_4:
+        result = gripper.openTheGrip();
+        if(result) {
+          brain.thoughtState = LittleBrain::TELEOP;
+          lastState = brain.thoughtState;
+          btSlave.setRadLow(false);
+        }
+        break;
 
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
         // uses the gripper to get the new rod from the supply
       case LittleBrain::GET_NEW_ROD:
-        // TODO
-        btSlave.setRadHigh(true);
-        brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
+        result = gripper.closeTheGrip();
+        if (result) {
+          btSlave.setRadHigh(true);
+          btSlave.setRadLow(false);
+          brain.thoughtState = LittleBrain::GET_NEW_ROD_1;
+        }
         break;
+        
+        
+      case LittleBrain::GET_NEW_ROD_1:
+        result = gripper.retractTheGrip();
+        if (result) 
+          brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
+        break;
+        
 
         // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
         result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD);
 
         if (result == 1)
+          brain.thoughtState = LittleBrain::REVERSE_AGAIN;
+        break;
+        
+      case LittleBrain::REVERSE_AGAIN:
+        result = driveTrain.backupABit();
+        
+        if (result)
           brain.thoughtState = LittleBrain::PREP_180;
         break;
+        
 
         // preps time for a 180
       case LittleBrain::PREP_180:
@@ -291,8 +403,17 @@ void loop() {
         result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD); // stop at first cross
 
         if (result == 1)
+          brain.thoughtState = LittleBrain::GET_TO_CENTER_1;
+        break;
+        
+        
+      case LittleBrain::GET_TO_CENTER_1:
+        result = driveTrain.forwardABit();
+        
+        if (result)
           brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
         break;
+
 
         // initialize turn towards the reactor
       case LittleBrain::INIT_TURN_TO_REACTOR:
@@ -317,21 +438,42 @@ void loop() {
           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
         else {
           driveTrain.halt();
-          brain.thoughtState = LittleBrain::REFUEL_REACTOR;
+          brain.thoughtState = LittleBrain::LOWER_ARM;
+        }
+        break;
+        
+      case LittleBrain::LOWER_ARM:
+        if (robotArm.goDown(frontLimit)) {
+          brain.thoughtState = LittleBrain::REFUEL_REACTOR_0;
         }
         break;
 
         // refuel the reactor using the gripper
+        
+      case LittleBrain::REFUEL_REACTOR_0:
+        result = gripper.extendTheGrip();
+        if (result)
+          brain.thoughtState = LittleBrain::REFUEL_REACTOR_1;
+        break;
+        
+      case LittleBrain::REFUEL_REACTOR_1:
+        result = gripper.openTheGrip();
+        if (result)
+          brain.thoughtState = LittleBrain::REFUEL_REACTOR;
+        break;
+        
+        
       case LittleBrain::REFUEL_REACTOR:
-        // TODO manip movements
+        lastState = brain.thoughtState;
         // if we are on the first reactor, switch us to 2 for the next run
         if (reactorNum == 1)
           reactorNum = 2;
         // otherwise, go back to 1 in case we need to re do it
         else
           reactorNum = 1;
-        // TODO - when manip movements done, turn off radiation messages and go to teleop
+        // when manip movements done, turn off radiation messages and go to teleop
         brain.thoughtState = LittleBrain::TELEOP;
+        btSlave.setRadHigh(false);
         break;
 
         // this should never execute
@@ -352,6 +494,4 @@ void timer1ISR() {
 void reinitialize() {
   follow.resetCrossCount();
   result = 0;
-  btSlave.setRadLow(false);
-  btSlave.setRadHigh(false);
 }
