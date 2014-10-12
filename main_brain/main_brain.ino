@@ -173,6 +173,7 @@ void loop() {
         // reactor tube should be between fork
       case LittleBrain::GRAB:
         btSlave.setRadLow(true);
+        btSlave.setRadHigh(false);
         if (gripper.closeTheGrip()) {
           brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
         }
@@ -339,6 +340,7 @@ void loop() {
         result = gripper.closeTheGrip();
         if (result) {
           btSlave.setRadHigh(true);
+          btSlave.setRadLow(false);
           brain.thoughtState = LittleBrain::GET_NEW_ROD_1;
         }
         break;
