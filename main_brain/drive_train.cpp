@@ -202,7 +202,7 @@ bool DriveTrain::forwardABit() {
       return false;
       break;
     case BACKUP:
-      bool result = backupForTime();
+      bool result = forwardForTime();
       if (result) {
         revState = INIT_BACKUP;
         return true;
