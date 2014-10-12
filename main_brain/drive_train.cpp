@@ -74,11 +74,11 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  moveMotors(110, 80); // 110, 80 is actually forward
+  moveMotors(110, 70); // 110, 80 is actually forward
 }
 
 void DriveTrain::reverse() {
-  moveMotors(78, 110); // true reverse!
+  moveMotors(80, 110); // true reverse!
 }
 
 void DriveTrain::turn(int lval, int rval) {
@@ -127,23 +127,23 @@ bool DriveTrain::turnAround(bool isRight) {
   switch(turnState) {
       case TURN_OFF_LINE:
         if (isRight) {
-          turn(110, 110);
+          moveMotors(110, 110);
         }
         else {
-          turn(70, 70);
+          moveMotors(70, 70);
         }
-        if (analogRead(1) < 200) // on white
+        if ((analogRead(0) < 200) && (analogRead(1) < 200) && (analogRead(2) < 200)) // ALL on white
           turnState = TURN_TILL_LINE;
          break;
          
        case TURN_TILL_LINE:
          if (isRight) {
-           turn(110, 110);
+           moveMotors(110, 110);
          }
          else {
-           turn(70, 70);
+           moveMotors(70, 70);
          }
-         if (analogRead(1) > 200) { // on black
+         if ((analogRead(0) > 200) || (analogRead(1) > 200) || (analogRead(2) > 200)) { // either on black
            turnState = TURN_OFF_LINE;
            return true;
          }
@@ -154,7 +154,7 @@ bool DriveTrain::turnAround(bool isRight) {
 
 bool DriveTrain::backupForTime() {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 1000) {
+  if (timeLapse <= 650) {
     reverse();
     return false;
   }
@@ -184,8 +184,8 @@ bool DriveTrain::backupABit() {
 
 bool DriveTrain::forwardForTime() {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 1000) {
-    forward();
+  if (timeLapse <= 650) {
+    moveMotors(110, 80);
     return false;
   }
   else {
