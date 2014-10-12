@@ -74,7 +74,7 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  moveMotors(110, 70); // 110, 80 is actually forward
+  moveMotors(110, 80); // 110, 80 is actually forward
 }
 
 void DriveTrain::reverse() {
@@ -154,7 +154,7 @@ bool DriveTrain::turnAround(bool isRight) {
 
 bool DriveTrain::backupForTime() {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 500) {
+  if (timeLapse <= 1000) {
     reverse();
     return false;
   }
@@ -165,6 +165,36 @@ bool DriveTrain::backupForTime() {
 }
 
 bool DriveTrain::backupABit() {
+  switch (revState) {
+    case INIT_BACKUP:
+      setTime();
+      revState = BACKUP;
+      return false;
+      break;
+    case BACKUP:
+      bool result = backupForTime();
+      if (result) {
+        revState = INIT_BACKUP;
+        return true;
+      }
+      return false;
+      break;
+  }
+}
+
+bool DriveTrain::forwardForTime() {
+  int timeLapse = millis() - startTime;
+  if (timeLapse <= 1000) {
+    forward();
+    return false;
+  }
+  else {
+    halt();
+    return true;
+  }
+}
+
+bool DriveTrain::forwardABit() {
   switch (revState) {
     case INIT_BACKUP:
       setTime();

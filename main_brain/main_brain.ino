@@ -200,6 +200,13 @@ void loop() {
 
         // once we have hit the first cross, case is the next one
         if (result == 1)
+          brain.thoughtState = LittleBrain::BACKUP_1;
+        break;
+        
+      case LittleBrain::BACKUP_1:
+        result = driveTrain.backupABit();
+        
+        if (result)
           brain.thoughtState = LittleBrain::TURN_AROUND;
         break;
 
@@ -247,8 +254,16 @@ void loop() {
         result = follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD);
         // once we've made it to the specified crossing, set the next case
         if (result == 1)
+          brain.thoughtState = LittleBrain::GO_A_BIT_FURTHER;
+        break;
+        
+      case LittleBrain::GO_A_BIT_FURTHER:
+        result = driveTrain.forwardABit();
+        
+        if (result)
           brain.thoughtState = LittleBrain::TURN;
         break;
+        
 
         // does a 45 degree turn to face a storage rack (depends on which reactor we're traveling from)
       case LittleBrain::TURN:
@@ -366,8 +381,17 @@ void loop() {
         result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD); // stop at first cross
 
         if (result == 1)
+          brain.thoughtState = LittleBrain::GET_TO_CENTER_1;
+        break;
+        
+        
+      case LittleBrain::GET_TO_CENTER_1:
+        result = driveTrain.forwardABit();
+        
+        if (result)
           brain.thoughtState = LittleBrain::TURN_TO_REACTOR;
         break;
+
 
         // turn towards the reactor that we're refueling
       case LittleBrain::TURN_TO_REACTOR:

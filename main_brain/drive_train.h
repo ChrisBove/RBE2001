@@ -29,6 +29,7 @@ class DriveTrain
     bool turn180(bool isRight);
     void setTime();
     bool backupABit();
+    bool forwardABit();
     bool turnAround(bool isRight);
     
     enum dirTravel {FORWARD, BACKWARD};
@@ -41,6 +42,7 @@ class DriveTrain
     
   private:
     bool backupForTime();
+    bool forwardForTime();
   
     // VARIABLES
     Servo left;       // Declare drive motors
