@@ -201,19 +201,26 @@ void loop() {
 
         // once we have hit the first cross, case is the next one
         if (result == 1)
-          brain.thoughtState = LittleBrain::BACKUP_1;
+          brain.thoughtState = LittleBrain::INIT_180;
         break;
         
       case LittleBrain::BACKUP_1:
         result = driveTrain.backupABit();
         
         if (result)
-          brain.thoughtState = LittleBrain::TURN_AROUND;
+          brain.thoughtState = LittleBrain::INIT_180;
+        break;
+
+
+        // initiates a 180 degree turn by setting the drivetrain clock timer.
+      case LittleBrain::INIT_180:
+        driveTrain.setTime(); // set the clock to this time
+        brain.thoughtState = LittleBrain::TURN_AROUND;
         break;
 
 
       case LittleBrain::TURN_AROUND:
-        result = driveTrain.turnAround(false);  // do a right turn (specified by false)of 180 degrees
+        result = driveTrain.turn180(false);  // do a right turn (specified by false)of 180 degrees
         // if the driveTrain returns done moving, then we're ready to go to the next case
         if (result)
           brain.thoughtState = LittleBrain::CHOOSE_STORAGE_RACK;
@@ -255,23 +262,30 @@ void loop() {
         result = follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD);
         // once we've made it to the specified crossing, set the next case
         if (result == 1)
-          brain.thoughtState = LittleBrain::GO_A_BIT_FURTHER;
+          brain.thoughtState = LittleBrain::INIT_TURN;
         break;
         
       case LittleBrain::GO_A_BIT_FURTHER:
         result = driveTrain.forwardABit();
         
         if (result)
-          brain.thoughtState = LittleBrain::TURN;
+          brain.thoughtState = LittleBrain::INIT_TURN;
         break;
         
+
+
+        // initiates a turn
+      case LittleBrain::INIT_TURN:
+        driveTrain.setTime();
+        brain.thoughtState = LittleBrain::TURN;
+        break;
 
         // does a 45 degree turn to face a storage rack (depends on which reactor we're traveling from)
       case LittleBrain::TURN:
         if (reactorNum == 1)
-          result = driveTrain.turnAround(false); // turn left
+          result = driveTrain.turn45(false); // turn left
         else
-          result = driveTrain.turnAround(true); // turn right
+          result = driveTrain.turn45(true); // turn right
         // if done the turn, set to next state
         if (result)
           brain.thoughtState = LittleBrain::LINE_FOLLOW_TO_PEG;
@@ -365,13 +379,19 @@ void loop() {
         result = driveTrain.backupABit();
         
         if (result)
-          brain.thoughtState = LittleBrain::DO_180;
+          brain.thoughtState = LittleBrain::PREP_180;
         break;
         
 
+        // preps time for a 180
+      case LittleBrain::PREP_180:
+        driveTrain.setTime();
+        brain.thoughtState = LittleBrain::DO_180;
+        break;
+
         // does a 180 degree turn
       case LittleBrain::DO_180:
-        result = driveTrain.turnAround(false);  // do a right turn
+        result = driveTrain.turn180(false);  // do a right turn
         if (result) {
           brain.thoughtState = LittleBrain::GET_TO_CENTER;
           follow.resetCrossCount(); // reset for next linefollow
@@ -391,16 +411,22 @@ void loop() {
         result = driveTrain.forwardABit();
         
         if (result)
-          brain.thoughtState = LittleBrain::TURN_TO_REACTOR;
+          brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
         break;
 
+
+        // initialize turn towards the reactor
+      case LittleBrain::INIT_TURN_TO_REACTOR:
+        driveTrain.setTime();
+        brain.thoughtState = LittleBrain::TURN_TO_REACTOR;
+        break;
 
         // turn towards the reactor that we're refueling
       case LittleBrain::TURN_TO_REACTOR:
         if (reactorNum == 1)
-          result = driveTrain.turnAround(false); // turn left
+          result = driveTrain.turn45(false); // turn left
         else
-          result = driveTrain.turnAround(true); // turn right
+          result = driveTrain.turn45(true); // turn right
 
         if (result)
           brain.thoughtState = LittleBrain::GET_TO_REACTOR;

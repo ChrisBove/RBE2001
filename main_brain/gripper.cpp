@@ -97,7 +97,7 @@ bool Gripper::openTheGrip() {
 bool Gripper::extend() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 1000) {
-    rack.write(25);
+    rack.write(15);
     return false;
   }
   return true;
