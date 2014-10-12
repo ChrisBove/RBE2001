@@ -28,13 +28,23 @@ class DriveTrain
     bool turn45(bool isRight);
     bool turn180(bool isRight);
     void setTime();
+    bool backupABit();
+    bool forwardABit();
+    bool turnAround(bool isRight);
     
     enum dirTravel {FORWARD, BACKWARD};
+    enum ReverseState {INIT_BACKUP, BACKUP};
+    enum ForwardState {INIT_FORWARD, RUN_FORWARD};
+    enum turnAroundState {TURN_OFF_LINE, TURN_TILL_LINE};
+    turnAroundState turnState = TURN_OFF_LINE;
+    ReverseState revState = INIT_BACKUP;
+    ForwardState forwardState = INIT_FORWARD;
     
     bool shouldMove = true;
     
   private:
-    
+    bool backupForTime();
+    bool forwardForTime();
   
     // VARIABLES
     Servo left;       // Declare drive motors

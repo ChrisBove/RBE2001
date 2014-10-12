@@ -80,13 +80,13 @@ bool Gripper::openTheGrip() {
   switch (grippyStateOpen) {
     case INIT_OPEN_GRIP:
     setReactTime();
-    grippyStateClose = OPEN_GRIP;
+    grippyStateOpen = OPEN_GRIP;
     return false;
     break;
     case OPEN_GRIP:
     bool result = openGrip();
     if (result) {
-      grippyStateExtend = INIT_OPEN_GRIP;
+      grippyStateOpen = INIT_OPEN_GRIP;
       return true;
     }
     return false;
@@ -97,19 +97,19 @@ bool Gripper::openTheGrip() {
 bool Gripper::extend() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 1000) {
-    rack.write(25);
-    return true;
+    rack.write(15);
+    return false;
   }
-  return false;
+  return true;
 }
 
 bool Gripper::retract() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 1000) {
     rack.write(150);
-    return true;
+    return false;
   }
-  return false;
+  return true;
 }
 
 bool Gripper::openGrip() {
