@@ -340,12 +340,19 @@ void loop() {
        case LittleBrain::DOUBLE_TAP_4:
         result = gripper.openTheGrip();
         if(result) {
+          brain.thoughtState = LittleBrain::SET_FOR_NEW;
+//          lastState = brain.thoughtState;
+//          btSlave.setRadLow(false);
+        }
+        break;
+
+       case LittleBrain::SET_FOR_NEW:
+        if(gripper.extendLimTheGrip()) {
           brain.thoughtState = LittleBrain::TELEOP;
           lastState = brain.thoughtState;
           btSlave.setRadLow(false);
         }
         break;
-
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
@@ -451,7 +458,7 @@ void loop() {
         // refuel the reactor using the gripper
         
       case LittleBrain::REFUEL_REACTOR_0:
-        result = gripper.extendTheGrip();
+        result = gripper.extendLimTheGrip();
         if (result)
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_1;
         break;
