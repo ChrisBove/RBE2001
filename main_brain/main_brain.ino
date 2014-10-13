@@ -87,6 +87,9 @@ void setup() {
   
   pinMode(reactorNumLED, OUTPUT);
   digitalWrite(reactorNumLED, HIGH);
+  
+  // this calibrates the line sensors. Make sure the center is on black, outers are on white!!!
+  follow.calibrate();
 
   // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
