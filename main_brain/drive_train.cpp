@@ -169,8 +169,7 @@ bool DriveTrain::backupABit() {
     case INIT_BACKUP:
       setTime();
       revState = BACKUP;
-      return false;
-      break;
+
     case BACKUP:
       bool result = backupForTime();
       if (result) {

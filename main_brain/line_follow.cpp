@@ -14,7 +14,7 @@ LineFollow::LineFollow(int leftPort, int middlePort, int rightPort, int backPort
 void LineFollow::calibrate() {
   int left = analogRead(_leftPort);
   int right = analogRead(_rightPort);
-  _whiteThreshold = right + left; // take average and multiply by two. Consider this the threshold.
+  _whiteThreshold = 3*((right + left)/2); // take average and multiply by 3. Consider this the threshold.
 }
 
 void LineFollow::setThreshold(int value) {

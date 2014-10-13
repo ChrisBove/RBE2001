@@ -384,7 +384,7 @@ void loop() {
       case LittleBrain::REVERSE_FROM_SUPPLY:
         result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD);
 
-        if (result == 1)
+        if (result)
           brain.thoughtState = LittleBrain::REVERSE_AGAIN;
         break;
         
