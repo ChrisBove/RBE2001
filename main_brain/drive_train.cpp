@@ -74,7 +74,7 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  moveMotors(110, 70); // 110, 80 is actually forward
+  moveMotors(110, 80); // 110, 80 is actually forward
 }
 
 void DriveTrain::reverse() {
@@ -108,7 +108,7 @@ bool DriveTrain::turn45(bool isRight) {
 
 bool DriveTrain::turn180(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 1100) {
+  if (timeLapse <= 1300) {
     if (isRight) {
       turn(110, 110);
     }
