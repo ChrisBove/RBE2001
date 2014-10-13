@@ -370,8 +370,10 @@ void loop() {
         
       case LittleBrain::GET_NEW_ROD_1:
         result = gripper.retractTheGrip();
-        if (result) 
+        if (result) {
           brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
+          follow.resetCrossCount();
+        }
         break;
         
 
