@@ -416,16 +416,16 @@ void loop() {
         result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD); // stop at first cross
 
         if (result == 1)
-          brain.thoughtState = LittleBrain::GET_TO_CENTER_1;
-        break;
-        
-        
-      case LittleBrain::GET_TO_CENTER_1:
-        result = driveTrain.forwardABit();
-        
-        if (result)
           brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
         break;
+        
+        
+//      case LittleBrain::GET_TO_CENTER_1:
+//        result = driveTrain.forwardABit();
+//        
+//        if (result)
+//          brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
+//        break;
 
 
         // initialize turn towards the reactor
