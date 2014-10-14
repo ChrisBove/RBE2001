@@ -28,8 +28,8 @@ class DriveTrain
     bool turn45(bool isRight);
     bool turn180(bool isRight);
     void setTime();
-    bool backupABit();
-    bool forwardABit();
+    int backupABit();
+    int forwardABit();
     bool turnAround(bool isRight);
     
     enum dirTravel {FORWARD, BACKWARD};

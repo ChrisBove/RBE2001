@@ -375,25 +375,23 @@ void loop() {
       case LittleBrain::GET_NEW_ROD_1:
         result = gripper.retractTheGrip();
         if (result) {
-          brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
           follow.resetCrossCount();
+          brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
         }
         break;
         
 
         // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
-        result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD);
-
-        if (result)
+        if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
           brain.thoughtState = LittleBrain::REVERSE_AGAIN;
+        }
         break;
         
       case LittleBrain::REVERSE_AGAIN:
-        result = driveTrain.backupABit();
-        
-        if (result)
+        if (driveTrain.backupABit()) {
           brain.thoughtState = LittleBrain::PREP_180;
+        }
         break;
         
 

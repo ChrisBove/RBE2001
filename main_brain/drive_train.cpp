@@ -93,7 +93,7 @@ void DriveTrain::setTime() {
 // returns 1 when the turn is done
 bool DriveTrain::turn45(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 550) {
+  if (timeLapse <= 650) {
     if (isRight)
       turn(110, 110);
     else
@@ -108,7 +108,7 @@ bool DriveTrain::turn45(bool isRight) {
 
 bool DriveTrain::turn180(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 1300) {
+  if (timeLapse <= 1200) {
     if (isRight) {
       turn(110, 110);
     }
@@ -164,21 +164,22 @@ bool DriveTrain::backupForTime() {
   }
 }
 
-bool DriveTrain::backupABit() {
+int DriveTrain::backupABit() {
   switch (revState) {
     case INIT_BACKUP:
       setTime();
       revState = BACKUP;
+      break;
 
     case BACKUP:
       bool result = backupForTime();
       if (result) {
         revState = INIT_BACKUP;
-        return true;
+        return 1;
       }
-      return false;
       break;
   }
+  return 0;
 }
 
 bool DriveTrain::forwardForTime() {
@@ -193,7 +194,7 @@ bool DriveTrain::forwardForTime() {
   }
 }
 
-bool DriveTrain::forwardABit() {
+int DriveTrain::forwardABit() {
   switch (forwardState) {
     case INIT_FORWARD:
       setTime();
