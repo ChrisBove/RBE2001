@@ -46,7 +46,6 @@ int LineFollow::doLineFollowTillCross(DriveTrain& driving, int dir) {
 
 int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
   updateSensorData();
-  static int state;
   if (allOnCross() != 1) {
     if (currentSensors.left && !currentSensors.middle && !currentSensors.right){
       driving.turnLeft(dir);// turn left
@@ -129,6 +128,7 @@ int LineFollow::stopOnCrossing(DriveTrain& driving, int number, int dir) {
 }
 
 void LineFollow::resetCrossCount() {
+  state = 0;
   lastRun = 0;
   sumCrossings = 0;
 }
