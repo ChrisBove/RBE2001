@@ -89,7 +89,7 @@ void setup() {
   digitalWrite(reactorNumLED, HIGH);
   
   // this calibrates the line sensors. Make sure the center is on black, outers are on white!!!
-  follow.calibrate();
+//  follow.calibrate();
 
   // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
@@ -175,8 +175,9 @@ void loop() {
         // ASSUMPTION: the robot is positioned along the line facing the reactor (East west line in between reactors).
         // reactor tube should be between fork
       case LittleBrain::GRAB:
-        btSlave.setRadLow(true);
         btSlave.setRadHigh(false);
+        btSlave.setRadLow(true);
+
         if (gripper.closeTheGrip()) {
           brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
         }
@@ -364,8 +365,8 @@ void loop() {
       case LittleBrain::GET_NEW_ROD:
         result = gripper.closeTheGrip();
         if (result) {
-          btSlave.setRadHigh(true);
           btSlave.setRadLow(false);
+          btSlave.setRadHigh(true);
           brain.thoughtState = LittleBrain::GET_NEW_ROD_1;
         }
         break;
