@@ -176,9 +176,18 @@ void BluetoothSlave::updateArrays() {
     storageArray[2] = storageData & 0x04;
     storageArray[3] = storageData & 0x08;
     
-    supplyArray[0] = supplyData & 0x01;
-    supplyArray[1] = supplyData & 0x02;
-    supplyArray[2] = supplyData & 0x04;
-    supplyArray[3] = supplyData & 0x08;
+//    supplyArray[0] = supplyData & 0x01;
+//    supplyArray[1] = supplyData & 0x02;
+//    supplyArray[2] = supplyData & 0x04;
+//    supplyArray[3] = supplyData & 0x08;
 
+}
+
+// returns 1 if the storage position at passed index now has a tube
+int BluetoothSlave::isInStorage(int index) {
+  updateArrays();
+  if (storageArray[index] == 1)
+    return 1;
+  else
+    return 0;
 }
