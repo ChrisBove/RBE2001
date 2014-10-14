@@ -62,6 +62,7 @@ Arm robotArm(10, 4);
 int result = 0;            // used over and over again for temporarily storing results of functions
 int reactorNum = 1;        // number of the reactor we are on.
 int crossingCount = 0;     // crossings to do
+int winningIndex = 0;      // the index of the selected tube
 bool isBumped = false;     // for the front bump switch, true if pressed
 bool stopBumped = false;   // for the stop button, true if pressed
 bool stopChanged = false;  // flag for servicing stop button presses
@@ -478,11 +479,15 @@ void loop() {
       case LittleBrain::REFUEL_REACTOR:
         lastState = brain.thoughtState;
         // if we are on the first reactor, switch us to 2 for the next run
-        if (reactorNum == 1)
+        if (reactorNum == 1) {
           reactorNum = 2;
+          digitalWrite(reactorNumLED, LOW);
+        }
         // otherwise, go back to 1 in case we need to re do it
-        else
+        else {
           reactorNum = 1;
+          digitalWrite(reactorNumLED, HIGH);
+        }
         // when manip movements done, turn off radiation messages and go to teleop
         brain.thoughtState = LittleBrain::TELEOP;
         btSlave.setRadHigh(false);
