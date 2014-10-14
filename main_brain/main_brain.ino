@@ -241,6 +241,7 @@ void loop() {
           for (int i = 0; i < 4; i++) {
             if (btSlave.storageArray[i] == 0) {
               crossingCount = i + 1; // find closest open storage tube
+              winningIndex = i;
               break;
             }
           }
@@ -249,6 +250,7 @@ void loop() {
             // TODO check this value
             if (btSlave.storageArray[i] == 0) {
               crossingCount = (i - 4) * -1; // find closest open storage tube
+              winningIndex = i;
               break;
             }
           }
@@ -313,8 +315,16 @@ void loop() {
         // TODO add this gripper code
         result = gripper.extendTheGrip();
         if (result) {
-          brain.thoughtState = LittleBrain::DOUBLE_TAP_0; // next loop does teleop
+          brain.thoughtState = LittleBrain::CHECK_INSERTION; // next loop does teleop
         }
+        break;
+        
+      case LittleBrain::CHECK_INSERTION:
+        if (btSlave.isInStorage(winningIndex))
+          brain.thoughtState = LittleBrain::SET_FOR_NEW;
+        else
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_0;
+        
         break;
 
       case LittleBrain::DOUBLE_TAP_0:
@@ -345,7 +355,7 @@ void loop() {
        case LittleBrain::DOUBLE_TAP_4:
         result = gripper.openTheGrip();
         if(result) {
-          brain.thoughtState = LittleBrain::SET_FOR_NEW;
+          brain.thoughtState = LittleBrain::CHECK_INSERTION;
 //          lastState = brain.thoughtState;
 //          btSlave.setRadLow(false);
         }
