@@ -384,11 +384,11 @@ void loop() {
 
         // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
-        if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
-          brain.thoughtState = LittleBrain::REVERSE_AGAIN;
+        if (follow.stopOnCrossing(driveTrain, 2, DriveTrain::BACKWARD)) {
+          brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
         }
         break;
-        
+     /*   
       case LittleBrain::REVERSE_AGAIN:
         if (driveTrain.backupABit()) {
           brain.thoughtState = LittleBrain::PREP_180;
@@ -418,7 +418,7 @@ void loop() {
         if (result == 1)
           brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
         break;
-        
+        */
         
 //      case LittleBrain::GET_TO_CENTER_1:
 //        result = driveTrain.forwardABit();
@@ -436,7 +436,7 @@ void loop() {
 
         // turn towards the reactor that we're refueling
       case LittleBrain::TURN_TO_REACTOR:
-        if (reactorNum == 1)
+        if (reactorNum == 2)
           result = driveTrain.turn45(false); // turn left
         else
           result = driveTrain.turn45(true); // turn right
