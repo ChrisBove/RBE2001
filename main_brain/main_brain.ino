@@ -395,12 +395,19 @@ void loop() {
         // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
-          brain.thoughtState = LittleBrain::REVERSE_AGAIN;
+          brain.thoughtState = LittleBrain::INIT_REVERSE_AGAIN;
         }
         break;
         
+        
+      
+      case LittleBrain::INIT_REVERSE_AGAIN:
+        driveTrain.setTime();
+        brain.thoughtState = LittleBrain::REVERSE_AGAIN;
+        break;
+        
       case LittleBrain::REVERSE_AGAIN:
-        if (driveTrain.backupABit()) {
+        if (driveTrain.backupForTime()) {
           brain.thoughtState = LittleBrain::PREP_180;
         }
         break;

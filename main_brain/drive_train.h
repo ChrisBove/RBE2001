@@ -29,6 +29,7 @@ class DriveTrain
     bool turn180(bool isRight);
     void setTime();
     int backupABit();
+    bool backupForTime();
     int forwardABit();
     bool turnAround(bool isRight);
     
@@ -43,7 +44,6 @@ class DriveTrain
     bool shouldMove = true;
     
   private:
-    bool backupForTime();
     bool forwardForTime();
   
     // VARIABLES
