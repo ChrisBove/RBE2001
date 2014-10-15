@@ -346,7 +346,7 @@ void loop() {
         break;
         
       case LittleBrain::DOUBLE_TAP_3:
-        result = gripper.extendTheGrip();
+        result = gripper.extendLimTheGrip();
         if(result) {
           brain.thoughtState = LittleBrain::DOUBLE_TAP_4;
         }
@@ -356,8 +356,6 @@ void loop() {
         result = gripper.openTheGrip();
         if(result) {
           brain.thoughtState = LittleBrain::CHECK_INSERTION;
-//          lastState = brain.thoughtState;
-//          btSlave.setRadLow(false);
         }
         break;
 
