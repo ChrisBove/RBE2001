@@ -36,7 +36,7 @@ void DriveTrain::moveMotors(int leftVal, int rightVal) {
 
 void DriveTrain::turnLeft(int dir){
   if (dir == FORWARD) {
-    moveMotors(105, 70);
+    moveMotors(105, 75);
     // left should be slower or backwards
   }
   else { // reverse turn right
@@ -46,7 +46,7 @@ void DriveTrain::turnLeft(int dir){
 
 void DriveTrain::turnRight(int dir) {
   if (dir == FORWARD) {
-    moveMotors(110, 80);
+    moveMotors(120, 80);
   }
   else { // reverse turn left
     moveMotors(75, 80);
@@ -55,7 +55,7 @@ void DriveTrain::turnRight(int dir) {
 
 void DriveTrain::sharpTurnLeft (int dir) {
   if (dir == FORWARD)
-    moveMotors(80, 75);
+    moveMotors(90, 75);
 //  else 
 //    turn(75, 85); // reverse sharp turn RIGHT
 }
