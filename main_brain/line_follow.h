@@ -19,6 +19,7 @@ class LineFollow {
     // number is the crossing to stop on
     int stopOnCrossing(DriveTrain& driving, int number, int dir);
     void resetCrossCount();
+    void setForwardOnCross(bool goesForward);
     
     struct LineSensors {
       bool left;
@@ -46,6 +47,8 @@ class LineFollow {
     int sumCrossings = 0;
     int lastRun = 0;
     LineSensors currentSensors;
+    
+    bool goForwardOnCross = false;
     
 };
 

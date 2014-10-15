@@ -302,6 +302,7 @@ void loop() {
 
         // do line following until we hit the storage peg
       case LittleBrain::LINE_FOLLOW_TO_PEG:
+        follow.setForwardOnCross(true);
         if (!isBumped)
           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
         else {
@@ -471,6 +472,7 @@ void loop() {
            brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
          break;
        case LittleBrain::A_LINE_FOLLOW_TO_PEG:
+         follow.setForwardOnCross(true);
          if (!isBumped)
            follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
          else {
@@ -575,6 +577,7 @@ void loop() {
 
         // line follow until we hit the reactor tube
       case LittleBrain::GET_TO_REACTOR:
+        follow.setForwardOnCross(true);
         if (!isBumped)
           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
         else {

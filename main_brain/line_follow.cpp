@@ -99,6 +99,9 @@ int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
     
     }
   }
+  else if(goForwardOnCross) 
+    driving.forward();
+    
   return allOnCross();
 }
 
@@ -108,6 +111,7 @@ int LineFollow::allOnCross() {
 }
 
 int LineFollow::stopOnCrossing(DriveTrain& driving, int number, int dir) {
+  goForwardOnCross = false;
   int currentRun = 0;
   if (sumCrossings < number)
     currentRun = doLineFollow(driving, dir);
@@ -132,6 +136,11 @@ void LineFollow::resetCrossCount() {
   lastRun = 0;
   sumCrossings = 0;
 }
+
+void LineFollow::setForwardOnCross(bool goesForward) {
+  goForwardOnCross = goesForward;
+}
+
 //// motorspeed data
 //void DriveTrain::turnLeft(){
 //  lSpeed = 150;
