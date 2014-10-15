@@ -54,7 +54,6 @@ LineFollow follow(0, 1, 2, 3);
 Button frontBumper(22);
 Button stopBumper(23);
 Button frontLimit(24);
-Button backLimit(25);
 BluetoothSlave btSlave;
 Arm robotArm(10, 4);
 
@@ -72,13 +71,16 @@ int lastState = LittleBrain::TELEOP;    // stores last state.
 bool wasClosed = false;
 bool wasExtended = false;
 
+// autonomous globals
+bool shouldTurnRight = false;
+int winningSupplyIndex = 0;
+
 // ***** SETUP *****
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
   
   frontLimit.setupButton();
-  backLimit.setupButton();
   
   gripper.attachMotors();
   robotArm.setupArm();
@@ -361,16 +363,120 @@ void loop() {
 
        case LittleBrain::SET_FOR_NEW:
         if(gripper.extendLimTheGrip()) {
-          brain.thoughtState = LittleBrain::TELEOP;
-          lastState = brain.thoughtState;
+//          brain.thoughtState = LittleBrain::TELEOP;
+          brain.thoughtState = LittleBrain::A_REVERSE_FROM_STORAGE;
           btSlave.setRadLow(false);
+          follow.resetCrossCount();
         }
         break;
         
         
        // ==================== EXPERIMENTAL AUTONOMY FOR REFUELING =============================
        
-       case 
+       case LittleBrain::A_REVERSE_FROM_STORAGE:
+        if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
+          brain.thoughtState = LittleBrain::A_PREP_REVERSE;
+        }
+         break;
+       case LittleBrain::A_PREP_REVERSE:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_REVERSE;
+         break;
+       case LittleBrain::A_REVERSE:
+         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
+           brain.thoughtState = LittleBrain::A_PREP_180;
+         }
+         break;
+       case LittleBrain::A_PREP_180:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_DO_180;
+         break;
+       case LittleBrain::A_DO_180:
+         result = driveTrain.turn180(false);  // do a right turn
+         if (result) {
+           brain.thoughtState = LittleBrain::A_CHOOSE_PATH;
+           follow.resetCrossCount(); // reset for next linefollow
+         }
+         break;
+        /*              STORAGE SIDE
+            ARRAY  0    1    2    3
+                   1    2    3    4
+                   1    2    3    4
+            ARRAY  0    1    2    3
+                      SUPPLY SIDE
+        */
+       case LittleBrain::A_CHOOSE_PATH:
+         btSlave.updateArrays();
+         winningSupplyIndex = 0;
+         for (int i = 0; i < 4; i++) {
+            if (btSlave.supplyArray[i] == 1) {
+              winningSupplyIndex = i;
+              break;
+            }
+         }
+         
+         switch (winningSupplyIndex - winningIndex) {
+           
+           case 0:
+             brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
+             break;
+           
+           case -3 ... -1:
+             // turn right
+             shouldTurnRight = true;
+             // count out crossings
+             crossingCount = abs(winningSupplyIndex - winningIndex);
+             brain.thoughtState = LittleBrain::A_GO_TO_CENTER;
+             break;
+           case 1 ... 3:
+             // turn left
+             shouldTurnRight = false;
+             // count out crossings
+             crossingCount = winningSupplyIndex - winningIndex;
+             brain.thoughtState = LittleBrain::A_GO_TO_CENTER;
+             break;
+             
+           default:
+             brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
+             break;           
+         }
+         follow.resetCrossCount();
+         break;
+         
+       case LittleBrain::A_GO_TO_CENTER:
+         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD))
+           brain.thoughtState = LittleBrain::A_INIT_TURN_TOWARDS_1;
+         break;
+       case LittleBrain::A_INIT_TURN_TOWARDS_1:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_TURN_TOWARDS_1;
+         break;
+       case LittleBrain::A_TURN_TOWARDS_1:
+        if (driveTrain.turn45(shouldTurnRight))
+          brain.thoughtState = LittleBrain::A_DRIVE_TO_NEXT_CROSSING;
+        follow.resetCrossCount();
+       break;
+       case LittleBrain::A_DRIVE_TO_NEXT_CROSSING:
+         if(follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD))
+           brain.thoughtState = LittleBrain::A_INIT_TURN_TO_SUPPLY;
+         break;
+       case LittleBrain::A_INIT_TURN_TO_SUPPLY:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_TURN_TO_SUPPLY;
+         break;
+       case LittleBrain::A_TURN_TO_SUPPLY:
+         if (driveTrain.turn45(!shouldTurnRight))
+           brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
+         break;
+       case LittleBrain::A_LINE_FOLLOW_TO_PEG:
+         if (!isBumped)
+           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
+         else {
+           driveTrain.halt();
+           brain.thoughtState = LittleBrain::GET_NEW_ROD;
+         }
+         break;
+       
        // ======================== END EXPERIMENTAL AUTONOMY ==================================
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
