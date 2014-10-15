@@ -24,6 +24,7 @@ class BluetoothSlave {
 
     void updateArrays();
     void update();
+    int isInStorage(int index);
     
     void setRadLow(bool enable);
     void setRadHigh(bool enable);

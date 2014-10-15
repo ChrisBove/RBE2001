@@ -54,7 +54,6 @@ LineFollow follow(0, 1, 2, 3);
 Button frontBumper(22);
 Button stopBumper(23);
 Button frontLimit(24);
-Button backLimit(25);
 BluetoothSlave btSlave;
 Arm robotArm(10, 4);
 
@@ -62,14 +61,19 @@ Arm robotArm(10, 4);
 int result = 0;            // used over and over again for temporarily storing results of functions
 int reactorNum = 1;        // number of the reactor we are on.
 int crossingCount = 0;     // crossings to do
+int winningIndex = 0;      // the index of the selected tube
 bool isBumped = false;     // for the front bump switch, true if pressed
 bool stopBumped = false;   // for the stop button, true if pressed
 bool stopChanged = false;  // flag for servicing stop button presses
 bool isFirstBoot = true;   // flag if this is the first boot
 
-int lastState = LittleBrain::TELEOP;    // stores last state.
 bool wasClosed = false;
 bool wasExtended = false;
+int doubleTapCount = 0;
+
+// autonomous globals
+bool shouldTurnRight = false;
+int winningSupplyIndex = 0;
 
 // ***** SETUP *****
 void setup() {
@@ -77,7 +81,6 @@ void setup() {
   driveTrain.halt();         // stop the drivetrain motors
   
   frontLimit.setupButton();
-  backLimit.setupButton();
   
   gripper.attachMotors();
   robotArm.setupArm();
@@ -87,6 +90,9 @@ void setup() {
   
   pinMode(reactorNumLED, OUTPUT);
   digitalWrite(reactorNumLED, HIGH);
+  
+  // this calibrates the line sensors. Make sure the center is on black, outers are on white!!!
+//  follow.calibrate();
 
   // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
@@ -172,8 +178,9 @@ void loop() {
         // ASSUMPTION: the robot is positioned along the line facing the reactor (East west line in between reactors).
         // reactor tube should be between fork
       case LittleBrain::GRAB:
-        btSlave.setRadLow(true);
         btSlave.setRadHigh(false);
+        btSlave.setRadLow(true);
+
         if (gripper.closeTheGrip()) {
           brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
         }
@@ -236,6 +243,7 @@ void loop() {
           for (int i = 0; i < 4; i++) {
             if (btSlave.storageArray[i] == 0) {
               crossingCount = i + 1; // find closest open storage tube
+              winningIndex = i;
               break;
             }
           }
@@ -244,6 +252,7 @@ void loop() {
             // TODO check this value
             if (btSlave.storageArray[i] == 0) {
               crossingCount = (i - 4) * -1; // find closest open storage tube
+              winningIndex = i;
               break;
             }
           }
@@ -308,8 +317,16 @@ void loop() {
         // TODO add this gripper code
         result = gripper.extendTheGrip();
         if (result) {
-          brain.thoughtState = LittleBrain::DOUBLE_TAP_0; // next loop does teleop
+          brain.thoughtState = LittleBrain::CHECK_INSERTION; // next loop does teleop
         }
+        break;
+        
+      case LittleBrain::CHECK_INSERTION:
+        if (btSlave.isInStorage(winningIndex) || doubleTapCount > 4 )
+          brain.thoughtState = LittleBrain::SET_FOR_NEW;
+        else
+          brain.thoughtState = LittleBrain::DOUBLE_TAP_0;
+        
         break;
 
       case LittleBrain::DOUBLE_TAP_0:
@@ -331,7 +348,7 @@ void loop() {
         break;
         
       case LittleBrain::DOUBLE_TAP_3:
-        result = gripper.extendTheGrip();
+        result = gripper.extendLimTheGrip();
         if(result) {
           brain.thoughtState = LittleBrain::DOUBLE_TAP_4;
         }
@@ -340,12 +357,129 @@ void loop() {
        case LittleBrain::DOUBLE_TAP_4:
         result = gripper.openTheGrip();
         if(result) {
-          brain.thoughtState = LittleBrain::TELEOP;
-          lastState = brain.thoughtState;
-          btSlave.setRadLow(false);
+          doubleTapCount ++;
+          brain.thoughtState = LittleBrain::CHECK_INSERTION;
         }
         break;
 
+       case LittleBrain::SET_FOR_NEW:
+        if(gripper.extendLimTheGrip()) {
+//          brain.thoughtState = LittleBrain::TELEOP;
+          brain.thoughtState = LittleBrain::A_REVERSE_FROM_STORAGE;
+          btSlave.setRadLow(false);
+          follow.resetCrossCount();
+          doubleTapCount = 0;
+        }
+        break;
+        
+        
+       // ==================== EXPERIMENTAL AUTONOMY FOR REFUELING =============================
+       
+       case LittleBrain::A_REVERSE_FROM_STORAGE:
+        if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
+          brain.thoughtState = LittleBrain::A_PREP_REVERSE;
+        }
+         break;
+       case LittleBrain::A_PREP_REVERSE:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_REVERSE;
+         break;
+       case LittleBrain::A_REVERSE:
+         if (driveTrain.backupForTime()) {
+           brain.thoughtState = LittleBrain::A_PREP_180;
+         }
+         break;
+       case LittleBrain::A_PREP_180:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_DO_180;
+         break;
+       case LittleBrain::A_DO_180:
+         result = driveTrain.turn180(false);  // do a right turn
+         if (result) {
+           brain.thoughtState = LittleBrain::A_CHOOSE_PATH;
+           follow.resetCrossCount(); // reset for next linefollow
+         }
+         break;
+        /*              STORAGE SIDE
+            ARRAY  0    1    2    3
+                   1    2    3    4
+                   1    2    3    4
+            ARRAY  0    1    2    3
+                      SUPPLY SIDE
+        */
+       case LittleBrain::A_CHOOSE_PATH:
+         btSlave.updateArrays();
+         winningSupplyIndex = 0;
+         for (int i = 0; i < 4; i++) {
+            if (btSlave.supplyArray[i] == 1) {
+              winningSupplyIndex = i;
+              break;
+            }
+         }
+         
+         switch (winningSupplyIndex - winningIndex) {
+           
+           case 0:
+             brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
+             break;
+           
+           case -3 ... -1:
+             // turn right
+             shouldTurnRight = true;
+             // count out crossings
+             crossingCount = abs(winningSupplyIndex - winningIndex);
+             brain.thoughtState = LittleBrain::A_GO_TO_CENTER;
+             break;
+           case 1 ... 3:
+             // turn left
+             shouldTurnRight = false;
+             // count out crossings
+             crossingCount = winningSupplyIndex - winningIndex;
+             brain.thoughtState = LittleBrain::A_GO_TO_CENTER;
+             break;
+             
+           default:
+             brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
+             break;           
+         }
+         follow.resetCrossCount();
+         break;
+         
+       case LittleBrain::A_GO_TO_CENTER:
+         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD))
+           brain.thoughtState = LittleBrain::A_INIT_TURN_TOWARDS_1;
+         break;
+       case LittleBrain::A_INIT_TURN_TOWARDS_1:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_TURN_TOWARDS_1;
+         break;
+       case LittleBrain::A_TURN_TOWARDS_1:
+        if (driveTrain.turn45(shouldTurnRight))
+          brain.thoughtState = LittleBrain::A_DRIVE_TO_NEXT_CROSSING;
+        follow.resetCrossCount();
+       break;
+       case LittleBrain::A_DRIVE_TO_NEXT_CROSSING:
+         if(follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD))
+           brain.thoughtState = LittleBrain::A_INIT_TURN_TO_SUPPLY;
+         break;
+       case LittleBrain::A_INIT_TURN_TO_SUPPLY:
+         driveTrain.setTime();
+         brain.thoughtState = LittleBrain::A_TURN_TO_SUPPLY;
+         break;
+       case LittleBrain::A_TURN_TO_SUPPLY:
+         if (driveTrain.turn45(!shouldTurnRight))
+           brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
+         break;
+       case LittleBrain::A_LINE_FOLLOW_TO_PEG:
+         if (!isBumped)
+           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
+         else {
+           driveTrain.halt();
+           brain.thoughtState = LittleBrain::GET_NEW_ROD;
+         }
+         break;
+       
+       // ======================== END EXPERIMENTAL AUTONOMY ==================================
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
@@ -353,8 +487,8 @@ void loop() {
       case LittleBrain::GET_NEW_ROD:
         result = gripper.closeTheGrip();
         if (result) {
-          btSlave.setRadHigh(true);
           btSlave.setRadLow(false);
+          btSlave.setRadHigh(true);
           brain.thoughtState = LittleBrain::GET_NEW_ROD_1;
         }
         break;
@@ -362,24 +496,31 @@ void loop() {
         
       case LittleBrain::GET_NEW_ROD_1:
         result = gripper.retractTheGrip();
-        if (result) 
+        if (result) {
+          follow.resetCrossCount();
           brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
+        }
         break;
         
 
         // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
-        result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD);
-
-        if (result == 1)
-          brain.thoughtState = LittleBrain::REVERSE_AGAIN;
+        if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
+          brain.thoughtState = LittleBrain::INIT_REVERSE_AGAIN;
+        }
+        break;
+        
+        
+      
+      case LittleBrain::INIT_REVERSE_AGAIN:
+        driveTrain.setTime();
+        brain.thoughtState = LittleBrain::REVERSE_AGAIN;
         break;
         
       case LittleBrain::REVERSE_AGAIN:
-        result = driveTrain.backupABit();
-        
-        if (result)
+        if (driveTrain.backupForTime()) {
           brain.thoughtState = LittleBrain::PREP_180;
+        }
         break;
         
 
@@ -403,16 +544,16 @@ void loop() {
         result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD); // stop at first cross
 
         if (result == 1)
-          brain.thoughtState = LittleBrain::GET_TO_CENTER_1;
-        break;
-        
-        
-      case LittleBrain::GET_TO_CENTER_1:
-        result = driveTrain.forwardABit();
-        
-        if (result)
           brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
         break;
+        
+        
+//      case LittleBrain::GET_TO_CENTER_1:
+//        result = driveTrain.forwardABit();
+//        
+//        if (result)
+//          brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
+//        break;
 
 
         // initialize turn towards the reactor
@@ -451,7 +592,7 @@ void loop() {
         // refuel the reactor using the gripper
         
       case LittleBrain::REFUEL_REACTOR_0:
-        result = gripper.extendTheGrip();
+        result = gripper.extendLimTheGrip();
         if (result)
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_1;
         break;
@@ -464,13 +605,16 @@ void loop() {
         
         
       case LittleBrain::REFUEL_REACTOR:
-        lastState = brain.thoughtState;
         // if we are on the first reactor, switch us to 2 for the next run
-        if (reactorNum == 1)
+        if (reactorNum == 1) {
           reactorNum = 2;
+          digitalWrite(reactorNumLED, LOW);
+        }
         // otherwise, go back to 1 in case we need to re do it
-        else
+        else {
           reactorNum = 1;
+          digitalWrite(reactorNumLED, HIGH);
+        }
         // when manip movements done, turn off radiation messages and go to teleop
         brain.thoughtState = LittleBrain::TELEOP;
         btSlave.setRadHigh(false);

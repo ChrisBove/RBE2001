@@ -7,7 +7,7 @@ class LineFollow {
   
   public:
     LineFollow(int leftPort, int middlePort, int rightPort, int backPort);
-    
+    void calibrate();
     
     void updateSensorData();
     void setThreshold(int value);
@@ -39,7 +39,7 @@ class LineFollow {
     int lSpeed;
     int rSpeed;
     
-    int _white = 200; // white is less than
+    int _whiteThreshold = 200; // white is less than this
     
     int state = 2;
     

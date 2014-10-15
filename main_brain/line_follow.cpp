@@ -9,16 +9,24 @@ LineFollow::LineFollow(int leftPort, int middlePort, int rightPort, int backPort
   
 }
 
+// runs during startup to calibrate values. Center sensor should be over the center line, outside left and right
+// should be over the white
+void LineFollow::calibrate() {
+  int left = analogRead(_leftPort);
+  int right = analogRead(_rightPort);
+  _whiteThreshold = 3*((right + left)/2); // take average and multiply by 3. Consider this the threshold.
+}
+
 void LineFollow::setThreshold(int value) {
-  _white = value;
+  _whiteThreshold = value;
 }
 
 // true if black
 void LineFollow::updateSensorData() {
-  currentSensors.left = (analogRead(_leftPort) > _white); // true if on black
-  currentSensors.middle = (analogRead(_middlePort) > _white);
-  currentSensors.right = (analogRead(_rightPort) > _white);
-  currentSensors.back = (analogRead(_backPort) > _white);
+  currentSensors.left = (analogRead(_leftPort) > _whiteThreshold); // true if on black
+  currentSensors.middle = (analogRead(_middlePort) > _whiteThreshold);
+  currentSensors.right = (analogRead(_rightPort) > _whiteThreshold);
+//  currentSensors.back = (analogRead(_backPort) > _whiteThreshold);
   
   // TODO make this so that it will check if sensors are new
 }
@@ -38,7 +46,6 @@ int LineFollow::doLineFollowTillCross(DriveTrain& driving, int dir) {
 
 int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
   updateSensorData();
-  static int state;
   if (allOnCross() != 1) {
     if (currentSensors.left && !currentSensors.middle && !currentSensors.right){
       driving.turnLeft(dir);// turn left
@@ -121,6 +128,7 @@ int LineFollow::stopOnCrossing(DriveTrain& driving, int number, int dir) {
 }
 
 void LineFollow::resetCrossCount() {
+  state = 0;
   lastRun = 0;
   sumCrossings = 0;
 }

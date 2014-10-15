@@ -14,7 +14,7 @@ Gripper::Gripper(int gripServo, int rackServo) {
 void Gripper::attachMotors() {
   grip.attach(_gripServo);
   rack.attach(_rackServo);
-  rack.write(25);
+  rack.write(50);
   grip.write(45);
 }
 
@@ -76,6 +76,24 @@ bool Gripper::extendTheGrip() {
   }
 }
 
+bool Gripper::extendLimTheGrip() {
+  switch (grippyStateExtendLim) {
+    case INIT_EXTENDLIM:
+    setReactTime();
+    grippyStateExtendLim = EXTENDLIM;
+    return false;
+    break;
+    case EXTENDLIM:
+    bool result = extendLim();
+    if (result) {
+      grippyStateExtendLim = INIT_EXTENDLIM;
+      return true;
+    }
+    return false;
+    break;
+  }
+}
+
 bool Gripper::openTheGrip() {
   switch (grippyStateOpen) {
     case INIT_OPEN_GRIP:
@@ -101,12 +119,22 @@ bool Gripper::extend() {
     return false;
   }
   return true;
+
+}
+
+bool Gripper::extendLim() {
+  int timeLapse = millis() - reactTime;
+  if (timeLapse <= 1000) {
+    rack.write(50);
+    return false;
+  }
+  return true;
 }
 
 bool Gripper::retract() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 1000) {
-    rack.write(150);
+    rack.write(180);
     return false;
   }
   return true;
@@ -124,7 +152,7 @@ bool Gripper::openGrip() {
 bool Gripper::closeGrip() {
   int timeLapse = millis() - reactTime;
   if (timeLapse <= 500) {
-    grip.write(145);
+    grip.write(150);
     return false;
   }
   return true;
