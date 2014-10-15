@@ -70,6 +70,7 @@ bool isFirstBoot = true;   // flag if this is the first boot
 int lastState = LittleBrain::TELEOP;    // stores last state.
 bool wasClosed = false;
 bool wasExtended = false;
+int doubleTapCount = 0;
 
 // autonomous globals
 bool shouldTurnRight = false;
@@ -322,7 +323,7 @@ void loop() {
         break;
         
       case LittleBrain::CHECK_INSERTION:
-        if (btSlave.isInStorage(winningIndex))
+        if (btSlave.isInStorage(winningIndex) || doubleTapCount > 4 )
           brain.thoughtState = LittleBrain::SET_FOR_NEW;
         else
           brain.thoughtState = LittleBrain::DOUBLE_TAP_0;
@@ -357,6 +358,7 @@ void loop() {
        case LittleBrain::DOUBLE_TAP_4:
         result = gripper.openTheGrip();
         if(result) {
+          doubleTapCount ++;
           brain.thoughtState = LittleBrain::CHECK_INSERTION;
         }
         break;
@@ -367,6 +369,7 @@ void loop() {
           brain.thoughtState = LittleBrain::A_REVERSE_FROM_STORAGE;
           btSlave.setRadLow(false);
           follow.resetCrossCount();
+          doubleTapCount = 0;
         }
         break;
         
