@@ -367,6 +367,11 @@ void loop() {
         }
         break;
         
+        
+       // ==================== EXPERIMENTAL AUTONOMY FOR REFUELING =============================
+       
+       case 
+       // ======================== END EXPERIMENTAL AUTONOMY ==================================
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
