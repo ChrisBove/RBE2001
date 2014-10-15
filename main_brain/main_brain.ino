@@ -67,7 +67,6 @@ bool stopBumped = false;   // for the stop button, true if pressed
 bool stopChanged = false;  // flag for servicing stop button presses
 bool isFirstBoot = true;   // flag if this is the first boot
 
-int lastState = LittleBrain::TELEOP;    // stores last state.
 bool wasClosed = false;
 bool wasExtended = false;
 int doubleTapCount = 0;
@@ -386,7 +385,7 @@ void loop() {
          brain.thoughtState = LittleBrain::A_REVERSE;
          break;
        case LittleBrain::A_REVERSE:
-         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
+         if (driveTrain.backupForTime()) {
            brain.thoughtState = LittleBrain::A_PREP_180;
          }
          break;
@@ -606,7 +605,6 @@ void loop() {
         
         
       case LittleBrain::REFUEL_REACTOR:
-        lastState = brain.thoughtState;
         // if we are on the first reactor, switch us to 2 for the next run
         if (reactorNum == 1) {
           reactorNum = 2;
