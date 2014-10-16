@@ -10,7 +10,7 @@
     
     Pins are as defined below this comment block.
     
-  Authors: Christopher Bove and Christopher Ellen
+  Authors: Christopher Bove, Christopher Ellen, and Sami Neeno
   
   Date last modified: 10-16-2014
   
@@ -90,7 +90,6 @@ BluetoothSlave btSlave;
 Arm robotArm(armMotor, armPot);
 
 // ****************** saddening globals **********************
-int result = 0;            // used over and over again for temporarily storing results of functions
 int reactorNum = 1;        // number of the reactor we are on.
 int crossingCount = 0;     // crossings to do
 int winningIndex = 0;      // the index of the selected tube
@@ -172,7 +171,7 @@ void loop() {
   // this allows the updates to take place at the beginning of each loop.
   // A case may be called multiple times until a condition is met that sets a
   // new case.
-
+  int result = 0; // a local variable to store a result when needed (can't declare in a case)
   if (!isFirstBoot) // if this is not the first boot, do the main switch case
     switch (brain.thoughtState) {
         // switch based on stored state in brain
@@ -236,17 +235,13 @@ void loop() {
 
         // backs the robot up in BACKWARD line following until it hits the first cross
       case LittleBrain::BACKUP:
-        result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD);
-
         // once we have hit the first cross, case is the next one
-        if (result == 1)
+        if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD))
           brain.thoughtState = LittleBrain::INIT_180;
         break;
         
       case LittleBrain::BACKUP_1:
-        result = driveTrain.backupABit();
-        
-        if (result)
+        if (driveTrain.backupABit())
           brain.thoughtState = LittleBrain::INIT_180;
         break;
 
@@ -259,9 +254,9 @@ void loop() {
 
 
       case LittleBrain::TURN_AROUND:
-        result = driveTrain.turn180(false);  // do a right turn (specified by false)of 180 degrees
+        // do a right turn (specified by false)of 180 degrees
         // if the driveTrain returns done moving, then we're ready to go to the next case
-        if (result)
+        if (driveTrain.turn180(false))
           brain.thoughtState = LittleBrain::CHOOSE_STORAGE_RACK;
         break;
 
@@ -300,16 +295,13 @@ void loop() {
 
         // stop once we have reached the requested crossing count
       case LittleBrain::LINE_FOLLOW_CROSSING:
-        result = follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD);
         // once we've made it to the specified crossing, set the next case
-        if (result == 1)
+        if (follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD))
           brain.thoughtState = LittleBrain::INIT_TURN;
         break;
         
       case LittleBrain::GO_A_BIT_FURTHER:
-        result = driveTrain.forwardABit();
-        
-        if (result)
+        if (driveTrain.forwardABit())
           brain.thoughtState = LittleBrain::INIT_TURN;
         break;
         
@@ -323,6 +315,7 @@ void loop() {
 
         // does a 45 degree turn to face a storage rack (depends on which reactor we're traveling from)
       case LittleBrain::TURN:
+        result = 0;
         if (reactorNum == 1)
           result = driveTrain.turn45(false); // turn left
         else
@@ -347,9 +340,7 @@ void loop() {
 
         // insert the rod into storage
       case LittleBrain::INSERT_STORAGE:
-        // TODO add this gripper code
-        result = gripper.extendTheGrip();
-        if (result) {
+        if (gripper.extendTheGrip()) {
           brain.thoughtState = LittleBrain::CHECK_INSERTION; // next loop does teleop
         }
         break;
@@ -363,33 +354,28 @@ void loop() {
         break;
 
       case LittleBrain::DOUBLE_TAP_0:
-        result = gripper.openTheGrip();
-        if(result)
+        if(gripper.openTheGrip())
           brain.thoughtState = LittleBrain::DOUBLE_TAP_1;
         break;
       
       case LittleBrain::DOUBLE_TAP_1:
-        result = gripper.retractTheGrip();
-        if(result)
+        if(gripper.retractTheGrip())
           brain.thoughtState = LittleBrain::DOUBLE_TAP_2;
         break;
         
       case LittleBrain::DOUBLE_TAP_2:
-        result = gripper.closeTheGrip();
-        if (result)
+        if (gripper.closeTheGrip())
           brain.thoughtState = LittleBrain::DOUBLE_TAP_3;
         break;
         
       case LittleBrain::DOUBLE_TAP_3:
-        result = gripper.extendLimTheGrip();
-        if(result) {
+        if(gripper.extendLimTheGrip()) {
           brain.thoughtState = LittleBrain::DOUBLE_TAP_4;
         }
         break;
         
        case LittleBrain::DOUBLE_TAP_4:
-        result = gripper.openTheGrip();
-        if(result) {
+        if(gripper.openTheGrip()) {
           doubleTapCount ++;
           brain.thoughtState = LittleBrain::CHECK_INSERTION;
         }
@@ -427,8 +413,8 @@ void loop() {
          brain.thoughtState = LittleBrain::A_DO_180;
          break;
        case LittleBrain::A_DO_180:
-         result = driveTrain.turn180(false);  // do a right turn
-         if (result) {
+         // do a right turn
+         if (driveTrain.turn180(false)) {
            brain.thoughtState = LittleBrain::A_CHOOSE_PATH;
            follow.resetCrossCount(); // reset for next linefollow
          }
@@ -519,8 +505,7 @@ void loop() {
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
         // uses the gripper to get the new rod from the supply
       case LittleBrain::GET_NEW_ROD:
-        result = gripper.closeTheGrip();
-        if (result) {
+        if (gripper.closeTheGrip()) {
           btSlave.setRadLow(false);
           btSlave.setRadHigh(true);
           brain.thoughtState = LittleBrain::GET_NEW_ROD_1;
@@ -529,8 +514,7 @@ void loop() {
         
         
       case LittleBrain::GET_NEW_ROD_1:
-        result = gripper.retractTheGrip();
-        if (result) {
+        if (gripper.retractTheGrip()) {
           follow.resetCrossCount();
           brain.thoughtState = LittleBrain::REVERSE_FROM_SUPPLY;
         }
@@ -566,8 +550,8 @@ void loop() {
 
         // does a 180 degree turn
       case LittleBrain::DO_180:
-        result = driveTrain.turn180(false);  // do a right turn
-        if (result) {
+        // do a right turn
+        if (driveTrain.turn180(false)) {
           brain.thoughtState = LittleBrain::GET_TO_CENTER;
           follow.resetCrossCount(); // reset for next linefollow
         }
@@ -575,9 +559,8 @@ void loop() {
 
         // linefollow until reaching center cross
       case LittleBrain::GET_TO_CENTER:
-        result = follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD); // stop at first cross
-
-        if (result == 1)
+        // stop at first cross
+        if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD))
           brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
         break;
         
@@ -598,6 +581,7 @@ void loop() {
 
         // turn towards the reactor that we're refueling
       case LittleBrain::TURN_TO_REACTOR:
+        result = 0;
         if (reactorNum == 1)
           result = driveTrain.turn45(false); // turn left
         else
@@ -627,14 +611,12 @@ void loop() {
         // refuel the reactor using the gripper
         
       case LittleBrain::REFUEL_REACTOR_0:
-        result = gripper.extendLimTheGrip();
-        if (result)
+        if (gripper.extendLimTheGrip())
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_1;
         break;
         
       case LittleBrain::REFUEL_REACTOR_1:
-        result = gripper.openTheGrip();
-        if (result)
+        if (gripper.openTheGrip())
           brain.thoughtState = LittleBrain::REFUEL_REACTOR;
         break;
         
@@ -672,5 +654,4 @@ void timer1ISR() {
 // resets the globals that matter
 void reinitialize() {
   follow.resetCrossCount();
-  result = 0;
 }
