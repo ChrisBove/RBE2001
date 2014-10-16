@@ -1,5 +1,23 @@
 /*
 
+  Description:
+      This code is written for the RBE 2001 A14 Final Project Robot Wilber. 
+    main_brain is the .ino file associated with the specific code for running this robot,
+    and it contains the main state machine for the game.
+    
+      Teleop is a default state, one in which the robot starts and stops in before and
+    after refueling reactors. Other states are set through a mostly linear progression.
+    
+    Pins are as defined below this comment block.
+    
+  Authors: Christopher Bove and Christopher Ellen
+  
+  Date last modified: 10-16-2014
+  
+  NOTE:  This code requires use of Arduino 1.5.8 or higher in order to compile.
+
+  Diagrams:
+  
     North ^ is up
           |
 
@@ -17,23 +35,22 @@
         SUP    1    2    3    4
 
 
-
-      NOTE:  This code requires use of Arduino 1.5.8 or higher in order to compile.
 */
 
 
 // ***** INCLUDED LIBRARIEIS *******
 
-// put them here...
+// 3rd party libraries
 #include <Servo.h>
-
 #include <PPM.h>
-
+// bluetooth and reactor libraries
 #include <BluetoothClient.h>
 #include <BluetoothMaster.h>
 #include <ReactorProtocol.h>
+// timer library for interrupts
 #include <TimerOne.h>
 
+// user-defined libraries, contained in root
 #include "drive_train.h"
 #include "vex_controller.h"
 #include "line_follow.h"
@@ -43,21 +60,36 @@
 #include "gripper.h"
 #include "arm.h"
 
-#define reactorNumLED 31
+// ************* CONSTANTS AND PINS ***************
+#define reactorNumLED   31
+#define controllerPin   2
+#define leftMotorPin    7
+#define rightMotorPin   6
+#define gripServo       8
+#define rackServo       9
+#define leftSensor      0
+#define middleSensor    1
+#define rightSensor     2
+#define rearSensor      3
+#define frontSwitch     22
+#define stopSwitch      23
+#define frontArmLimit   24
+#define armMotor        10
+#define armPot          4
 
-// instantiate class objects
+// *************** instantiate class objects **************
 LittleBrain brain(LittleBrain::TELEOP);
-Controller controller(2);
-DriveTrain driveTrain(7, 6, 1, 0);
-Gripper gripper(8, 9);
-LineFollow follow(0, 1, 2, 3);
-Button frontBumper(22);
-Button stopBumper(23);
-Button frontLimit(24);
+Controller controller(controllerPin);
+DriveTrain driveTrain(leftMotorPin, rightMotorPin, 1, 0); // left motor inverted, right not
+Gripper gripper(gripServo, rackServo);
+LineFollow follow(leftSensor, middleSensor, rightSensor, rearSensor);
+Button frontBumper(frontSwitch);
+Button stopBumper(stopSwitch);
+Button frontLimit(frontArmLimit);
 BluetoothSlave btSlave;
-Arm robotArm(10, 4);
+Arm robotArm(armMotor, armPot);
 
-// saddening globals
+// ****************** saddening globals **********************
 int result = 0;            // used over and over again for temporarily storing results of functions
 int reactorNum = 1;        // number of the reactor we are on.
 int crossingCount = 0;     // crossings to do
