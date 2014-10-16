@@ -11,8 +11,9 @@ ReactorProtocol pcol(byte(teamNumber));         // instantiate the protocol obje
 BluetoothClient bt;                            // instantiate a Bluetooth client object
 BluetoothMaster btmaster;                      // ...and a master object
 
-BluetoothSlave::BluetoothSlave() {
-  
+BluetoothSlave::BluetoothSlave(int onboardLED, int radiationLED) {
+  _onboardLED = onboardLED;
+  _radiationLED = radiationLED;
 }
 
 void BluetoothSlave::setupBluetooth() {
@@ -26,11 +27,11 @@ void BluetoothSlave::setupBluetooth() {
   sendHB = false;
   sendRad = false;
   
-  pinMode(onboardLED, OUTPUT);
-  digitalWrite(onboardLED, LOW);
+  pinMode(_onboardLED, OUTPUT);
+  digitalWrite(_onboardLED, LOW);
   
-  pinMode(radiationLED, OUTPUT);
-  digitalWrite(radiationLED, LOW);
+  pinMode(_radiationLED, OUTPUT);
+  digitalWrite(_radiationLED, LOW);
   
 }
 
@@ -69,7 +70,7 @@ void BluetoothSlave::update() {
     sendHB = false;                            // clear the heartbeat flag
     interrupts();
     // generate and send the heartbeat message    
-    digitalWrite(onboardLED, !digitalRead(onboardLED));  // flip the state of the HB LED
+    digitalWrite(_onboardLED, !digitalRead(_onboardLED));  // flip the state of the HB LED
     pcol.setDst(0x00);			       // this will be a broadcast message
     sz = pcol.createPkt(0x07, data1, pkt);     // create a packet using the heartbeat type ID (there is no data)
     btmaster.sendPkt(pkt, sz);                 // send to the field computer
@@ -128,22 +129,22 @@ void BluetoothSlave::update() {
 void BluetoothSlave::setRadLow(bool enable) {
   if (enable) {
     enableRadLow = true;
-    digitalWrite(radiationLED, HIGH);
+    digitalWrite(_radiationLED, HIGH);
   }
   else {
     enableRadLow = false;
-    digitalWrite(radiationLED, LOW);
+    digitalWrite(_radiationLED, LOW);
   }
 }
 
 void BluetoothSlave::setRadHigh(bool enable) {
   if (enable) {
     enableRadHigh = true;
-    digitalWrite(radiationLED, HIGH);
+    digitalWrite(_radiationLED, HIGH);
   }
   else {
     enableRadHigh = false;
-    digitalWrite(radiationLED, LOW);
+    digitalWrite(_radiationLED, LOW);
   }
 }
 

@@ -9,14 +9,12 @@
 #include <ReactorProtocol.h>
 #include <TimerOne.h>
 
-#define teamNumber 21
-#define onboardLED 13
-#define radiationLED 30
+#define teamNumber      21
 
 class BluetoothSlave {
   
   public:
-    BluetoothSlave();
+    BluetoothSlave(int onboardLED, int radiationLED);
     void setupBluetooth();
     void goTime();
     void timer1ISR();
@@ -60,6 +58,9 @@ class BluetoothSlave {
     int sz;                                      // holds the size of the message (in bytes)
     byte type;                                   // hold the message type id
     byte data1[3];                               // holds any data associated with a message
+    
+    int _onboardLED;
+    int _radiationLED;
 };
 
 #endif

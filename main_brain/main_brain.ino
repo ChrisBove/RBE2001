@@ -61,6 +61,8 @@
 #include "arm.h"
 
 // ************* CONSTANTS AND PINS ***************
+#define onBoardLEDPin   13
+#define radiationLEDPin 30
 #define reactorNumLED   31
 #define controllerPin   2
 #define leftMotorPin    7
@@ -86,7 +88,7 @@ LineFollow follow(leftSensor, middleSensor, rightSensor, rearSensor);
 Button frontBumper(frontSwitch);
 Button stopBumper(stopSwitch);
 Button frontLimit(frontArmLimit);
-BluetoothSlave btSlave;
+BluetoothSlave btSlave(onBoardLEDPin, radiationLEDPin); // change team number in here
 Arm robotArm(armMotor, armPot);
 
 // ****************** saddening globals **********************
@@ -107,14 +109,14 @@ void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
   
-  frontLimit.setupButton();
+  frontLimit.setupButton();    // setup the button on the arm forward limit
+  frontBumper.setupButton();   // setup the front bumper stop
+  stopBumper.setupButton();    // setup the stop button
   
-  gripper.attachMotors();
-  robotArm.setupArm();
-
-  frontBumper.setupButton();  // setup bumper buttons
-  stopBumper.setupButton();
+  gripper.attachMotors();      // attach motors on gripper
+  robotArm.setupArm();         // setup and attach motor on arm
   
+  // configure reactorNumLED, set to represent reactor 1
   pinMode(reactorNumLED, OUTPUT);
   digitalWrite(reactorNumLED, HIGH);
   
@@ -124,6 +126,7 @@ void setup() {
   // set up the timer (it starts automatically)
   Timer1.initialize(100000);	               // set up a 100 millisecond timer period
   Timer1.attachInterrupt(timer1ISR);           // ...and specify the timer ISR
+  
   btSlave.setupBluetooth();  // setup the bluetooth slave
 }
 
