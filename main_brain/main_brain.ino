@@ -398,15 +398,16 @@ void loop() {
        break;
       
       
-       // ==================== EXPERIMENTAL AUTONOMY FOR REFUELING =============================
-       
+       // ==================== AUTONOMY FOR REFUELING =============================
+       // reverses from the storage rack until it hits the crossing
        case LittleBrain::A_REVERSE_FROM_STORAGE:
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
           setDriveTrain(LittleBrain::A_REVERSE);
         }
          break;
          
-         
+       
+       // goes in reverse a bit further to avoid hitting the post
        case LittleBrain::A_REVERSE:
          if (driveTrain.backupForTime()) {
            setDriveTrain(LittleBrain::A_DO_180);
@@ -414,6 +415,7 @@ void loop() {
          break;
          
          
+       // spins around.
        case LittleBrain::A_DO_180:
          // do a right turn
          if (driveTrain.turn180(false)) {
@@ -422,7 +424,7 @@ void loop() {
          }
          break;
          
-         
+        // reminder...
         /*              STORAGE SIDE
             ARRAY  0    1    2    3
                    1    2    3    4
@@ -431,23 +433,25 @@ void loop() {
                       SUPPLY SIDE
         */
         
-        
+       
+       // decides how many turns and crossings to proceed to supply rack
        case LittleBrain::A_CHOOSE_PATH:
-         btSlave.updateArrays();
-         winningSupplyIndex = 0;
+         btSlave.updateArrays(); // update our arrays
+         winningSupplyIndex = 0; // reset winning supply index
+         // check which supply racks have rods, no optimization
          for (int i = 0; i < 4; i++) {
             if (btSlave.supplyArray[i] == 1) {
               winningSupplyIndex = i;
               break;
             }
          }
-         
+         // based on index difference, determine turns and crossings
          switch (winningSupplyIndex - winningIndex) {
-           
+           // if its straight ahead, just line follow until the peg
            case 0:
              brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
              break;
-           
+           // if negative...
            case -3 ... -1:
              // turn right
              shouldTurnRight = true;
@@ -455,6 +459,7 @@ void loop() {
              crossingCount = abs(winningSupplyIndex - winningIndex);
              brain.thoughtState = LittleBrain::A_GO_TO_CENTER;
              break;
+           // if positive...
            case 1 ... 3:
              // turn left
              shouldTurnRight = false;
@@ -462,7 +467,7 @@ void loop() {
              crossingCount = winningSupplyIndex - winningIndex;
              brain.thoughtState = LittleBrain::A_GO_TO_CENTER;
              break;
-             
+           // shouldn't happen...
            default:
              brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
              break;           
@@ -470,57 +475,64 @@ void loop() {
          follow.resetCrossCount();
          break;
          
-         
+       
+       // goes to the center crossing
        case LittleBrain::A_GO_TO_CENTER:
          if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD))
            setDriveTrain(LittleBrain::A_TURN_TOWARDS_1);
          break;
 
-
+       
+       // turns towards the needed side
        case LittleBrain::A_TURN_TOWARDS_1:
-        if (driveTrain.turn45(shouldTurnRight))
-          brain.thoughtState = LittleBrain::A_DRIVE_TO_NEXT_CROSSING;
-        follow.resetCrossCount();
+         // turn right or left
+         if (driveTrain.turn45(shouldTurnRight))
+           brain.thoughtState = LittleBrain::A_DRIVE_TO_NEXT_CROSSING;
+         follow.resetCrossCount();
        break;
        
        
+       // drives to the predetermined crossing
        case LittleBrain::A_DRIVE_TO_NEXT_CROSSING:
          if(follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD))
            setDriveTrain(LittleBrain::A_TURN_TO_SUPPLY);
          break;
          
-         
+       
+       // turns towards the supply
        case LittleBrain::A_TURN_TO_SUPPLY:
-         if (driveTrain.turn45(!shouldTurnRight))
+         if (driveTrain.turn45(!shouldTurnRight)) // opposite direction from before
            brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
          break;
          
-         
+       
+       // line follow until hitting the supply peg
        case LittleBrain::A_LINE_FOLLOW_TO_PEG:
-         follow.setForwardOnCross(true);
+         follow.setForwardOnCross(true); // go forward on crosses - fixes if stop command is sent while robot is on line
          if (!isBumped)
-           follow.doLineFollow(driveTrain, DriveTrain::FORWARD);
-         else {
+           follow.doLineFollow(driveTrain, DriveTrain::FORWARD); // switch hasn't been hit, keep going
+         else { // switch has been hit
            driveTrain.halt();
            brain.thoughtState = LittleBrain::GET_NEW_ROD;
          }
          break;
-       // ======================== END EXPERIMENTAL AUTONOMY ==================================
+       // ======================== END AUTONOMY ==================================
 
 
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
-        // uses the gripper to get the new rod from the supply
+      // closes gripper around new rod
       case LittleBrain::GET_NEW_ROD:
         if (gripper.closeTheGrip()) {
-          btSlave.setRadLow(false);
+          btSlave.setRadLow(false); // set radiation alerts
           btSlave.setRadHigh(true);
           brain.thoughtState = LittleBrain::GET_NEW_ROD_1;
         }
         break;
         
         
+      // retracts the gripper to extract the rod
       case LittleBrain::GET_NEW_ROD_1:
         if (gripper.retractTheGrip()) {
           follow.resetCrossCount();
@@ -529,7 +541,7 @@ void loop() {
         break;
         
 
-        // backs away from the supply rack until hitting the little line in front of it
+      // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
           setDriveTrain(LittleBrain::REVERSE_AGAIN);
@@ -537,7 +549,7 @@ void loop() {
         break;
         
         
-        
+      // reverses some more to avoid hitting peg
       case LittleBrain::REVERSE_AGAIN:
         if (driveTrain.backupForTime()) {
           setDriveTrain(LittleBrain::DO_180);
@@ -545,7 +557,7 @@ void loop() {
         break;
         
 
-        // does a 180 degree turn
+      // does a 180 degree turn
       case LittleBrain::DO_180:
         // do a right turn
         if (driveTrain.turn180(false)) {
@@ -555,7 +567,7 @@ void loop() {
         break;
 
 
-        // linefollow until reaching center cross
+      // linefollow until reaching center cross
       case LittleBrain::GET_TO_CENTER:
         // stop at first cross
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD))
@@ -563,19 +575,19 @@ void loop() {
         break;
         
 
-        // turn towards the reactor that we're refueling
+      // turn towards the reactor that we're refueling
       case LittleBrain::TURN_TO_REACTOR:
         result = 0;
         if (reactorNum == 1)
           result = driveTrain.turn45(false); // turn left
         else
           result = driveTrain.turn45(true); // turn right
-
         if (result)
           brain.thoughtState = LittleBrain::GET_TO_REACTOR;
         break;
 
-        // line follow until we hit the reactor tube
+
+      // line follow until we hit the reactor tube
       case LittleBrain::GET_TO_REACTOR:
         follow.setForwardOnCross(true);
         if (!isBumped)
@@ -587,28 +599,28 @@ void loop() {
         break;
         
         
+      // lowers the arm
       case LittleBrain::LOWER_ARM:
         if (robotArm.goDown(frontLimit)) {
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_0;
         }
         break;
 
-        // refuel the reactor using the gripper
-        
-        
+      // refuel the reactor using the gripper
       case LittleBrain::REFUEL_REACTOR_0:
         if (gripper.extendLimTheGrip())
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_1;
         break;
         
-        
+      // open the grip up to let go of reactor
       case LittleBrain::REFUEL_REACTOR_1:
         if (gripper.openTheGrip())
-          brain.thoughtState = LittleBrain::REFUEL_REACTOR;
+          brain.thoughtState = LittleBrain::FINISHED_REFUEL_REACTOR;
         break;
         
-        
-      case LittleBrain::REFUEL_REACTOR:
+      
+      // sets new reactor num, turns off radiation alert.
+      case LittleBrain::FINISHED_REFUEL_REACTOR:
         // if we are on the first reactor, switch us to 2 for the next run
         if (reactorNum == 1) {
           reactorNum = 2;
@@ -623,6 +635,7 @@ void loop() {
         brain.thoughtState = LittleBrain::TELEOP;
         btSlave.setRadHigh(false);
         break;
+
 
         // this should never execute
       default:
