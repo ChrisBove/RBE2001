@@ -180,39 +180,42 @@ void loop() {
     brain.thoughtState = LittleBrain::TELEOP;
   }
 
+
   // *********** enter state machine ****************
 
   /// NOTE: Each case breaks, allowing loop to execute every single time it can.
   // this allows the updates to take place at the beginning of each loop.
   // A case may be called multiple times until a condition is met that sets a
   // new case.
+  
   int result = 0; // a local variable to store a result when needed (can't declare in a case)
   if (!isFirstBoot) // if this is not the first boot, do the main switch case
     switch (brain.thoughtState) {
+      
         // switch based on stored state in brain
         // this is teleop, from here, the next autonomous action is taken
       case LittleBrain::TELEOP:
-        reinitialize(); // reinitialize globals and turn off rad alerts (scroll way, way down)
+        reinitialize(); // reinitialize globals
         // update the drivetrain with input from the controller
         driveTrain.moveMotors(180- controller.getControllerChannel(3), controller.getControllerChannel(2) );
         // if the up button on channel 5 is pressed, switch to grab state
-        if (controller.isUpPressed(5))
-        {
+        if (controller.isUpPressed(5)) {
           brain.thoughtState = LittleBrain::GRAB; // meant to grab rod FROM the first or second reactor
         }
         // otherwise, if the down is pressed on channel 5, start moving the gripper to grab the new rod.
         else if (controller.isDownPressed(5))
           brain.thoughtState = LittleBrain::GET_NEW_ROD;
-        // otherwise, if the down is pressed on channel 5, start moving the gripper to grab the new rod.
+        
+        // change reactor number if down is pressed, update LED status
         if(controller.isDownPressed(6)) {
           if (reactorNum == 1) {
-            reactorNum = 2;
-            digitalWrite(reactorNumLED, LOW);
+            reactorNum = 2;  // if we're on 1, go to 2
+            digitalWrite(reactorNumLED, LOW); // off if on 2
           }
           // otherwise, go back to 1 in case we need to re do it
           else {
             reactorNum = 1;
-            digitalWrite(reactorNumLED, HIGH);
+            digitalWrite(reactorNumLED, HIGH); // on if on 1
           }
         }
         break;
@@ -222,24 +225,24 @@ void loop() {
         // ASSUMPTION: the robot is positioned along the line facing the reactor (East west line in between reactors).
         // reactor tube should be between fork
       case LittleBrain::GRAB:
+        // set new radiation status - rod is being exposed
         btSlave.setRadHigh(false);
         btSlave.setRadLow(true);
-
+        // close the grip, if done, go to next state
         if (gripper.closeTheGrip()) {
           brain.thoughtState = LittleBrain::EXTRACT; // next loop, do extraction
         }
         break;
 
 
-        // this extracts the rod from the reactor, moving the fourbar to the vertical position after the rod is vert. moved.
+        // this extracts the rod from the reactor using the rack and pinion
       case LittleBrain::EXTRACT:
         if (gripper.retractTheGrip()) {
-          
           brain.thoughtState = LittleBrain::EXTRACT_1;
         }
         break;
         
-        
+      // moves the fourbar to the vertical position after the rod is vert. moved.
       case LittleBrain::EXTRACT_1:
         if (robotArm.goUp(frontLimit)) {
           follow.resetCrossCount(); // reset the cross count for our next state
@@ -256,7 +259,7 @@ void loop() {
         break;
         
         
-
+      // do a 180 degree to turn to reverse direction
       case LittleBrain::TURN_AROUND:
         // do a right turn (specified by false)of 180 degrees
         // if the driveTrain returns done moving, then we're ready to go to the next case
@@ -264,30 +267,26 @@ void loop() {
           brain.thoughtState = LittleBrain::CHOOSE_STORAGE_RACK;
         break;
 
+
         // calculates the crossings to get to the closest empty storage rack.
       case LittleBrain::CHOOSE_STORAGE_RACK:
         // assume we're starting at 1 and 1 side of the field
         btSlave.updateArrays(); // update our arrays
         crossingCount = 1;      // reset crossing count
-        // if reactor one, search array in one direction
-        if (reactorNum == 1)
-          for (int i = 0; i < 4; i++) {
-            if (btSlave.storageArray[i] == 0) {
+        // search array for open storage tubes
+        for (int i = 0; i < 4; i++) {
+          if (btSlave.storageArray[i] == 0) {
+            if (reactorNum == 1)
               crossingCount = i + 1; // find closest open storage tube
-              winningIndex = i;
-              break;
-            }
+            else
+              crossingCount = (i - 4) * -1; // find closest open storage tube to other reactor
+            winningIndex = i; // this is the index we chose
+            break;
           }
-        else // else, search the array from a different direction
-          for (int i = 0; i < 4; i++) {
-            // TODO check this value
-            if (btSlave.storageArray[i] == 0) {
-              crossingCount = (i - 4) * -1; // find closest open storage tube
-              winningIndex = i;
-              break;
-            }
-          }
-        follow.resetCrossCount();
+        }
+        
+        follow.resetCrossCount(); // reset cross count for line following
+        // uncomment next block and change crossingCount initialization to 0 to revert to tele if a tube is not found
 //        if (crossingCount == 0) {
 //          brain.thoughtState = LittleBrain::TELEOP; // revert to teleop
 //          break;
@@ -297,7 +296,7 @@ void loop() {
         break;
 
 
-        // stop once we have reached the requested crossing count
+      // stop once we have reached the requested crossing count
       case LittleBrain::LINE_FOLLOW_CROSSING:
         // once we've made it to the specified crossing, set the next case
         if (follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD))
@@ -305,7 +304,7 @@ void loop() {
         break;
         
 
-        // does a 45 degree turn to face a storage rack (depends on which reactor we're traveling from)
+      // does a 45 degree turn to face a storage rack (depends on which reactor we're traveling from)
       case LittleBrain::TURN:
         result = 0;
         if (reactorNum == 1)
@@ -318,7 +317,7 @@ void loop() {
         break;
 
 
-        // do line following until we hit the storage peg
+      // do line following until we hit the storage peg
       case LittleBrain::LINE_FOLLOW_TO_PEG:
         follow.setForwardOnCross(true);
         if (!isBumped)
@@ -331,60 +330,74 @@ void loop() {
         break;
         
 
-        // insert the rod into storage
+      // insert the rod into storage
       case LittleBrain::INSERT_STORAGE:
         if (gripper.extendTheGrip()) {
-          brain.thoughtState = LittleBrain::CHECK_INSERTION; // next loop does teleop
+          brain.thoughtState = LittleBrain::RELEASE_ROD;
         }
         break;
         
-      case LittleBrain::CHECK_INSERTION:
-        if (btSlave.isInStorage(winningIndex) || doubleTapCount > 4 )
-          brain.thoughtState = LittleBrain::SET_FOR_NEW;
-        else
-          brain.thoughtState = LittleBrain::DOUBLE_TAP_0;
         
+      // open the grip
+      case LittleBrain::RELEASE_ROD:
+        if (gripper.openTheGrip())
+          brain.thoughtState = LittleBrain::CHECK_INSERTION;
         break;
-
-      case LittleBrain::DOUBLE_TAP_0:
-        if(gripper.openTheGrip())
+        
+      
+      // check array to see if our selected storage rack has now been filled, only try 5 times
+      case LittleBrain::CHECK_INSERTION:
+        if (btSlave.isInStorage(winningIndex) || doubleTapCount > 4 ) {
+          if (doubleTapCount == 0)
+            brain.thoughtState = LittleBrain::SET_FOR_NEW;
+          else
+            brain.thoughtState = LittleBrain::MADE_IT;
+        }
+        else
           brain.thoughtState = LittleBrain::DOUBLE_TAP_1;
         break;
+
       
+      // just open the grip and set for new
+      case LittleBrain::MADE_IT:
+        if(gripper.openTheGrip())
+          brain.thoughtState = LittleBrain::SET_FOR_NEW;
+        break;
+        
+      
+      // retract the grip
       case LittleBrain::DOUBLE_TAP_1:
         if(gripper.retractTheGrip())
           brain.thoughtState = LittleBrain::DOUBLE_TAP_2;
         break;
-        
+      
+      
+      // close gripper to make a flat service to hammer with
       case LittleBrain::DOUBLE_TAP_2:
         if (gripper.closeTheGrip())
           brain.thoughtState = LittleBrain::DOUBLE_TAP_3;
         break;
-        
+      
+      
+      // extend gripper to push rod in, then check
       case LittleBrain::DOUBLE_TAP_3:
-        if(gripper.extendLimTheGrip()) {
-          brain.thoughtState = LittleBrain::DOUBLE_TAP_4;
-        }
-        break;
-        
-       case LittleBrain::DOUBLE_TAP_4:
-        if(gripper.openTheGrip()) {
-          doubleTapCount ++;
+        if(gripper.extendTheGrip()) {
           brain.thoughtState = LittleBrain::CHECK_INSERTION;
         }
         break;
+        
 
-       case LittleBrain::SET_FOR_NEW:
-        if(gripper.extendLimTheGrip()) {
-//          brain.thoughtState = LittleBrain::TELEOP;
-          brain.thoughtState = LittleBrain::A_REVERSE_FROM_STORAGE;
-          btSlave.setRadLow(false);
-          follow.resetCrossCount();
-          doubleTapCount = 0;
-        }
-        break;
-        
-        
+      // reset gripper position to avoid grabbing the supply tube itself instead of the rod
+      case LittleBrain::SET_FOR_NEW:
+       if(gripper.extendLimTheGrip()) {
+         brain.thoughtState = LittleBrain::A_REVERSE_FROM_STORAGE;
+         btSlave.setRadLow(false); // turn off low radiation
+         follow.resetCrossCount();  // reset for line following
+         doubleTapCount = 0;  // reset count
+       }
+       break;
+      
+      
        // ==================== EXPERIMENTAL AUTONOMY FOR REFUELING =============================
        
        case LittleBrain::A_REVERSE_FROM_STORAGE:
