@@ -1,14 +1,23 @@
+/**
+ ********************************************************************************************************
+ * @file    arm.cpp
+ * @brief   Arm control methods
+ * @details Used to control 4-bar linkage robot arm.
+ ********************************************************************************************************
+ */
+/*** INCLUDE FILES ***/
 #include "arm.h"
 #include "button.h"
 
-Servo arm;
+Servo arm; // arm servo
 
-
+// constructor
 Arm::Arm(int motorPin, int potPin) {
   _motorPin = motorPin;
   _potPin = potPin;
 }
-    
+
+// attaches pins
 void Arm::setupArm() {
   arm.attach(_motorPin);
   arm.write(90);
@@ -92,17 +101,17 @@ float Arm::scaleOutput (float output) {
 }
 
 bool Arm::isInPosition() {
-  if (goodness > 200)
+  if (goodness > 200) // if in position for 200 conseq. iterations, it is good
     return true;
   return false;
 }
 
 void Arm::rotateUp (float output, Button& frontLimit){
-  if (!frontLimit.isBumped())
+  if (!frontLimit.isBumped()) // move if we haven't hit the limit
     arm.write(70+output);
-  else {
+  else { // stop the motor! we've hit
     arm.write(90);
-    goodness++;
+    goodness++; // increment goodness since we're in position
   }
 }
 
@@ -112,17 +121,15 @@ void Arm::rotateDown (float output, Button& frontLimit) {
 
 
 bool Arm::goUp(Button& frontLimit) {
-  setPosition(696, frontLimit);
+  setPosition(upPos, frontLimit); // set up position
   return isInPosition();
 }
 
 bool Arm::goDown(Button& frontLimit) {
-  setPosition(330, frontLimit);
+  setPosition(downPos, frontLimit);
   return isInPosition();
 }
 // positive values put the arm down
 
 // 342 is lowest position
 // 696 is highest position.
-
-
