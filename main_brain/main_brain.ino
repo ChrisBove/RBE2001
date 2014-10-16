@@ -130,8 +130,24 @@ void setup() {
   btSlave.setupBluetooth();  // setup the bluetooth slave
 }
 
-// ***** LOOP *****
+// ************************** Supporting functions *************************
+// ISR for timer1 
+void timer1ISR() {
+  btSlave.doTimerInterrupt();
+}
 
+// resets the lineFollower (in case of controller interrupt)
+void reinitialize() {
+  follow.resetCrossCount();
+}
+
+// sets up the drivetrain clock for the passed turn, puts brainState to that state
+void setDriveTrain(LittleBrain::littleBrainState nextState) {
+  driveTrain.setTime(); // set the clock to this time
+  brain.thoughtState = nextState;
+}
+
+// **************************** LOOP **********************
 void loop() {
   // do updates each loop! MUST BE RUN!!!
   btSlave.update();  // check for messages and send needed messages
@@ -199,10 +215,8 @@ void loop() {
             digitalWrite(reactorNumLED, HIGH);
           }
         }
-          
-          
-        // TODO check other buttons to determine next step if needed
         break;
+
 
         // this grabs the rod in the reactor
         // ASSUMPTION: the robot is positioned along the line facing the reactor (East west line in between reactors).
@@ -225,6 +239,7 @@ void loop() {
         }
         break;
         
+        
       case LittleBrain::EXTRACT_1:
         if (robotArm.goUp(frontLimit)) {
           follow.resetCrossCount(); // reset the cross count for our next state
@@ -232,25 +247,15 @@ void loop() {
         }
         break;
 
+
         // backs the robot up in BACKWARD line following until it hits the first cross
       case LittleBrain::BACKUP:
         // once we have hit the first cross, case is the next one
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD))
-          brain.thoughtState = LittleBrain::INIT_180;
+          setDriveTrain(LittleBrain::TURN_AROUND);
         break;
         
-      case LittleBrain::BACKUP_1:
-        if (driveTrain.backupABit())
-          brain.thoughtState = LittleBrain::INIT_180;
-        break;
-
-
-        // initiates a 180 degree turn by setting the drivetrain clock timer.
-      case LittleBrain::INIT_180:
-        driveTrain.setTime(); // set the clock to this time
-        brain.thoughtState = LittleBrain::TURN_AROUND;
-        break;
-
+        
 
       case LittleBrain::TURN_AROUND:
         // do a right turn (specified by false)of 180 degrees
@@ -282,7 +287,6 @@ void loop() {
               break;
             }
           }
-
         follow.resetCrossCount();
 //        if (crossingCount == 0) {
 //          brain.thoughtState = LittleBrain::TELEOP; // revert to teleop
@@ -292,25 +296,14 @@ void loop() {
         brain.thoughtState = LittleBrain::LINE_FOLLOW_CROSSING;
         break;
 
+
         // stop once we have reached the requested crossing count
       case LittleBrain::LINE_FOLLOW_CROSSING:
         // once we've made it to the specified crossing, set the next case
         if (follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD))
-          brain.thoughtState = LittleBrain::INIT_TURN;
+          setDriveTrain(LittleBrain::TURN);
         break;
         
-      case LittleBrain::GO_A_BIT_FURTHER:
-        if (driveTrain.forwardABit())
-          brain.thoughtState = LittleBrain::INIT_TURN;
-        break;
-        
-
-
-        // initiates a turn
-      case LittleBrain::INIT_TURN:
-        driveTrain.setTime();
-        brain.thoughtState = LittleBrain::TURN;
-        break;
 
         // does a 45 degree turn to face a storage rack (depends on which reactor we're traveling from)
       case LittleBrain::TURN:
@@ -323,6 +316,7 @@ void loop() {
         if (result)
           brain.thoughtState = LittleBrain::LINE_FOLLOW_TO_PEG;
         break;
+
 
         // do line following until we hit the storage peg
       case LittleBrain::LINE_FOLLOW_TO_PEG:
@@ -395,22 +389,18 @@ void loop() {
        
        case LittleBrain::A_REVERSE_FROM_STORAGE:
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
-          brain.thoughtState = LittleBrain::A_PREP_REVERSE;
+          setDriveTrain(LittleBrain::A_REVERSE);
         }
          break;
-       case LittleBrain::A_PREP_REVERSE:
-         driveTrain.setTime();
-         brain.thoughtState = LittleBrain::A_REVERSE;
-         break;
+         
+         
        case LittleBrain::A_REVERSE:
          if (driveTrain.backupForTime()) {
-           brain.thoughtState = LittleBrain::A_PREP_180;
+           setDriveTrain(LittleBrain::A_DO_180);
          }
          break;
-       case LittleBrain::A_PREP_180:
-         driveTrain.setTime();
-         brain.thoughtState = LittleBrain::A_DO_180;
-         break;
+         
+         
        case LittleBrain::A_DO_180:
          // do a right turn
          if (driveTrain.turn180(false)) {
@@ -418,6 +408,8 @@ void loop() {
            follow.resetCrossCount(); // reset for next linefollow
          }
          break;
+         
+         
         /*              STORAGE SIDE
             ARRAY  0    1    2    3
                    1    2    3    4
@@ -425,6 +417,8 @@ void loop() {
             ARRAY  0    1    2    3
                       SUPPLY SIDE
         */
+        
+        
        case LittleBrain::A_CHOOSE_PATH:
          btSlave.updateArrays();
          winningSupplyIndex = 0;
@@ -463,31 +457,32 @@ void loop() {
          follow.resetCrossCount();
          break;
          
+         
        case LittleBrain::A_GO_TO_CENTER:
          if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD))
-           brain.thoughtState = LittleBrain::A_INIT_TURN_TOWARDS_1;
+           setDriveTrain(LittleBrain::A_TURN_TOWARDS_1);
          break;
-       case LittleBrain::A_INIT_TURN_TOWARDS_1:
-         driveTrain.setTime();
-         brain.thoughtState = LittleBrain::A_TURN_TOWARDS_1;
-         break;
+
+
        case LittleBrain::A_TURN_TOWARDS_1:
         if (driveTrain.turn45(shouldTurnRight))
           brain.thoughtState = LittleBrain::A_DRIVE_TO_NEXT_CROSSING;
         follow.resetCrossCount();
        break;
+       
+       
        case LittleBrain::A_DRIVE_TO_NEXT_CROSSING:
          if(follow.stopOnCrossing(driveTrain, crossingCount, DriveTrain::FORWARD))
-           brain.thoughtState = LittleBrain::A_INIT_TURN_TO_SUPPLY;
+           setDriveTrain(LittleBrain::A_TURN_TO_SUPPLY);
          break;
-       case LittleBrain::A_INIT_TURN_TO_SUPPLY:
-         driveTrain.setTime();
-         brain.thoughtState = LittleBrain::A_TURN_TO_SUPPLY;
-         break;
+         
+         
        case LittleBrain::A_TURN_TO_SUPPLY:
          if (driveTrain.turn45(!shouldTurnRight))
            brain.thoughtState = LittleBrain::A_LINE_FOLLOW_TO_PEG;
          break;
+         
+         
        case LittleBrain::A_LINE_FOLLOW_TO_PEG:
          follow.setForwardOnCross(true);
          if (!isBumped)
@@ -497,8 +492,9 @@ void loop() {
            brain.thoughtState = LittleBrain::GET_NEW_ROD;
          }
          break;
-       
        // ======================== END EXPERIMENTAL AUTONOMY ==================================
+
+
 
         // SEQUENCE FOR GETTING THINGS TO THE REACTOR
         // GET_NEW_ROD, REVERSE_FROM_SUPPLY, PREP_180, DO_180, GET_TO_CENTER
@@ -523,29 +519,18 @@ void loop() {
         // backs away from the supply rack until hitting the little line in front of it
       case LittleBrain::REVERSE_FROM_SUPPLY:
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::BACKWARD)) {
-          brain.thoughtState = LittleBrain::INIT_REVERSE_AGAIN;
+          setDriveTrain(LittleBrain::REVERSE_AGAIN);
         }
         break;
         
         
-      
-      case LittleBrain::INIT_REVERSE_AGAIN:
-        driveTrain.setTime();
-        brain.thoughtState = LittleBrain::REVERSE_AGAIN;
-        break;
         
       case LittleBrain::REVERSE_AGAIN:
         if (driveTrain.backupForTime()) {
-          brain.thoughtState = LittleBrain::PREP_180;
+          setDriveTrain(LittleBrain::DO_180);
         }
         break;
         
-
-        // preps time for a 180
-      case LittleBrain::PREP_180:
-        driveTrain.setTime();
-        brain.thoughtState = LittleBrain::DO_180;
-        break;
 
         // does a 180 degree turn
       case LittleBrain::DO_180:
@@ -556,27 +541,14 @@ void loop() {
         }
         break;
 
+
         // linefollow until reaching center cross
       case LittleBrain::GET_TO_CENTER:
         // stop at first cross
         if (follow.stopOnCrossing(driveTrain, 1, DriveTrain::FORWARD))
-          brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
+          setDriveTrain(LittleBrain::TURN_TO_REACTOR);
         break;
         
-        
-//      case LittleBrain::GET_TO_CENTER_1:
-//        result = driveTrain.forwardABit();
-//        
-//        if (result)
-//          brain.thoughtState = LittleBrain::INIT_TURN_TO_REACTOR;
-//        break;
-
-
-        // initialize turn towards the reactor
-      case LittleBrain::INIT_TURN_TO_REACTOR:
-        driveTrain.setTime();
-        brain.thoughtState = LittleBrain::TURN_TO_REACTOR;
-        break;
 
         // turn towards the reactor that we're refueling
       case LittleBrain::TURN_TO_REACTOR:
@@ -601,6 +573,7 @@ void loop() {
         }
         break;
         
+        
       case LittleBrain::LOWER_ARM:
         if (robotArm.goDown(frontLimit)) {
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_0;
@@ -609,10 +582,12 @@ void loop() {
 
         // refuel the reactor using the gripper
         
+        
       case LittleBrain::REFUEL_REACTOR_0:
         if (gripper.extendLimTheGrip())
           brain.thoughtState = LittleBrain::REFUEL_REACTOR_1;
         break;
+        
         
       case LittleBrain::REFUEL_REACTOR_1:
         if (gripper.openTheGrip())
@@ -642,15 +617,4 @@ void loop() {
         break;
 
     }
-}
-/*
- * ISR for timer1
- */
-void timer1ISR() {
-  btSlave.doTimerInterrupt();
-}
-
-// resets the globals that matter
-void reinitialize() {
-  follow.resetCrossCount();
 }
