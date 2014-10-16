@@ -97,16 +97,12 @@ bool isBumped = false;     // for the front bump switch, true if pressed
 bool stopBumped = false;   // for the stop button, true if pressed
 bool stopChanged = false;  // flag for servicing stop button presses
 bool isFirstBoot = true;   // flag if this is the first boot
-
-bool wasClosed = false;
-bool wasExtended = false;
-int doubleTapCount = 0;
-
+int doubleTapCount = 0;    // stored number of taps we've done
 // autonomous globals
-bool shouldTurnRight = false;
-int winningSupplyIndex = 0;
+bool shouldTurnRight = false; // for storing whether to turn left or right
+int winningSupplyIndex = 0;   // stores which index we chose from supply array
 
-// ***** SETUP *****
+// ******************* SETUP *******************************
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
