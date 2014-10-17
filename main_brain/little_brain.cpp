@@ -1,3 +1,12 @@
+/**
+ ********************************************************************************************************
+ * @file    little_brain.cpp
+ * @brief   little brain class methods
+ * @details Initializes the littlebrain state
+ ********************************************************************************************************
+ */
+/*** INCLUDE FILES ***/
+
 #include "little_brain.h"
 
 LittleBrain::LittleBrain(littleBrainState state ) {
@@ -5,6 +14,5 @@ LittleBrain::LittleBrain(littleBrainState state ) {
 }
 
 void LittleBrain::think(int state) {
-  
+  // TODO
 }
-
