@@ -11,13 +11,13 @@ class LineFollow {
     
     void updateSensorData();
     void setThreshold(int value);
-    int doLineFollowTillCross(DriveTrain& driving, int dir);
-    int doLineFollow(DriveTrain& driving, int dir);
+    int doLineFollowTillCross(DriveTrain& driving, DriveTrain::dirTravel dir);
+    int doLineFollow(DriveTrain& driving, DriveTrain::dirTravel dir);
     int allOnCross();
     int makeBinNumber();
     
     // number is the crossing to stop on
-    int stopOnCrossing(DriveTrain& driving, int number, int dir);
+    int stopOnCrossing(DriveTrain& driving, int number, DriveTrain::dirTravel dir);
     void resetCrossCount();
     void setForwardOnCross(bool goesForward);
     

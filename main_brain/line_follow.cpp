@@ -36,7 +36,7 @@ void LineFollow::updateSensorData() {
 //  if (currentSensors.left
 //}
 
-int LineFollow::doLineFollowTillCross(DriveTrain& driving, int dir) {
+int LineFollow::doLineFollowTillCross(DriveTrain& driving, DriveTrain::dirTravel dir) {
   int result = doLineFollow(driving, dir);
   if (result == 1)
     driving.halt();
@@ -44,7 +44,7 @@ int LineFollow::doLineFollowTillCross(DriveTrain& driving, int dir) {
   
 }
 
-int LineFollow::doLineFollow(DriveTrain& driving, int dir) {
+int LineFollow::doLineFollow(DriveTrain& driving, DriveTrain::dirTravel dir) {
   updateSensorData();
   if (allOnCross() != 1) {
     if (currentSensors.left && !currentSensors.middle && !currentSensors.right){
@@ -110,7 +110,7 @@ int LineFollow::allOnCross() {
   
 }
 
-int LineFollow::stopOnCrossing(DriveTrain& driving, int number, int dir) {
+int LineFollow::stopOnCrossing(DriveTrain& driving, int number, DriveTrain::dirTravel dir) {
   goForwardOnCross = false;
   int currentRun = 0;
   if (sumCrossings < number)
