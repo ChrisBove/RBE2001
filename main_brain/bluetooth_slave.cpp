@@ -1,4 +1,12 @@
-// this code is modified from Craig Putnam's sketch_slave_bluetooth_sample code
+/**
+ ********************************************************************************************************
+ * @file    bluetooth_slave.cpp
+ * @brief   bluetooth control methods
+ * @details Used to control bluetooth
+ * @note    this code is modified from Craig Putnam's sketch_slave_bluetooth_sample code
+ ********************************************************************************************************
+ */
+/*** INCLUDE FILES ***/
 
 #include <BluetoothClient.h>
 #include <BluetoothMaster.h>
@@ -11,8 +19,9 @@ ReactorProtocol pcol(byte(teamNumber));         // instantiate the protocol obje
 BluetoothClient bt;                            // instantiate a Bluetooth client object
 BluetoothMaster btmaster;                      // ...and a master object
 
-BluetoothSlave::BluetoothSlave() {
-  
+BluetoothSlave::BluetoothSlave(int onboardLED, int radiationLED) {
+  _onboardLED = onboardLED;
+  _radiationLED = radiationLED;
 }
 
 void BluetoothSlave::setupBluetooth() {
@@ -22,21 +31,20 @@ void BluetoothSlave::setupBluetooth() {
   go = false;
   tickCount = 0;
   hbCount = 0;
-  elapsedTime = 0;
   sendHB = false;
   sendRad = false;
   
-  pinMode(onboardLED, OUTPUT);
-  digitalWrite(onboardLED, LOW);
+  // initialize LEDs
+  pinMode(_onboardLED, OUTPUT);
+  digitalWrite(_onboardLED, LOW);
   
-  pinMode(radiationLED, OUTPUT);
-  digitalWrite(radiationLED, LOW);
+  pinMode(_radiationLED, OUTPUT);
+  digitalWrite(_radiationLED, LOW);
   
 }
 
 void BluetoothSlave::goTime() {
   go = true;
-  
 }
 
 void BluetoothSlave::doTimerInterrupt() {
@@ -46,19 +54,19 @@ void BluetoothSlave::doTimerInterrupt() {
   radCount++;                                  // increment radiation counter
   if (tickCount >= 10) {                       // do the following once a second
     tickCount = 0;                             // reset the tick counter
-    elapsedTime++;			       // increment the elapsed time counter (in seconds)
   }
   if (hbCount >= 20) {                         // do the following every other second
     hbCount = 0;                               // reset the heartbeat counter
     sendHB = true;                             // note it is time to send a heartbeat message
   }
-  if (radCount >= 25) {
+  if (radCount >= 25) {        // do radiation messages every 2.5 sec
     radCount = 0;
     sendRad = true;
   }
 }
 
 void BluetoothSlave::update() {
+  // grab variables
   noInterrupts();
   bool tempSendHB = sendHB;
   bool tempSendRad = sendRad;
@@ -69,13 +77,15 @@ void BluetoothSlave::update() {
     sendHB = false;                            // clear the heartbeat flag
     interrupts();
     // generate and send the heartbeat message    
-    digitalWrite(onboardLED, !digitalRead(onboardLED));  // flip the state of the HB LED
+    digitalWrite(_onboardLED, !digitalRead(_onboardLED));  // flip the state of the HB LED
     pcol.setDst(0x00);			       // this will be a broadcast message
     sz = pcol.createPkt(0x07, data1, pkt);     // create a packet using the heartbeat type ID (there is no data)
     btmaster.sendPkt(pkt, sz);                 // send to the field computer
 
   }
+  // if we're not sending a heartbeat, send a rad. message if we need to
   else if (tempSendRad && go) {
+    // grab variables
     noInterrupts();
     sendRad = false;
     interrupts();
@@ -100,17 +110,17 @@ void BluetoothSlave::update() {
       case 0x02:                               // received a supply tube message
         supplyData = data1[0];                 // extract and save the supply-related data (the byte bitmask)
         break;
-      // TODO - add other cases for other data
+      
+      // stop movement case!
       case 0x04:
-        // stop movement case!
         // if the packet is addressed to our robot, process it!
         if (pkt[4] == 0x12) {
           resumeMovement = false;
           stopMovement = true;
         }
         break;
+       // resume movement case!
       case 0x05:
-        // resume movement case!
         // if the packet is addressed to our robot, process it!
         if (pkt[4] == 0x12) {
           resumeMovement = true;
@@ -128,22 +138,22 @@ void BluetoothSlave::update() {
 void BluetoothSlave::setRadLow(bool enable) {
   if (enable) {
     enableRadLow = true;
-    digitalWrite(radiationLED, HIGH);
+    digitalWrite(_radiationLED, HIGH);
   }
   else {
     enableRadLow = false;
-    digitalWrite(radiationLED, LOW);
+    digitalWrite(_radiationLED, LOW);
   }
 }
 
 void BluetoothSlave::setRadHigh(bool enable) {
   if (enable) {
     enableRadHigh = true;
-    digitalWrite(radiationLED, HIGH);
+    digitalWrite(_radiationLED, HIGH);
   }
   else {
     enableRadHigh = false;
-    digitalWrite(radiationLED, LOW);
+    digitalWrite(_radiationLED, LOW);
   }
 }
 
@@ -170,6 +180,7 @@ void BluetoothSlave::sendLowRadiation() {
     ARRAY  0    1    2    3
               SUPPLY SIDE
 */
+// stuffs data of racks into arrays for our processing
 void BluetoothSlave::updateArrays() {
     storageArray[0] = storageData & 0x01;
     storageArray[1] = storageData & 0x02;

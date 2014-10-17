@@ -1,3 +1,12 @@
+/**
+ ********************************************************************************************************
+ * @file    gripper.cpp
+ * @brief   gripper control methods
+ * @details Used to control the gripper's claw and extension
+ ********************************************************************************************************
+ */
+/*** INCLUDE FILES ***/
+
 #include "Arduino.h"
 #include "gripper.h"
 
@@ -14,8 +23,8 @@ Gripper::Gripper(int gripServo, int rackServo) {
 void Gripper::attachMotors() {
   grip.attach(_gripServo);
   rack.attach(_rackServo);
-  rack.write(50);
-  grip.write(45);
+  rack.write(50);  // extend
+  grip.write(45);  // open
 }
 
 void Gripper::setReactTime() {
@@ -23,6 +32,8 @@ void Gripper::setReactTime() {
 }
 
 bool Gripper::closeTheGrip() {
+  // switch based on a state
+  // initialize the time, then close until the time has passed.
   switch (grippyStateClose) {
     case INIT_CLOSE_GRIP:
       setReactTime();

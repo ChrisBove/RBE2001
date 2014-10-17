@@ -1,3 +1,12 @@
+/**
+ ********************************************************************************************************
+ * @file    drive_train.cpp
+ * @brief   drive train control methods
+ * @details Used to control the drivetrain, turn, etc.
+ ********************************************************************************************************
+ */
+/*** INCLUDE FILES ***/
+
 #include "Arduino.h"
 #include "drive_train.h"
 
@@ -9,6 +18,7 @@ DriveTrain::DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInv
   _leftPin = leftPin;
   _rightPin = rightPin;
   
+  // following sets offsets, but it is not fully implemented
   if (leftInverted == 1)
     leftOffset = 180;
   else
@@ -26,6 +36,7 @@ void DriveTrain::attachMotors() {
 }
 
 void DriveTrain::moveMotors(int leftVal, int rightVal) {
+  // if we're good to move, move the motors
   if(shouldMove) {
     left.write(leftVal);
     right.write(rightVal);
@@ -34,7 +45,7 @@ void DriveTrain::moveMotors(int leftVal, int rightVal) {
     halt();
 }
 
-void DriveTrain::turnLeft(int dir){
+void DriveTrain::turnLeft(dirTravel dir){
   if (dir == FORWARD) {
     moveMotors(105, 75);
     // left should be slower or backwards
@@ -44,7 +55,7 @@ void DriveTrain::turnLeft(int dir){
   }
 }
 
-void DriveTrain::turnRight(int dir) {
+void DriveTrain::turnRight(dirTravel dir) {
   if (dir == FORWARD) {
     moveMotors(120, 80);
   }
@@ -53,16 +64,18 @@ void DriveTrain::turnRight(int dir) {
   }
 }
 
-void DriveTrain::sharpTurnLeft (int dir) {
+void DriveTrain::sharpTurnLeft (dirTravel dir) {
   if (dir == FORWARD)
     moveMotors(90, 75);
+  // reverse direction is broken
 //  else 
 //    turn(75, 85); // reverse sharp turn RIGHT
 }
 
-void DriveTrain::sharpTurnRight(int dir) {
+void DriveTrain::sharpTurnRight(dirTravel dir) {
   if (dir == FORWARD)
     moveMotors(110, 100);
+  // reverse direction is broken
 //  else
 //    turn(105, 120); // reverse sharp turn left
 
@@ -93,7 +106,7 @@ void DriveTrain::setTime() {
 // returns 1 when the turn is done
 bool DriveTrain::turn45(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 550) {
+  if (timeLapse <= 550) { // if not gone the time, keep turning
     if (isRight)
       turn(110, 110);
     else
@@ -101,14 +114,14 @@ bool DriveTrain::turn45(bool isRight) {
     return false;
   }
   else {
-    halt();
+    halt(); // stop when time has expired
     return true;
   }
 }
 
 bool DriveTrain::turn180(bool isRight) {
   int timeLapse = millis() - startTime;
-  if (timeLapse <= 1200) {
+  if (timeLapse <= 1200) { // if not gone the time, keep turning
     if (isRight) {
       turn(110, 110);
     }
@@ -117,7 +130,7 @@ bool DriveTrain::turn180(bool isRight) {
     }
     return false;
   }
-  else {
+  else { // stop when time expires
     halt();
     return true;
   }
@@ -125,6 +138,7 @@ bool DriveTrain::turn180(bool isRight) {
 
 bool DriveTrain::turnAround(bool isRight) {
   switch(turnState) {
+      // turn until the line sensors only see white
       case TURN_OFF_LINE:
         if (isRight) {
           moveMotors(110, 110);
@@ -135,7 +149,7 @@ bool DriveTrain::turnAround(bool isRight) {
         if ((analogRead(0) < 200) && (analogRead(1) < 200) && (analogRead(2) < 200)) // ALL on white
           turnState = TURN_TILL_LINE;
          break;
-         
+       // turn other way until sensors detect black
        case TURN_TILL_LINE:
          if (isRight) {
            moveMotors(110, 110);
@@ -143,9 +157,9 @@ bool DriveTrain::turnAround(bool isRight) {
          else {
            moveMotors(70, 70);
          }
-         if ((analogRead(0) > 200) || (analogRead(1) > 200) || (analogRead(2) > 200)) { // either on black
+         if ((analogRead(0) > 200) || (analogRead(1) > 200) || (analogRead(2) > 200)) { // any on black
            turnState = TURN_OFF_LINE;
-           return true;
+           return true; // return that the turn is complete
          }
          break;
   }
@@ -164,6 +178,7 @@ bool DriveTrain::backupForTime() {
   }
 }
 
+// not debugged
 int DriveTrain::backupABit() {
   switch (revState) {
     case INIT_BACKUP:
@@ -194,6 +209,7 @@ bool DriveTrain::forwardForTime() {
   }
 }
 
+// not debugged
 int DriveTrain::forwardABit() {
   switch (forwardState) {
     case INIT_FORWARD:
