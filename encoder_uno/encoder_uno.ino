@@ -41,7 +41,7 @@ void loop() {
 //    Serial.print("right: ");
 //    Serial.println(r_newPosition);
   }
-  update = false;
+//  update = false;
   if (update) {
     calcHeading();
     calcPos();
