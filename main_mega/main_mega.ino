@@ -11,9 +11,16 @@
 // user-defined libraries, contained in root
 #include "drive_train.h"
 
-void setup() {
-  // put your setup code here, to run once:
+// ************* CONSTANTS AND PINS ***************
+#define leftMotorPin    4
+#define rightMotorPin   5
 
+// *************** instantiate class objects **************
+DriveTrain driveTrain(leftMotorPin, rightMotorPin, 1, 0); // left motor inverted, right not
+
+void setup() {
+  driveTrain.attachMotors(); // attach motors in drivetrain
+  driveTrain.halt();         // stop the drivetrain motors
 }
 
 void loop() {
