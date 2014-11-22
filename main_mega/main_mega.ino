@@ -12,8 +12,8 @@
 #include "drive_train.h"
 
 // ************* CONSTANTS AND PINS ***************
-#define leftMotorPin    4
-#define rightMotorPin   5
+#define leftMotorPin    11
+#define rightMotorPin   10
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, 0); // left motor inverted, right not
@@ -25,5 +25,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
+//  driveTrain.forward();
+  driveTrain.turn(0, 180);
+//  delay(1000);
+//  driveTrain.halt();
+//  while(1) {}
 }
