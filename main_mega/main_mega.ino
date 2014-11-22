@@ -16,7 +16,7 @@
 #define rightMotorPin   5
 
 // *************** instantiate class objects **************
-DriveTrain driveTrain(leftMotorPin, rightMotorPin, 1, 0); // left motor inverted, right not
+DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, 0); // left motor inverted, right not
 
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
@@ -25,5 +25,5 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  
 }

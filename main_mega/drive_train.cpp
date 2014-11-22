@@ -13,19 +13,15 @@
 #include <Servo.h>  // import libraries
 
 
-DriveTrain::DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInverted) {
+DriveTrain::DriveTrain(int leftPin, int rightPin, bool leftInverted, bool rightInverted) {
   _leftPin = leftPin;
   _rightPin = rightPin;
   
   // following sets offsets, but it is not fully implemented
-  if (leftInverted == 1)
-    leftOffset = 180;
-  else
-    leftOffset = 0;
-  if (rightInverted == 1)
-    rightOffset = 180;
-  else
-    rightOffset = 0;
+  if (leftInverted)
+    leftInversion = -1;
+  if (rightInverted)
+    rightInversion = -1;
     
 }
 
@@ -34,11 +30,12 @@ void DriveTrain::attachMotors() {
   right.attach(_rightPin);
 }
 
+// pass in values between -90 and 90
 void DriveTrain::moveMotors(int leftVal, int rightVal) {
   // if we're good to move, move the motors
   if(shouldMove) {
-    left.write(leftVal);
-    right.write(rightVal);
+    left.write((leftVal*leftInversion) + 90);    // go from -90-90 to 0-180
+    right.write((rightVal*rightInversion) + 90);
   }
   else
     halt();
@@ -46,17 +43,17 @@ void DriveTrain::moveMotors(int leftVal, int rightVal) {
 
 void DriveTrain::turnLeft(dirTravel dir){
   if (dir == FORWARD) {
-    moveMotors(105, 75);
+    moveMotors(10, 50);
     // left should be slower or backwards
   }
   else { // reverse turn right
-    moveMotors(80, 120);
+    moveMotors(-10, 120);
   }
 }
 
 void DriveTrain::turnRight(dirTravel dir) {
   if (dir == FORWARD) {
-    moveMotors(120, 80);
+    moveMotors(50, 10);
   }
   else { // reverse turn left
     moveMotors(75, 80);
@@ -65,7 +62,7 @@ void DriveTrain::turnRight(dirTravel dir) {
 
 void DriveTrain::sharpTurnLeft (dirTravel dir) {
   if (dir == FORWARD)
-    moveMotors(90, 75);
+    moveMotors(0, 50);
   // reverse direction is broken
 //  else 
 //    turn(75, 85); // reverse sharp turn RIGHT
@@ -86,11 +83,11 @@ void DriveTrain::halt(){
 }
 
 void DriveTrain::forward() {
-  moveMotors(110, 80); // 110, 80 is actually forward
+  moveMotors(90, 90);
 }
 
 void DriveTrain::reverse() {
-  moveMotors(80, 110); // true reverse!
+  moveMotors(-90, -90); // true reverse!
 }
 
 void DriveTrain::turn(int lval, int rval) {

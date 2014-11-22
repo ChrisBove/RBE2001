@@ -23,7 +23,7 @@ class DriveTrain
    * @param   pins of motors, whether they are inverted
    * @return  drive train object
    */
-    DriveTrain(int leftPin, int rightPin, int leftInverted, int rightInverted);
+    DriveTrain(int leftPin, int rightPin, bool leftInverted, bool rightInverted);
      /**
    * @brief   attaches motors
    * @param   None
@@ -153,14 +153,14 @@ class DriveTrain
     int _rightPin;
     
     //inititialize the motor drive constants to "stopped"
-    int _leftDrive = 90;  
-    int _rightDrive = 90;
+    int _leftDrive = 0;  
+    int _rightDrive = 0;
     
-    int leftStop = 90;
-    int rightStop = 90;
+    int leftStop = 0;
+    int rightStop = 0;
     
-    int leftOffset = 0;
-    int rightOffset = 0;
+    int leftInversion = 1;
+    int rightInversion = 1;
     
     int startTime = 0;    // stores the start time to calculate elapsed time
 };
