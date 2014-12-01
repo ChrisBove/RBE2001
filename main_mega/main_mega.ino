@@ -25,9 +25,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-//  driveTrain.forward();
-  driveTrain.turn(0, 180);
-//  delay(1000);
-//  driveTrain.halt();
-//  while(1) {}
+  driveTrain.forward();
+//  driveTrain.turn(0, 180);
+  delay(1000);
+  driveTrain.reverse();
+  delay(1000);
+  driveTrain.halt();
+  while(1) {}
 }
