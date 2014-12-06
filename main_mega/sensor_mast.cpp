@@ -36,3 +36,6 @@ int SensorMast::getDigitalDistance() {
   return distance;
 }
 
+int SensorMast::getFlameReading() {
+  flameVal = analogRead(_flamePin);
+}

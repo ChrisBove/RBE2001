@@ -39,10 +39,12 @@ void loop() {
 //  delay(1000);
 //  driveTrain.halt();
 
-  Serial.print("PW: ");
-  Serial.print(sensorMast.getDigitalDistance());
-  Serial.print("\t Analog: ");
-  Serial.println(sensorMast.getAnalogDistance());
+//  Serial.print("PW: ");
+//  Serial.print(sensorMast.getDigitalDistance());
+//  Serial.print("\t Analog: ");
+//  Serial.println(sensorMast.getAnalogDistance());
+  
+  Serial.println(sensorMast.getFlameReading());
   
   delay(10);
 }
