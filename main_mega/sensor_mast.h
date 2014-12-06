@@ -54,7 +54,7 @@ class SensorMast
    * @param   int delay in ms between each step
    * @return  None
    */
-   void setServoSpin(int time = 15);
+   void setServoSpin(int time = 20);
    /**
    * @brief   keeps servo at current location
    * @param   None
@@ -76,6 +76,7 @@ class SensorMast
     int flameVal; // stores value for flame sensor
     
     const int servoCenter = 90; // center position of servo
+    const int servoStep = 1;
     int servoPos = servoCenter; // position of servo
     int servoDir = 0; // 0 is CCW, 1 is CW
     int maxCCW = 0;

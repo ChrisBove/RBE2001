@@ -54,10 +54,10 @@ void SensorMast::setServoSpin(int time) {
     if(servoPos <= 0) // time to go in other direction 
     {
       servoDir = 1;
-      servoPos++;
+      servoPos += servoStep;
     }
     else // haven't made it to limit, keep going CCW
-      servoPos --;
+      servoPos -= servoStep;
   }
   
   // CW movement, servoDir = 1
@@ -65,10 +65,10 @@ void SensorMast::setServoSpin(int time) {
     if (servoPos >= 180)
     {
       servoDir = 0;
-      servoPos --;
+      servoPos -= servoStep;
     }
     else
-      servoPos ++;
+      servoPos += servoStep;
   }
   servo.write(servoPos);
   delay(time);
