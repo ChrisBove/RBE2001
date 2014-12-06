@@ -26,8 +26,8 @@ DriveTrain::DriveTrain(int leftPin, int rightPin, bool leftInverted, bool rightI
 }
 
 void DriveTrain::attachMotors() {
-  left.attach(_leftPin);
-  right.attach(_rightPin);
+  left.attach(_leftPin, 1000, 2000);
+  right.attach(_rightPin, 1000, 2000);
 }
 
 // pass in values between -90 and 90
@@ -78,8 +78,7 @@ void DriveTrain::sharpTurnRight(dirTravel dir) {
 }
 
 void DriveTrain::halt(){
-  left.write(leftStop);
-  right.write(rightStop);
+  moveMotors(leftStop, rightStop);
 }
 
 void DriveTrain::forward() {
