@@ -47,5 +47,6 @@ void loop() {
   
 //  Serial.println(sensorMast.getFlameReading());
   
-  sensorMast.setServoSpin();
+//  sensorMast.setServoSpin();
+  sensorMast.center();
 }

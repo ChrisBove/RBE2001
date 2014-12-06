@@ -67,7 +67,12 @@ class SensorMast
    * @return  -90 to 90 degrees for heading
    */
    int getServoAngle();
-   
+   /**
+   * @brief   centers servo
+   * @param   None
+   * @return  None
+   */
+   void center();
    
   private:
     int _servoPin, _ultraPin, _flamePin, _digUltraPin;
@@ -75,10 +80,10 @@ class SensorMast
     int distance; // stores distance from ultrasonic in cm
     int flameVal; // stores value for flame sensor
     
-    const int servoCenter = 90; // center position of servo
+    const int servoCenter = 103; // center position of servo
     const int servoStep = 1;
     int servoPos = servoCenter; // position of servo
-    int servoDir = 0; // 0 is CCW, 1 is CW
+    int servoDir = 0; // 0 is CW, 1 is CCW
     int maxCCW = 0;
     int maxCW = 180;
 };

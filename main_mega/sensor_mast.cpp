@@ -49,7 +49,7 @@ int SensorMast::getFlameReading() {
 */
 
 void SensorMast::setServoSpin(int time) {
-  if(servoDir == 0) // CCW movement
+  if(servoDir == 0) // CW movement
   {
     if(servoPos <= 0) // time to go in other direction 
     {
@@ -60,7 +60,7 @@ void SensorMast::setServoSpin(int time) {
       servoPos -= servoStep;
   }
   
-  // CW movement, servoDir = 1
+  // CCW movement, servoDir = 1
   else {
     if (servoPos >= 180)
     {
@@ -73,4 +73,7 @@ void SensorMast::setServoSpin(int time) {
   servo.write(servoPos);
   delay(time);
 }
-  
+
+void SensorMast::center() {
+  servo.write(servoCenter);
+}
