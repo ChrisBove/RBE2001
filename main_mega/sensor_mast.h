@@ -22,16 +22,30 @@ class SensorMast
    * @param   pins of servo motor, ultrasonic sensor, and flame sensor
    * @return  sensor mast object
    */
-   SensorMast(int servoPin, int ultraPin, int flamePin);
+   SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin);
    /**
    * @brief   attaches motors
    * @param   None
    * @return  None
    */
    void setupMast();
+   /**
+   * @brief   grabs distance from ultrasonic analog port
+   * @param   None
+   * @return  int distance in inches
+   */
+   int getAnalogDistance();
+   /**
+   * @brief   grabs distance from ultrasonic PW
+   * @param   None
+   * @return  int distance in inches
+   */
+   int getDigitalDistance();
    
   private:
-    int _servoPin, _ultraPin, _flamePin;
+    int _servoPin, _ultraPin, _flamePin, _digUltraPin;
+    int reading; // stores distance in inches
+    int distance; // stores distance from ultrasonic
 };
 
 #endif
