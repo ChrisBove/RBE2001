@@ -10,13 +10,18 @@
 
 // user-defined libraries, contained in root
 #include "drive_train.h"
+#include "sensor_mast.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define leftMotorPin    10
 #define rightMotorPin   11
+#define mastServoPin    9
+#define redFlamePin     0
+#define ultraPin        1
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
+SensorMast sensorMast(mastServoPin, ultraPin, redFlamePin);
 
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
