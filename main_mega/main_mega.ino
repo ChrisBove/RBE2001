@@ -44,7 +44,7 @@ void loop() {
 //  Serial.print("\t Analog: ");
 //  Serial.println(sensorMast.getAnalogDistance());
   
-  Serial.println(sensorMast.getFlameReading());
+//  Serial.println(sensorMast.getFlameReading());
   
-  delay(10);
+  sensorMast.setServoSpin();
 }

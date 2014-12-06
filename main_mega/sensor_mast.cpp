@@ -39,3 +39,38 @@ int SensorMast::getDigitalDistance() {
 int SensorMast::getFlameReading() {
   flameVal = analogRead(_flamePin);
 }
+
+/*
+  const int servoCenter = 90; // center position of servo
+  int servoPos = servoCenter; // position of servo
+  int servoDir = 0; // 0 is CCW, 1 is CW
+  int maxCCW = 0;
+  int maxCW = 180;
+*/
+
+void SensorMast::setServoSpin(int time) {
+  if(servoDir == 0) // CCW movement
+  {
+    if(servoPos <= 0) // time to go in other direction 
+    {
+      servoDir = 1;
+      servoPos++;
+    }
+    else // haven't made it to limit, keep going CCW
+      servoPos --;
+  }
+  
+  // CW movement, servoDir = 1
+  else {
+    if (servoPos >= 180)
+    {
+      servoDir = 0;
+      servoPos --;
+    }
+    else
+      servoPos ++;
+  }
+  servo.write(servoPos);
+  delay(time);
+}
+  

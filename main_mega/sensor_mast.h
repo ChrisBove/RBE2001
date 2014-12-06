@@ -48,12 +48,38 @@ class SensorMast
    */
    int getFlameReading();
    
+   // *** Servo functions ****
+   /**
+   * @brief   spins the servo
+   * @param   int delay in ms between each step
+   * @return  None
+   */
+   void setServoSpin(int time = 15);
+   /**
+   * @brief   keeps servo at current location
+   * @param   None
+   * @return  None
+   */
+   void freeze();
+   /**
+   * @brief   calculates the angle the servo is at based on last command
+   * @param   None
+   * @return  -90 to 90 degrees for heading
+   */
+   int getServoAngle();
+   
    
   private:
     int _servoPin, _ultraPin, _flamePin, _digUltraPin;
     int reading; // stores distance in inches
     int distance; // stores distance from ultrasonic in cm
     int flameVal; // stores value for flame sensor
+    
+    const int servoCenter = 90; // center position of servo
+    int servoPos = servoCenter; // position of servo
+    int servoDir = 0; // 0 is CCW, 1 is CW
+    int maxCCW = 0;
+    int maxCW = 180;
 };
 
 #endif
