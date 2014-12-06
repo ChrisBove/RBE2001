@@ -12,11 +12,11 @@
 #include "drive_train.h"
 
 // ************* CONSTANTS AND PINS ***************
-#define leftMotorPin    11
-#define rightMotorPin   10
+#define leftMotorPin    10
+#define rightMotorPin   11
 
 // *************** instantiate class objects **************
-DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, 0); // left motor inverted, right not
+DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
 
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
