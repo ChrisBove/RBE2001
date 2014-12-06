@@ -45,7 +45,7 @@ class SensorMast
   private:
     int _servoPin, _ultraPin, _flamePin, _digUltraPin;
     int reading; // stores distance in inches
-    int distance; // stores distance from ultrasonic
+    int distance; // stores distance from ultrasonic in cm
 };
 
 #endif

@@ -32,7 +32,7 @@ int SensorMast::getAnalogDistance() {
 }
 
 int SensorMast::getDigitalDistance() {
-  distance = pulseIn(_digUltraPin, HIGH)/147; // 
+  distance = pulseIn(_digUltraPin, HIGH)/58; // 
   return distance;
 }
 
