@@ -27,6 +27,7 @@ SensorMast sensorMast(mastServoPin, ultraPin, redFlamePin, digUltraPin);
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
+  sensorMast.setupMast();
   Serial.begin(9600);
 }
 
@@ -39,10 +40,13 @@ void loop() {
 //  delay(1000);
 //  driveTrain.halt();
 
-  Serial.print("PW: ");
-  Serial.print(sensorMast.getDigitalDistance());
+//  Serial.print("PW: ");
+//  Serial.print(sensorMast.getDigitalDistance());
   Serial.print("\t Analog: ");
   Serial.println(sensorMast.getAnalogDistance());
   
-  delay(10);
+//  Serial.println(sensorMast.getFlameReading());
+  
+//  sensorMast.setServoSpin();
+  sensorMast.center();
 }
