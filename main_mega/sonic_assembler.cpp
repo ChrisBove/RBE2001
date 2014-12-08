@@ -10,4 +10,10 @@
 #include "Arduino.h"
 #include "sonic_assembler.h"
 
+SonicAssembler::SonicAssembler() {
+  // initialize
+}
 
+void SonicAssembler::assemble(int angle, int distance) {
+  
+}
