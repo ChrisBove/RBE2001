@@ -11,6 +11,7 @@
 // user-defined libraries, contained in root
 #include "drive_train.h"
 #include "sensor_mast.h"
+#include "sonic_assembler.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define leftMotorPin    10
