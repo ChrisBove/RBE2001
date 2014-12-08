@@ -30,6 +30,14 @@ class SensorMast
    */
    void setupMast();
    /**
+   * @brief   Runs all service routines for the sensor mast
+   * @param   None
+   * @return  None
+   */
+   void service();
+   
+   
+   /**
    * @brief   grabs distance from ultrasonic analog port
    * @param   None
    * @return  int distance in inches
@@ -47,6 +55,12 @@ class SensorMast
    * @return  int reading
    */
    int getFlameReading();
+   /**
+   * @brief   checks threshold to determine if there is a fire
+   * @param   None
+   * @return  true if there is a flame detected above threshold
+   */
+   bool isFire();
    
    // *** Servo functions ****
    /**
@@ -79,6 +93,8 @@ class SensorMast
     int reading; // stores distance in inches
     int distance; // stores distance from ultrasonic in cm
     int flameVal; // stores value for flame sensor
+    
+    const int flameThreshold = 850; // flame less than this
     
     const int servoCenter = 103; // center position of servo
     const int servoStep = 1;
