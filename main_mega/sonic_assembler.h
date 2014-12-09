@@ -26,7 +26,7 @@ class SonicAssembler {
    */
    void service();
    /**
-   * @brief   Runs all service routines
+   * @brief   Takes angle of reading and distance reading to stuff into a vector
    * @param   angle in degrees (-90 to 90), int distance inches
    * @return  None
    */
