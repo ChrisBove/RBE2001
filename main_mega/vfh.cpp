@@ -21,21 +21,22 @@
 #include <math.h>
 
 #include "vfh.h"
+#include "Arduino.h"
 
 /* PI value. */
-#define PI 3.1415926535
+//#define PI 3.1415926535
 
 /* These parameters are there to help me remember them, basically. */
 
 /* Parameters for the grid. */
-#define DIM 11 /* Must be an odd number. */
-#define CERTAINTY_GRID_RESOLUTION 0.1
+#define DIM 51 //11 /* Must be an odd number. */
+#define CERTAINTY_GRID_RESOLUTION 0.5 //0.1
 
 /* Parameters for the moving window. */
-#define WINDOW_DIM 5
+#define WINDOW_DIM 25 //5
 
 /* Parameters for histogram calculation. */
-#define ALPHA 5
+#define ALPHA 6 //5
 
 /* Parameters for density calculation. */
 #define DENSITY_A 10
