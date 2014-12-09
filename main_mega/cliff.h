@@ -33,7 +33,7 @@ class CliffDetector {
    bool falling();
    
   private:
-    int _LeftLightPin, int _RightLightPin;    
+    int _LeftLightPin, _RightLightPin;    
     int refWhiteHigh;   //calibrated at power-up to set high limit of white range, verge of black
     unsigned int sum; 
 };
