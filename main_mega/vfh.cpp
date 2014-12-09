@@ -1,3 +1,11 @@
+/**
+ ********************************************************************************************************
+ * @file    vfh.cpp
+ * @brief   vfh class
+ * @details Modified from source below into a class
+ ********************************************************************************************************
+ */
+
 /*
 ** Virtual Field Histogram
 **
@@ -41,7 +49,7 @@
 
 /* Helper functions. */
 
-int modulo(int x, int m) {
+int VFH::modulo(int x, int m) {
 	/* Source: http://crsouza.blogspot.com/2009/09/modulo-and-modular-distance-in-c.html */
 	int r;
 
@@ -51,7 +59,7 @@ int modulo(int x, int m) {
 	return r < 0 ? r + m : r;
 }
 
-int modular_dist(int a, int b, int m) {
+int VFH::modular_dist(int a, int b, int m) {
 	int dist_a, dist_b;
 
 	dist_a = modulo(a - b, m);
@@ -66,7 +74,7 @@ int modular_dist(int a, int b, int m) {
 **
 ***********************************/
 
-grid_t * grid_init(int dimension, int resolution) {
+VFH::grid_t * VFH::grid_init(int dimension, int resolution) {
 	int i, j;
 
 	/* Create a grid pointer and allocate memory to it. */
@@ -101,7 +109,7 @@ grid_t * grid_init(int dimension, int resolution) {
 	return grid;
 }
 
-int grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data) {
+int VFH::grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data) {
 
 	if (grid == NULL) return 0;
 	if (grid->cells == NULL) return 0;
@@ -136,7 +144,7 @@ int grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data) {
 }
 
 /* TODO: Finish implementing get_moving_window. */
-grid_t * get_moving_window(grid_t * grid, int current_position_x,
+VFH::grid_t * VFH::get_moving_window(grid_t * grid, int current_position_x,
 		int current_position_y, int dim) {
 
 	int i, j; /* Indexes for the moving window. */
@@ -178,7 +186,7 @@ grid_t * get_moving_window(grid_t * grid, int current_position_x,
 **
 ************************************/
 
-hist_t * hist_init(int alpha, double threshold, double density_a,
+VFH::hist_t * VFH::hist_init(int alpha, double threshold, double density_a,
 		double density_b) {
 
 	int i;
@@ -209,7 +217,7 @@ hist_t * hist_init(int alpha, double threshold, double density_a,
 	return hist;
 }
 
-void hist_update(hist_t * hist, grid_t * grid) {
+void VFH::hist_update(hist_t * hist, grid_t * grid) {
 	int i, j;
 	int dim; /* grid's dimension. */
 	double dens_a, dens_b; /* parameters 'a' and 'b' for density calculation. */
@@ -243,7 +251,7 @@ void hist_update(hist_t * hist, grid_t * grid) {
 ************************************/
 
 /* TODO: Improve the direction calculation. Re-read the paper. */
-int calculate_direction(hist_t * hist, int objective_direction) {
+int VFH::calculate_direction(hist_t * hist, int objective_direction) {
 	int sector, best_direction = -1;
 	int dist_best_and_obj, dist_sector_and_obj; /* Just to improve readability. */
 
