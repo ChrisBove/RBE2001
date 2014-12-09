@@ -12,7 +12,7 @@
 #include "navigator.h"
 
 Navigator::Navigator() {
-  
+  // maybe stuff in some pointers to other objects that are passed.
 }
 
-
+// TODO
