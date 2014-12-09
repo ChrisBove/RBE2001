@@ -38,7 +38,7 @@ class VFH {
     
     /* A rangefinder measurement. */
     struct range_measure {
-    	int direction; /* [degrees] */
+    	int dir; /* [degrees] */
     	unsigned long distance; /* [cm] */
     };
     
@@ -55,7 +55,7 @@ class VFH {
     
     /* Control signal created by the algorithm. */
     struct control_signal {
-    	int direction; /* [degrees] */
+    	int dir; /* [degrees] */
     };
     
     /***********
@@ -121,6 +121,7 @@ class VFH {
     void hist_update(hist_t * hist, grid_t * grid);
     
     grid myGrid;
+    hist_t myHist;
 };
 
 #endif
