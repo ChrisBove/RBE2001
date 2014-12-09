@@ -26,7 +26,7 @@
 // *************** instantiate class objects **************
 DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
 SensorMast sensorMast(mastServoPin, ultraPin, redFlamePin, digUltraPin);
-
+VFH vfh();
 
 Navigator::Navigator() {
   // maybe stuff in some pointers to other objects that are passed.
@@ -39,7 +39,9 @@ void Navigator::setupNavigator() {
 }
 
 void Navigator::service() {
+  sensorMast.service();
   
+  driveTrain.moveInDir(0);
 }
 
 

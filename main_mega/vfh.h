@@ -70,6 +70,13 @@ class VFH {
     typedef struct hist hist_t;    
     
     
+    /**
+   * @brief   Class constructor for vfh
+   * @param   none
+   * @return  vfh object
+   */
+   VFH();
+    
     /* Control signals. */
     
     /*
@@ -112,7 +119,8 @@ class VFH {
     
     /* hist_update: Update hist with grid's information. */
     void hist_update(hist_t * hist, grid_t * grid);
-  
+    
+    grid myGrid;
 };
 
 #endif
