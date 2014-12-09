@@ -27,7 +27,7 @@ class CannonControl
    */
    void setupCannon();
    
-   bool checkFlame();
+   void checkFlame();
    
    void locateFlame();
    
@@ -45,6 +45,13 @@ class CannonControl
    Servo hinge;
    Servo grip;
    
+   const int flameLimit = 100;
+   
    int _gripperPin, _servoPin, _motorPin, _flamePin, _encoderPin1, _encoderPin2;
+   int flameVal;
+   int currentFlameVal;
+   int servoPos;
+   int servoMin = 60;
+   int servoMax = 100;
 };
 #endif
