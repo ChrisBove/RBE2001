@@ -13,6 +13,7 @@
 #include "sensor_mast.h"
 #include "sonic_assembler.h"
 #include "vfh.h"
+#include "cliff.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define leftMotorPin    10
@@ -21,10 +22,13 @@
 #define redFlamePin     0
 #define ultraPin        1
 #define digUltraPin     22
+#define lineSensorL     0      //PROBABLY
+#define lineSensorR     1      //WRONG, DUNNO
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
 SensorMast sensorMast(mastServoPin, ultraPin, redFlamePin, digUltraPin);
+CliffDetector cliffDetective(lineSensorL, lineSensorR);     // sets up the line sensor pair
 
 void setup() {
   driveTrain.attachMotors(); // attach motors in drivetrain
