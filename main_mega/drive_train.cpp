@@ -41,6 +41,14 @@ void DriveTrain::moveMotors(int leftVal, int rightVal) {
     halt();
 }
 
+void DriveTrain::moveInDir(int dir) {
+  // we get our direction -90 to 90
+  // map direction to motor speeds
+  // 0 - both go forward at roaming speed
+  // -45 - 
+  moveMotors(roamSpeed + dir, roamSpeed - dir);
+}
+
 void DriveTrain::turnLeft(dirTravel dir){
   if (dir == FORWARD) {
     moveMotors(10, 50);
