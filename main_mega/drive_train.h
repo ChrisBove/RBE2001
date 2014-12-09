@@ -36,6 +36,13 @@ class DriveTrain
    * @return  None
    */
     void moveMotors(int leftVal, int rightVal);
+    /**
+   * @brief   drives robot in given direction
+   * @param   -90 (left) to 90 (right)
+   * @return  None
+   */
+    void moveInDir(int dir);
+    
      /**
    * @brief   turns left, either forward or reverse
    * @param   direction of travel
@@ -161,6 +168,10 @@ class DriveTrain
     
     int leftInversion = 1;
     int rightInversion = 1;
+    
+    int roamSpeed = 45; // how fast the robot roams at for VFH
+//    #define radius 1.375    // radius of drive wheels
+//    #define distance 9.63    // separation between wheels
     
     int startTime = 0;    // stores the start time to calculate elapsed time
 };
