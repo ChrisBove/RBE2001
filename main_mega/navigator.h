@@ -32,10 +32,12 @@ class Navigator {
    */
    void service();
    
+   // defines possible states of navigation
+   enum Navigate { FIND_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
    
   private:
    
-   
+   Navigate state;
   
 };
 
