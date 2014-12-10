@@ -15,6 +15,7 @@
 #include "sonic_assembler.h"
 #include "vfh.h"
 #include "lcd.h"
+#include "cliff.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define LEFT_MOTOR_PIN    10
@@ -23,6 +24,8 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
+#define LeftLight       10
+#define RightLight      11
 
 // globals:
 VFH::grid_t * myGrid;
@@ -34,6 +37,7 @@ SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
 SonicAssembler assembler;
 VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
+CliffDetector cliffDetect(RightLight, LeftLight);
 
 //myGrid = vfh.grid_init(50,10);
 //myHist = vfh.hist_init(2, 20, 10, 5);
