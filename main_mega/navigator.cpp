@@ -48,7 +48,8 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
-  assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance());
+  vfh.grid_update(&myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance()));
+  vfh.hist_update(&myHist, &myGrid);
   
 //  Serial.println(sensorMast.getServoAngle());
 //  delay(10);

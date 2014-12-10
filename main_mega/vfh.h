@@ -86,6 +86,12 @@ class VFH {
     */
     int calculate_direction(hist_t * hist, int objective_direction);
     
+    /* grid_update: Update grid's cells with an array of sensor readings. */
+    int grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data);
+    
+    /* hist_update: Update hist with grid's information. */
+    void hist_update(hist_t * hist, grid_t * grid);
+    
   private:
     
     /**********************
@@ -105,8 +111,7 @@ class VFH {
     /* grid_init: Return a pointer to an empty grid. NULL otherwise. */
     grid_t * grid_init(int dimension, int resolution);
     
-    /* grid_update: Update grid's cells with an array of sensor readings. */
-    int grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data);
+    
     
     /* get_moving_window: Get a sub-grid of the grid centered in (x, y). */
     grid_t * get_moving_window(grid_t * grid, int pos_x, int pos_y, int dim);
@@ -116,9 +121,6 @@ class VFH {
     /* hist_init: Return a pointer to a new hist. NULL otherwise. */
     hist_t * hist_init(int alpha, double threshold, double density_a,
     	double density_b);
-    
-    /* hist_update: Update hist with grid's information. */
-    void hist_update(hist_t * hist, grid_t * grid);
     
 };
 
