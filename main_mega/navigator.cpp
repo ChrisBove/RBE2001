@@ -30,7 +30,7 @@
 // *************** instantiate class objects **************
 DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
 SensorMast sensorMast(mastServoPin, ultraPin, redFlamePin, digUltraPin);
-
+CliffDetector cliffDetect(RightLight, LeftLight);
 
 Navigator::Navigator() {
   // maybe stuff in some pointers to other objects that are passed.
@@ -45,13 +45,23 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
     
   //Line Sensors Test Printing
-  cliff.setHues(); 
-  Serial.print("threshold"); 
-  Serial.print(refWhiteHigh);
-  Serial.print("right reading"); 
-  Serial.print(analogRead(RightLight))
-  Serial.print("left reading"); 
-  Serial.print(analogRead(LeftLight));
+  //int thresh = cliffDetect.setHues(); 
+  //Serial.print("threshold  "); 
+  //Serial.println(thresh);
+  bool ack = cliffDetect.fallingR(); 
+  Serial.print("cliff boolean R  "); 
+  Serial.println(ack);
+ 
+  Serial.print("right reading  "); 
+  Serial.println(analogRead(RightLight));
+  
+  bool ackL = cliffDetect.fallingL(); 
+  Serial.print("cliff boolean L  "); 
+  Serial.println(ackL);
+ 
+  Serial.print("left reading  "); 
+  Serial.println(analogRead(LeftLight));
+  delay(75);
  
 }
 

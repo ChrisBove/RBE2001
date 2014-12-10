@@ -24,17 +24,19 @@ class CliffDetector {
    * @param   None
    * @return  LightSensor white range values (2 int)
    */
-   void setHues();
+   int setHues();
    /**
    * @brief   checks threshold to determine if there is a cliff
    * @param   None
    * @return  true if a wheel is detected over the cliff
    */
-   bool falling();
+   bool fallingR();
+   bool fallingL();
    
   private:
     int _LeftLightPin, _RightLightPin;    
     int refWhiteHigh;   //calibrated at power-up to set high limit of white range, verge of black
+    int blackThresh;   //Dead reckoned black-threshold value: 230, black appears past 315 in almost every scenario
     unsigned int sum; 
 };
 
