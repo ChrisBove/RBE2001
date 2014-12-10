@@ -22,8 +22,9 @@ SensorMast::SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin
 }
 
 void SensorMast::setupMast() {
-  servo.attach(_servoPin, 1000, 2000); 
+  servo.attach(_servoPin); 
   // see http://makezine.com/2014/04/23/arduinos-servo-library-angles-microseconds-and-optional-command-parameters/
+  center(); // center the servo
   pinMode(_digUltraPin, INPUT);
 }
 
@@ -41,6 +42,10 @@ int SensorMast::getAnalogDistance() {
 int SensorMast::getDigitalDistance() {
   distance = pulseIn(_digUltraPin, HIGH)/58; // 
   return distance;
+}
+
+int SensorMast::getDistance() {
+  return reading;
 }
 
 int SensorMast::getFlameReading() {
@@ -63,7 +68,7 @@ bool SensorMast::isFire() {
 void SensorMast::setServoSpin(int time) {
   if(servoDir == 0) // CW movement
   {
-    if(servoPos <= 0) // time to go in other direction 
+    if(servoPos <= maxCW) // time to go in other direction 
     {
       servoDir = 1;
       servoPos += servoStep;
@@ -74,7 +79,7 @@ void SensorMast::setServoSpin(int time) {
   
   // CCW movement, servoDir = 1
   else {
-    if (servoPos >= 180)
+    if (servoPos >= maxCCW)
     {
       servoDir = 0;
       servoPos -= servoStep;
@@ -93,5 +98,5 @@ void SensorMast::center() {
 
 int SensorMast::getServoAngle() {
   // take pos, turn into +- angle from center, CCW pos, CW negative
-  return servoPos - 90;
+  return -1*(servoPos - 90);
 }

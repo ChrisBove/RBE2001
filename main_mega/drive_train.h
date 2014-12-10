@@ -12,7 +12,7 @@
 #include "Arduino.h"
 
 #include <Servo.h>  // import libraries
-
+#include <Encoder.h>
 
 class DriveTrain
 {
@@ -29,7 +29,13 @@ class DriveTrain
    * @param   None
    * @return  None
    */
-    void attachMotors();
+    void setupDriveTrain();
+    /**
+   * @brief   services drivetrain functionality
+   * @param   None
+   * @return  None
+   */
+    void service();
          /**
    * @brief   moves motors if they are enabled
    * @param   motor values
@@ -143,9 +149,30 @@ class DriveTrain
     ReverseState revState = INIT_BACKUP;
     ForwardState forwardState = INIT_FORWARD;
     
-    bool shouldMove = true; // flag if motors should move
+    struct my_position
+    {
+      float x;        /* inch */
+      float y;        /* inch */
+      float theta;    /* radian (clockwise from y-axis) */
+    };
+    
+    /**
+   * @brief   gets x coordinate of robot position
+   * @param   None
+   * @return  float of x coordinate (+ axis to right of robot)
+   */
+    float getX();
+    /**
+   * @brief   gets y coordinate of robot position
+   * @param   None
+   * @return  float of y coordinate (+ axis to front of robot)
+   */
+    float getY();
     
   private:
+  
+    bool shouldMove = true; // flag if motors should move
+    
    /**
    * @brief   goes froward for a particular time
    * @param   None
@@ -169,11 +196,36 @@ class DriveTrain
     int leftInversion = 1;
     int rightInversion = 1;
     
-    int roamSpeed = 45; // how fast the robot roams at for VFH
+    int roamSpeed = 20; // how fast the robot roams at for VFH
 //    #define radius 1.375    // radius of drive wheels
 //    #define distance 9.63    // separation between wheels
     
     int startTime = 0;    // stores the start time to calculate elapsed time
+    
+    // encoder things:
+    bool update_pos = true;
+    struct my_position current_position; // position used by the thread
+    struct my_position transformed;  // transformed into our X-Y coordinate frame
+    
+    /**
+   * @brief   resets position
+   * @param   None
+   * @return  None
+   */
+    void initialize_odometry();
+    /**
+   * @brief   runs the code that calculates the odometry from the encoders
+   * @param   None
+   * @return  None
+   */
+    void odometer_thread();
+   /**
+   * @brief   transforms the coordinate system
+   * @param   None
+   * @return  None
+   */
+    void transform();    
+    
 };
 
 #endif
