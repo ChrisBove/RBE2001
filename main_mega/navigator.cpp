@@ -16,16 +16,16 @@
 #include "vfh.h"
 
 // ************* CONSTANTS AND PINS ***************
-#define leftMotorPin    10
-#define rightMotorPin   11
-#define mastServoPin    9
-#define redFlamePin     0
-#define ultraPin        1
-#define digUltraPin     22
+#define LEFT_MOTOR_PIN    10
+#define RIGHT_MOTOR_PIN   11
+#define MAST_SERVO_PIN    9
+#define RED_FLAME_PIN     0
+#define ULTRA_PIN        1
+#define DIG_ULTRA_PIN     22
 
 // *************** instantiate class objects **************
-DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
-SensorMast sensorMast(mastServoPin, ultraPin, redFlamePin, digUltraPin);
+DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
+SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
 SonicAssembler assembler;
 VFH vfh;
 
@@ -43,8 +43,8 @@ void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
   assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance());
-  
-  driveTrain.moveInDir(0);
+  driveTrain.halt();
+//  driveTrain.moveInDir(0);
 }
 
 
