@@ -16,7 +16,7 @@ SonicAssembler::SonicAssembler() {
 
 VFH::range_measure SonicAssembler::assemble(int angle, int distance) {
   VFH::range_measure data;
-  data.dir = angle;
+  data.dir = angle * (180.0 *PI);
   data.distance = distance;
   return data;
 }
