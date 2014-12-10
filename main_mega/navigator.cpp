@@ -14,6 +14,7 @@
 #include "sensor_mast.h"
 #include "sonic_assembler.h"
 #include "vfh.h"
+#include "lcd.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define LEFT_MOTOR_PIN    10
