@@ -48,10 +48,13 @@ class CannonControl
    const int flameLimit = 100;
    
    int _gripperPin, _servoPin, _motorPin, _flamePin, _encoderPin1, _encoderPin2;
-   int flameVal;
+   int flameVal = 1000;
    int currentFlameVal;
+   int currentFlamePos;
    int servoPos;
-   int servoMin = 60;
+   int servoMin = 40;
    int servoMax = 100;
+   
+   bool flameFound = false;
 };
 #endif

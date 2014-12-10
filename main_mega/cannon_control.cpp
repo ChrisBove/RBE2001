@@ -11,14 +11,12 @@
 
 #include <Servo.h>  // import libraries
 
-//#define gripperPin  8
-//#define servoPin    7
-//#define motorPin    6
-//#define flamePin    A2
-//#define encoderPin1 A3
-//#define encoderPin2 A4
-
-Servo
+#define GRIPPER_PIN  8
+#define SERVO_PIN    7
+#define MOTOR_PIN    6
+#define FLAME_PIN    A2
+#define ENCODER_PIN_1 A3
+#define ENCODER_PIN_2 A4
 
 CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int flamePin, int encoderPin1, int encoderPin2) {
   _gripperPin = gripperPin;
@@ -31,23 +29,35 @@ CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int fla
 
 
 void CannonControl::setupCannon(){
-  winch.attach(_motorPin, 1000, 2000);
+  winch.attach(_motorPin);
   hinge.attach(_servoPin, 1000, 2000);
-  grip.attach(_gripperPin, 1000, 2000);
+  grip.attach(_gripperPin);
 }
 
 void CannonControl::checkFlame(){
   currentFlameVal = analogRead(_flamePin);
   if(flameVal >= currentFlameVal){
     flameVal = currentFlameVal;
+    currentFlamePos = servoPos;
   }
 }
 
 void CannonControl::locateFlame(){
-  for(servoPos = servoMin; servoPos <= servoMax; servoPos += 1)
+  if(servoPos <= servoMax)
   {
     hinge.write(servoPos);
-    delay(20);
-      
+    checkFlame();
+    delay(100); 
+  }
+  if(servoPos >= servoMax){
+    flameFound = true;
   }
 }
+
+void CannonControl::AIM(){
+  if(flameFound){
+  hinge.write(currentFlamePos);
+  }
+}
+
+
