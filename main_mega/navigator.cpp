@@ -40,6 +40,7 @@ void Navigator::setupNavigator() {
 }
 
 void Navigator::service() {
+  driveTrain.service();
   sensorMast.service();
   assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance());
   
