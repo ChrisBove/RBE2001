@@ -106,8 +106,8 @@ class SensorMast
     const int servoStep = 1;
     int servoPos = servoCenter; // position of servo
     int servoDir = 0; // 0 is CW, 1 is CCW
-    int maxCCW = 0;
-    int maxCW = 180;
+    int maxCW = 23;
+    int maxCCW = 180;
 };
 
 #endif

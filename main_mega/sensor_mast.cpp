@@ -68,7 +68,7 @@ bool SensorMast::isFire() {
 void SensorMast::setServoSpin(int time) {
   if(servoDir == 0) // CW movement
   {
-    if(servoPos <= 0) // time to go in other direction 
+    if(servoPos <= maxCW) // time to go in other direction 
     {
       servoDir = 1;
       servoPos += servoStep;
@@ -79,7 +79,7 @@ void SensorMast::setServoSpin(int time) {
   
   // CCW movement, servoDir = 1
   else {
-    if (servoPos >= 180)
+    if (servoPos >= maxCCW)
     {
       servoDir = 0;
       servoPos -= servoStep;
@@ -98,5 +98,5 @@ void SensorMast::center() {
 
 int SensorMast::getServoAngle() {
   // take pos, turn into +- angle from center, CCW pos, CW negative
-  return servoPos - 90;
+  return -1*(servoPos - 90);
 }
