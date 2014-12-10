@@ -149,8 +149,6 @@ class DriveTrain
     ReverseState revState = INIT_BACKUP;
     ForwardState forwardState = INIT_FORWARD;
     
-    bool shouldMove = true; // flag if motors should move
-    
     struct my_position
     {
       float x;        /* inch */
@@ -159,6 +157,9 @@ class DriveTrain
     };
     
   private:
+  
+    bool shouldMove = true; // flag if motors should move
+    
    /**
    * @brief   goes froward for a particular time
    * @param   None
