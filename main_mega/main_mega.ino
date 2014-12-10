@@ -7,6 +7,7 @@
 // ***** INCLUDED LIBRARIEIS *******
 // 3rd party libraries
 #include <Servo.h>
+#include <Encoder.h>
 
 // user-defined libraries, contained in root
 #include "navigator.h"
@@ -15,8 +16,8 @@
 Navigator lola;
 
 void setup() {
+  Serial.begin(115200);
   lola.setupNavigator();
-  Serial.begin(9600);
 }
 
 void loop() {

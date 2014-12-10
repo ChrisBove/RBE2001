@@ -38,7 +38,7 @@ class VFH {
     
     /* A rangefinder measurement. */
     struct range_measure {
-    	int direction; /* [degrees] */
+    	int dir; /* [degrees] */
     	unsigned long distance; /* [cm] */
     };
     
@@ -55,7 +55,7 @@ class VFH {
     
     /* Control signal created by the algorithm. */
     struct control_signal {
-    	int direction; /* [degrees] */
+    	int dir; /* [degrees] */
     };
     
     /***********
@@ -70,6 +70,13 @@ class VFH {
     typedef struct hist hist_t;    
     
     
+    /**
+   * @brief   Class constructor for vfh
+   * @param   grid and hist pointers
+   * @return  vfh object
+   */
+   VFH(); //grid_t * grid, hist_t * hist);
+    
     /* Control signals. */
     
     /*
@@ -78,6 +85,12 @@ class VFH {
     ** specified in hist. The objective_direction is given in DEGREES.
     */
     int calculate_direction(hist_t * hist, int objective_direction);
+    
+    /* grid_update: Update grid's cells with an array of sensor readings. */
+    int grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data);
+    
+    /* hist_update: Update hist with grid's information. */
+    void hist_update(hist_t * hist, grid_t * grid);
     
   private:
     
@@ -98,8 +111,7 @@ class VFH {
     /* grid_init: Return a pointer to an empty grid. NULL otherwise. */
     grid_t * grid_init(int dimension, int resolution);
     
-    /* grid_update: Update grid's cells with an array of sensor readings. */
-    int grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data);
+    
     
     /* get_moving_window: Get a sub-grid of the grid centered in (x, y). */
     grid_t * get_moving_window(grid_t * grid, int pos_x, int pos_y, int dim);
@@ -110,9 +122,6 @@ class VFH {
     hist_t * hist_init(int alpha, double threshold, double density_a,
     	double density_b);
     
-    /* hist_update: Update hist with grid's information. */
-    void hist_update(hist_t * hist, grid_t * grid);
-  
 };
 
 #endif

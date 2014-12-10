@@ -50,6 +50,12 @@ class SensorMast
    */
    int getDigitalDistance();
    /**
+   * @brief   returns reading from analog pin
+   * @param   None
+   * @return  int distance in inches
+   */
+   int getDistance();
+   /**
    * @brief   grabs flame reading from sensor
    * @param   None
    * @return  int reading
@@ -78,7 +84,7 @@ class SensorMast
    /**
    * @brief   calculates the angle the servo is at based on last command
    * @param   None
-   * @return  -90 to 90 degrees for heading
+   * @return  heading in radians from x-axis: CCW is Positive
    */
    int getServoAngle();
    /**
@@ -100,8 +106,8 @@ class SensorMast
     const int servoStep = 1;
     int servoPos = servoCenter; // position of servo
     int servoDir = 0; // 0 is CW, 1 is CCW
-    int maxCCW = 0;
-    int maxCW = 180;
+    int maxCW = 23;
+    int maxCCW = 180;
 };
 
 #endif
