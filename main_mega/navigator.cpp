@@ -24,15 +24,17 @@
 #define DIG_ULTRA_PIN     22
 
 // globals:
-VFH::grid myGrid;
-VFH::hist_t myHist;
+VFH::grid_t * myGrid;
+VFH::hist_t * myHist;
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
 SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
 SonicAssembler assembler;
-VFH vfh(&myGrid, &myHist);
+VFH vfh(); //&myGrid, &myHist);
 
+//myGrid = vfh.grid_init(50,10);
+//myHist = vfh.hist_init(2, 20, 10, 5);
 
 
 Navigator::Navigator() {
@@ -48,8 +50,13 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
-  vfh.grid_update(&myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance()));
-  vfh.hist_update(&myHist, &myGrid);
+//  Serial.print("Grid update: ");
+//  Serial.print(vfh.grid_update(&myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance())) );
+////  Serial.print("\t Hist update: ");
+//  vfh.hist_update(&myHist, &myGrid);
+//  Serial.print("\t Dir: ");
+//  
+//  Serial.println(vfh.calculate_direction(&myHist, 90));
   
 //  Serial.println(sensorMast.getServoAngle());
 //  delay(10);

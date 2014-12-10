@@ -75,7 +75,7 @@ class VFH {
    * @param   grid and hist pointers
    * @return  vfh object
    */
-   VFH(grid_t * grid, hist_t * hist);
+   VFH(); //grid_t * grid, hist_t * hist);
     
     /* Control signals. */
     

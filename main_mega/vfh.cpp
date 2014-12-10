@@ -29,11 +29,11 @@
 /* These parameters are there to help me remember them, basically. */
 
 /* Parameters for the grid. */
-#define DIM 51 //11 /* Must be an odd number. */
+#define DIM 11 //11 /* Must be an odd number. */
 #define CERTAINTY_GRID_RESOLUTION 0.5 //0.1
 
 /* Parameters for the moving window. */
-#define WINDOW_DIM 25 //5
+#define WINDOW_DIM 5 //5
 
 /* Parameters for histogram calculation. */
 #define ALPHA 6 //5
@@ -49,9 +49,9 @@
 #define OBJECTIVE_DIRECTION 90
 
 
-VFH::VFH(grid_t * grid, hist_t * hist) {
-  grid = grid_init(DIM, CERTAINTY_GRID_RESOLUTION);
-  hist = hist_init(ALPHA, OBSTACLE_DENSITY_THRESHOLD, DENSITY_A, DENSITY_B);
+VFH::VFH(){ //grid_t * grid, hist_t * hist) {
+//  grid = grid_init(DIM, CERTAINTY_GRID_RESOLUTION);
+//  hist = hist_init(ALPHA, OBSTACLE_DENSITY_THRESHOLD, DENSITY_A, DENSITY_B);
 }
 
 /* Helper functions. */
@@ -89,7 +89,10 @@ VFH::grid_t * VFH::grid_init(int dimension, int resolution) {
 	grid = (grid_t *)malloc(sizeof(grid_t));
 
 	/* Is there enough memory for the grid? */
-	if (NULL == grid) return NULL;
+	if (NULL == grid){
+          Serial.println("not enough memory for grid");
+          return NULL;
+        }
 
 	/* Initialize grid's parameters. Guarantee that dimension is odd. */
 	grid->dimension = dimension % 2 == 0 ? dimension + 1 : dimension;
@@ -104,7 +107,10 @@ VFH::grid_t * VFH::grid_init(int dimension, int resolution) {
 	grid->cells = (int *)malloc(dimension * dimension * sizeof(int));
 
 	/* Is there enough memory for the cells?*/
-	if (NULL == grid->cells) return NULL;
+	if (NULL == grid->cells) {
+          Serial.println("not enough memory for cells!");
+          return NULL;
+        }
 
 	/* Initialize all elements to 0. */
 	for (i = 0; i < dimension; ++i) {
@@ -118,9 +124,14 @@ VFH::grid_t * VFH::grid_init(int dimension, int resolution) {
 
 int VFH::grid_update(grid_t * grid, int pos_x, int pos_y, range_measure_t data) {
 
-	if (grid == NULL) return 0;
-	if (grid->cells == NULL) return 0;
-
+	if (grid == NULL) {
+          Serial.println("grid is null");
+            return 0;
+}
+	if (grid->cells == NULL) {
+           Serial.println("cells are null");
+          return 0;
+}
 	int new_x, new_y;
 
 	/*
