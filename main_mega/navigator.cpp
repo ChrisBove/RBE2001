@@ -24,6 +24,8 @@
 #define redFlamePin     0
 #define ultraPin        1
 #define digUltraPin     22
+#define LeftLight       11
+#define RightLight      10
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
@@ -41,7 +43,16 @@ void Navigator::setupNavigator() {
 }
 
 void Navigator::service() {
-  
+    
+  //Line Sensors Test Printing
+  cliff.setHues(); 
+  Serial.print("threshold"); 
+  Serial.print(refWhiteHigh);
+  Serial.print("right reading"); 
+  Serial.print(analogRead(RightLight))
+  Serial.print("left reading"); 
+  Serial.print(analogRead(LeftLight));
+ 
 }
 
 
