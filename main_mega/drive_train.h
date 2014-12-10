@@ -156,6 +156,19 @@ class DriveTrain
       float theta;    /* radian (clockwise from y-axis) */
     };
     
+    /**
+   * @brief   gets x coordinate of robot position
+   * @param   None
+   * @return  float of x coordinate (+ axis to right of robot)
+   */
+    float getX();
+    /**
+   * @brief   gets y coordinate of robot position
+   * @param   None
+   * @return  float of y coordinate (+ axis to front of robot)
+   */
+    float getY();
+    
   private:
   
     bool shouldMove = true; // flag if motors should move
@@ -211,9 +224,7 @@ class DriveTrain
    * @param   None
    * @return  None
    */
-    void transform();
-    
-    
+    void transform();    
     
 };
 

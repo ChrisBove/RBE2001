@@ -144,6 +144,14 @@ void DriveTrain::odometer_thread()
     
 }
 
+float DriveTrain::getX() {
+  return transformed.x;
+}
+
+float DriveTrain::getY() {
+  return transformed.y;
+}
+
 void DriveTrain::transform(){
   transformed.x = -current_position.y;
   transformed.y = current_position.x;
