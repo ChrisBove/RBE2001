@@ -183,7 +183,7 @@ class DriveTrain
     int leftInversion = 1;
     int rightInversion = 1;
     
-    int roamSpeed = 45; // how fast the robot roams at for VFH
+    int roamSpeed = 20; // how fast the robot roams at for VFH
 //    #define radius 1.375    // radius of drive wheels
 //    #define distance 9.63    // separation between wheels
     
