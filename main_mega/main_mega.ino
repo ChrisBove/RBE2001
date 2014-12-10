@@ -16,8 +16,8 @@
 Navigator lola;
 
 void setup() {
+  Serial.begin(115200);
   lola.setupNavigator();
-  Serial.begin(9600);
 }
 
 void loop() {
