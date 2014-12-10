@@ -152,12 +152,14 @@ float DriveTrain::getY() {
   return transformed.y;
 }
 
+float DriveTrain::getHeading() {
+  return transformed.x;
+}
+
 void DriveTrain::transform(){
   transformed.x = -current_position.y;
   transformed.y = current_position.x;
-  transformed.theta = -current_position.theta;
-//  float newX = -current_position.y;
-//  current_position.y = newX;
+  transformed.theta = current_position.theta - (PI/2.0);
 }
 
 void DriveTrain::turnLeft(dirTravel dir){

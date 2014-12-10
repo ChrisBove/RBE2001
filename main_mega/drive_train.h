@@ -168,6 +168,12 @@ class DriveTrain
    * @return  float of y coordinate (+ axis to front of robot)
    */
     float getY();
+    /**
+   * @brief   gets heading of robot position
+   * @param   None
+   * @return  float of heading: radians from X-axis (CCW is positive)
+   */
+    float getHeading();
     
   private:
   
@@ -220,7 +226,7 @@ class DriveTrain
    */
     void odometer_thread();
    /**
-   * @brief   transforms the coordinate system
+   * @brief   transforms the coordinate system to that used by our robot: y is front, x is right, theta is from x axis - CCW is positive
    * @param   None
    * @return  None
    */
