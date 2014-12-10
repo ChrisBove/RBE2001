@@ -34,7 +34,7 @@ Navigator::Navigator() {
 }
 
 void Navigator::setupNavigator() {
-  driveTrain.attachMotors(); // attach motors in drivetrain
+  driveTrain.setupDriveTrain(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
   sensorMast.setupMast();
 }

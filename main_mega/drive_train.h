@@ -12,7 +12,7 @@
 #include "Arduino.h"
 
 #include <Servo.h>  // import libraries
-
+#include <Encoder.h>
 
 class DriveTrain
 {
@@ -29,7 +29,13 @@ class DriveTrain
    * @param   None
    * @return  None
    */
-    void attachMotors();
+    void setupDriveTrain();
+    /**
+   * @brief   services drivetrain functionality
+   * @param   None
+   * @return  None
+   */
+    void service();
          /**
    * @brief   moves motors if they are enabled
    * @param   motor values
@@ -145,6 +151,13 @@ class DriveTrain
     
     bool shouldMove = true; // flag if motors should move
     
+    struct my_position
+    {
+      float x;        /* inch */
+      float y;        /* inch */
+      float theta;    /* radian (clockwise from y-axis) */
+    };
+    
   private:
    /**
    * @brief   goes froward for a particular time
@@ -174,6 +187,33 @@ class DriveTrain
 //    #define distance 9.63    // separation between wheels
     
     int startTime = 0;    // stores the start time to calculate elapsed time
+    
+    // encoder things:
+    bool update_pos = true;
+    struct my_position current_position; // position used by the thread
+    struct my_position transformed;  // transformed into our X-Y coordinate frame
+    
+    /**
+   * @brief   resets position
+   * @param   None
+   * @return  None
+   */
+    void initialize_odometry();
+    /**
+   * @brief   runs the code that calculates the odometry from the encoders
+   * @param   None
+   * @return  None
+   */
+    void odometer_thread();
+   /**
+   * @brief   transforms the coordinate system
+   * @param   None
+   * @return  None
+   */
+    void transform();
+    
+    
+    
 };
 
 #endif
