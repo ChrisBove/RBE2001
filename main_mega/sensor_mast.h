@@ -84,7 +84,7 @@ class SensorMast
    /**
    * @brief   calculates the angle the servo is at based on last command
    * @param   None
-   * @return  -90 to 90 degrees for heading
+   * @return  heading in radians from x-axis: CCW is Positive
    */
    int getServoAngle();
    /**
