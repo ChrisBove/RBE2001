@@ -35,7 +35,7 @@ bool update = true;
 /* define structures */
 /*********************/
 
-struct position
+struct my_position
 {
   float x;        /* inch */
   float y;        /* inch */
@@ -47,7 +47,7 @@ struct position
 /* global variables */
 /********************/
 
-struct position current_position;
+struct my_position current_position;
 
 
 /********************/
@@ -131,7 +131,7 @@ void odometer_thread()
     
 }
 
-struct position transformed;
+struct my_position transformed;
 
 void transform(){
   transformed.x = -current_position.y;
