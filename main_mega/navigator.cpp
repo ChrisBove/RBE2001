@@ -23,11 +23,17 @@
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
 
+// globals:
+VFH::grid myGrid;
+VFH::hist_t myHist;
+
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
 SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
 SonicAssembler assembler;
-VFH vfh;
+VFH vfh(&myGrid, &myHist);
+
+
 
 Navigator::Navigator() {
   // maybe stuff in some pointers to other objects that are passed.
@@ -43,6 +49,9 @@ void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
   assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance());
+  
+//  Serial.println(sensorMast.getServoAngle());
+//  delay(10);
   driveTrain.halt();
 //  driveTrain.moveInDir(0);
 }

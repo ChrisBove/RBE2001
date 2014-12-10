@@ -49,9 +49,9 @@
 #define OBJECTIVE_DIRECTION 90
 
 
-VFH::VFH() {
-  grid_init(DIM, CERTAINTY_GRID_RESOLUTION);
-  hist_init(ALPHA, OBSTACLE_DENSITY_THRESHOLD, DENSITY_A, DENSITY_B);
+VFH::VFH(grid_t * grid, hist_t * hist) {
+  grid = grid_init(DIM, CERTAINTY_GRID_RESOLUTION);
+  hist = hist_init(ALPHA, OBSTACLE_DENSITY_THRESHOLD, DENSITY_A, DENSITY_B);
 }
 
 /* Helper functions. */

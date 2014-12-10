@@ -72,10 +72,10 @@ class VFH {
     
     /**
    * @brief   Class constructor for vfh
-   * @param   none
+   * @param   grid and hist pointers
    * @return  vfh object
    */
-   VFH();
+   VFH(grid_t * grid, hist_t * hist);
     
     /* Control signals. */
     
@@ -120,8 +120,6 @@ class VFH {
     /* hist_update: Update hist with grid's information. */
     void hist_update(hist_t * hist, grid_t * grid);
     
-    grid myGrid;
-    hist_t myHist;
 };
 
 #endif
