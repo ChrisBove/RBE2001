@@ -29,7 +29,7 @@ class SonicAssembler {
    void service();
    /**
    * @brief   Takes angle of reading and distance reading to stuff into a vector
-   * @param   angle in degrees (-90 to 90), int distance inches
+   * @param   angle in radians, int distance inches
    * @return  range measure data type with angle with 90 heading and distance
    */
    VFH::range_measure assemble(int angle, int distance);
