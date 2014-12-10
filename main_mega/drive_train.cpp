@@ -17,8 +17,8 @@
 #include <Encoder.h>
 
 // create drivetrain encoders
-Encoder right (20, 3);
-Encoder left (19, 2);
+Encoder right_encoder (20, 3);
+Encoder left_encoder (19, 2);
 
 #define WHEEL_DIAMETER 2.75
 #define PULSES_PER_REVOLUTION 3200.0
@@ -50,13 +50,14 @@ void DriveTrain::service() {
 
 // pass in values between -90 and 90
 void DriveTrain::moveMotors(int leftVal, int rightVal) {
-  // if we're good to move, move the motors
-  if(shouldMove) {
+  // if we're good to move, move the motors - yo, don't use this, as right now 
+  // we have a logic loop. SOOOOO DUMB.
+//  if(shouldMove) {
     left.write((leftVal*leftInversion) + 90);    // go from -90-90 to 0-180
     right.write((rightVal*rightInversion) + 90);
-  }
-  else
-    halt();
+//  }
+//  else
+//    halt(); // call this, and it just calls this function again
 }
 
 void DriveTrain::moveInDir(int dir) {
@@ -91,10 +92,10 @@ void DriveTrain::odometer_thread()
   
   //  enable_interrupts(0);         /* Ensure we don't lose any odometer counts */
   noInterrupts();
-  left_ticks = left.read();
-  right_ticks = -right.read();
-  right.write(0);
-  left.write(0);
+  left_ticks = left_encoder.read();
+  right_ticks = -right_encoder.read();
+  right_encoder.write(0);
+  left_encoder.write(0);
 //    left_count = 0;
 //    right_count = 0;
   interrupts();
