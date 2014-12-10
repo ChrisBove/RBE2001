@@ -12,6 +12,7 @@
 #include "Arduino.h"
 
 #include <Servo.h>  // import libraries
+#include <Encoder.h>
 
 
 class CannonControl
@@ -54,6 +55,9 @@ class CannonControl
    int servoPos;
    int servoMin = 40;
    int servoMax = 100;
+   
+   long oldPosition = 0;
+   long newPosition;
    
    bool flameFound = false;
 };

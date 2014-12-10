@@ -10,6 +10,7 @@
 #include "cannon_control.h"
 
 #include <Servo.h>  // import libraries
+#include <Encoder.h>
 
 #define GRIPPER_PIN  8
 #define SERVO_PIN    7
@@ -32,6 +33,7 @@ void CannonControl::setupCannon(){
   winch.attach(_motorPin);
   hinge.attach(_servoPin, 1000, 2000);
   grip.attach(_gripperPin);
+  Encoder canEnc(A5, A6);
 }
 
 void CannonControl::checkFlame(){
@@ -60,4 +62,10 @@ void CannonControl::AIM(){
   }
 }
 
-
+void CannonControl:: drawBack(){
+  newPosition = canEnc.read();
+  if(oldPosition <= 180 && newPosition != oldPosition){
+    oldPosition = newPosition;
+    winch.write(100);
+  }
+}
