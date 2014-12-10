@@ -36,7 +36,7 @@ class CliffDetector {
   private:
     int _LeftLightPin, _RightLightPin;    
     int refWhiteHigh;   //calibrated at power-up to set high limit of white range, verge of black
-    int blackThresh;   //Dead reckoned black-threshold value: 230, black appears past 315 in almost every scenario
+    int blackThresh = 230;   //Dead reckoned black-threshold value: 230, black appears past 315 in almost every scenario
     unsigned int sum; 
 };
 

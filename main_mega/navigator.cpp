@@ -24,8 +24,8 @@
 #define redFlamePin     0
 #define ultraPin        1
 #define digUltraPin     22
-#define LeftLight       11
-#define RightLight      10
+#define LeftLight       10
+#define RightLight      11
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(leftMotorPin, rightMotorPin, true, false); // left motor inverted, right not
@@ -43,26 +43,7 @@ void Navigator::setupNavigator() {
 }
 
 void Navigator::service() {
-    
-  //Line Sensors Test Printing
-  //int thresh = cliffDetect.setHues(); 
-  //Serial.print("threshold  "); 
-  //Serial.println(thresh);
-  bool ack = cliffDetect.fallingR(); 
-  Serial.print("cliff boolean R  "); 
-  Serial.println(ack);
- 
-  Serial.print("right reading  "); 
-  Serial.println(analogRead(RightLight));
-  
-  bool ackL = cliffDetect.fallingL(); 
-  Serial.print("cliff boolean L  "); 
-  Serial.println(ackL);
- 
-  Serial.print("left reading  "); 
-  Serial.println(analogRead(LeftLight));
-  delay(75);
- 
+
 }
 
 
