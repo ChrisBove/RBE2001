@@ -26,7 +26,7 @@ class CliffDetector {
    */
    int setHues();
    /**
-   * @brief   checks threshold to determine if there is a cliff
+   * @brief   checks threshold to determine if there is a cliff for R and L
    * @param   None
    * @return  true if a wheel is detected over the cliff
    */
@@ -36,7 +36,7 @@ class CliffDetector {
   private:
     int _LeftLightPin, _RightLightPin;    
     int refWhiteHigh;   //calibrated at power-up to set high limit of white range, verge of black
-    int blackThresh = 230;   //Dead reckoned black-threshold value: 230, black appears past 315 in almost every scenario
+    const int blackThresh = 230;   //Dead reckoned black-threshold value: 230, black appears past 315 in almost every scenario
     unsigned int sum; 
 };
 
