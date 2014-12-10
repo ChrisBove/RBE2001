@@ -11,6 +11,8 @@ Encoder left (3, 5);
 
 bool update = true;
 
+// forward - y axis, right - x axis, theta is positive CW from y-axis, negative CCW from y-axis
+
 /***********************************************************/
 /* odometer.c - Copyright (C) 2000, Dafydd Walters         */
 /***********************************************************/
@@ -21,9 +23,9 @@ bool update = true;
 /********************/
 
 /* User defined constants */
-#define WHEEL_DIAMETER 0.06985
+#define WHEEL_DIAMETER 2.75
 #define PULSES_PER_REVOLUTION 3200.0
-#define AXLE_LENGTH 0.244602
+#define AXLE_LENGTH 9.63
 
 /* Fixed constants */
 //#define PI 3.14159
@@ -35,9 +37,9 @@ bool update = true;
 
 struct position
 {
-  float x;        /* meter */
-  float y;        /* meter */
-  float theta;    /* radian (counterclockwise from x-axis) */
+  float x;        /* inch */
+  float y;        /* inch */
+  float theta;    /* radian (clockwise from y-axis) */
 };
 
 
