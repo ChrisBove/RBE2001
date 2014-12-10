@@ -50,6 +50,12 @@ class SensorMast
    */
    int getDigitalDistance();
    /**
+   * @brief   returns reading from analog pin
+   * @param   None
+   * @return  int distance in inches
+   */
+   int getDistance();
+   /**
    * @brief   grabs flame reading from sensor
    * @param   None
    * @return  int reading
