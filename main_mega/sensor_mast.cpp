@@ -101,3 +101,10 @@ int SensorMast::getServoAngle() {
 //  int angle = -1*(servoPos - 90); // this is old // take pos, turn into +- angle from center, CCW pos, CW negative
   return servoPos * (PI/180.0); // this is radians
 }
+
+
+void SensorMast::freeze()
+{
+  servo.write(servoPos);
+  
+}

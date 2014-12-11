@@ -31,6 +31,12 @@ class Navigator {
    * @return  None
    */
    void service();
+   /** @brief  checks to see if there is a flame and stops the servo
+   * @param   None
+   * @return  None
+   */
+   
+   void checkFlame();
    
    // defines possible states of navigation
    enum Navigate { FIND_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };

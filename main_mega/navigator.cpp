@@ -62,8 +62,15 @@ void Navigator::service() {
 //  delay(10);
   driveTrain.halt();
 //  driveTrain.moveInDir(0);
+checkFlame();
 }
 
-
+void Navigator::checkFlame()
+{
+  if (sensorMast.isFire()==true)
+  {
+    sensorMast.freeze();
+  }
+}
 
 // TODO
