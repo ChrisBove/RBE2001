@@ -14,6 +14,8 @@
 #include "sensor_mast.h"
 #include "sonic_assembler.h"
 #include "vfh.h"
+#include "lcd.h"
+#include "cliff.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define LEFT_MOTOR_PIN    10
@@ -22,6 +24,8 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
+#define LeftLight       10
+#define RightLight      11
 
 // globals:
 VFH::grid_t * myGrid;
@@ -31,7 +35,9 @@ VFH::hist_t * myHist;
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
 SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
 SonicAssembler assembler;
-VFH vfh(); //&myGrid, &myHist);
+VFH vfh; //&myGrid, &myHist);
+LCD my_lcd;
+CliffDetector cliffDetect(RightLight, LeftLight);
 
 //myGrid = vfh.grid_init(50,10);
 //myHist = vfh.hist_init(2, 20, 10, 5);
@@ -45,6 +51,7 @@ void Navigator::setupNavigator() {
   driveTrain.setupDriveTrain(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
   sensorMast.setupMast();
+  my_lcd.setupLCD();
 }
 
 void Navigator::service() {
