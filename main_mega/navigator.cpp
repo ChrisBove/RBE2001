@@ -14,6 +14,7 @@
 #include "sensor_mast.h"
 #include "sonic_assembler.h"
 #include "vfh.h"
+#include "cannon_control.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define LEFT_MOTOR_PIN    10
@@ -22,6 +23,10 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
+#define GRIPPER_PIN  8
+#define SERVO_PIN    7
+#define MOTOR_PIN    6
+#define FLAME_PIN    A2
 
 // globals:
 VFH::grid_t * myGrid;
@@ -32,6 +37,7 @@ DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left mot
 SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
 SonicAssembler assembler;
 VFH vfh(); //&myGrid, &myHist);
+CannonControl cannonControl(GRIPPER_PIN, SERVO_PIN, MOTOR_PIN, FLAME_PIN);
 
 //myGrid = vfh.grid_init(50,10);
 //myHist = vfh.hist_init(2, 20, 10, 5);
@@ -45,11 +51,13 @@ void Navigator::setupNavigator() {
   driveTrain.setupDriveTrain(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
   sensorMast.setupMast();
+  cannonControl.setupCannon();
 }
 
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
+  cannonControl.drawBack();
 //  Serial.print("Grid update: ");
 //  Serial.print(vfh.grid_update(&myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance())) );
 ////  Serial.print("\t Hist update: ");

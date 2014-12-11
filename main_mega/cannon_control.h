@@ -20,7 +20,7 @@ class CannonControl
   public:
   //enum cannonState {WAIT_FOR_INSTRUCT, FIND_FLAME, DRAW_BACK, GIVE_SLACK, AIM_AT_FLAME, SHOOT_CANNON, CHECK_FLAME};
   
-  CannonControl(int gripperPin, int servoPin, int motorPin, int flamePin, int encoderPin1, int encoderPin2);
+  CannonControl(int gripperPin, int servoPin, int motorPin, int flamePin);
      /**
    * @brief   attaches motors, servos, and sensors
    * @param   None
@@ -55,6 +55,7 @@ class CannonControl
    int servoPos;
    int servoMin = 40;
    int servoMax = 100;
+   int counter = 0;
    
    long oldPosition = 0;
    long newPosition;

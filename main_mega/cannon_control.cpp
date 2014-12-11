@@ -12,20 +12,18 @@
 #include <Servo.h>  // import libraries
 #include <Encoder.h>
 
-#define GRIPPER_PIN  8
-#define SERVO_PIN    7
-#define MOTOR_PIN    6
-#define FLAME_PIN    A2
-#define ENCODER_PIN_1 A3
-#define ENCODER_PIN_2 A4
+#define ENCODER_PIN_1 10
+#define ENCODER_PIN_2 23
 
-CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int flamePin, int encoderPin1, int encoderPin2) {
+  Encoder canEnc(ENCODER_PIN_1, ENCODER_PIN_2);
+
+CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int flamePin) {
   _gripperPin = gripperPin;
   _servoPin = servoPin;
   _motorPin = motorPin;
   _flamePin = flamePin;
-  _encoderPin1 = encoderPin1;
-  _encoderPin2 = encoderPin2;
+  _encoderPin1 = ENCODER_PIN_1;
+  _encoderPin2 = ENCODER_PIN_2;
 }
 
 
@@ -33,7 +31,6 @@ void CannonControl::setupCannon(){
   winch.attach(_motorPin);
   hinge.attach(_servoPin, 1000, 2000);
   grip.attach(_gripperPin);
-  Encoder canEnc(A5, A6);
 }
 
 void CannonControl::checkFlame(){
@@ -62,10 +59,29 @@ void CannonControl::AIM(){
   }
 }
 
-void CannonControl:: drawBack(){
+void CannonControl::drawBack(){
   newPosition = canEnc.read();
-  if(oldPosition <= 180 && newPosition != oldPosition){
+  if(counter <= 100){
+    if(newPosition != oldPosition){
     oldPosition = newPosition;
-    winch.write(100);
+    counter = oldPosition + counter;
+    winch.write(120);
   }
+  }
+  if(counter >= 100){
+    winch.write(90);
+    grip.write(180);
+  }
+}
+
+void CannonControl::giveSlack(){
+  newPosition = canEnc.read();
+  if(oldPosition >= 0 && newPosition != oldPosition){
+    oldPosition = newPosition;
+    winch.write(80);
+  }
+}
+
+void CannonControl::shootCannon(){
+  grip.write(90);
 }

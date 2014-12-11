@@ -15,6 +15,7 @@
 // create navigator class, must have a British accent to be believable
 Navigator lola;
 
+
 void setup() {
   Serial.begin(115200);
   lola.setupNavigator();
