@@ -91,14 +91,14 @@ void DriveTrain::odometer_thread()
   
   
   //  enable_interrupts(0);         /* Ensure we don't lose any odometer counts */
-  noInterrupts();
+//  noInterrupts();
   left_ticks = left_encoder.read();
   right_ticks = -right_encoder.read();
   right_encoder.write(0);
   left_encoder.write(0);
 //    left_count = 0;
 //    right_count = 0;
-  interrupts();
+//  interrupts();
 //    enable_interrupts(1);
 
   if (left_ticks != 0 || right_ticks != 0) {
@@ -152,12 +152,14 @@ float DriveTrain::getY() {
   return transformed.y;
 }
 
+float DriveTrain::getHeading() {
+  return transformed.x;
+}
+
 void DriveTrain::transform(){
   transformed.x = -current_position.y;
   transformed.y = current_position.x;
-  transformed.theta = -current_position.theta;
-//  float newX = -current_position.y;
-//  current_position.y = newX;
+  transformed.theta = current_position.theta - (PI/2.0);
 }
 
 void DriveTrain::turnLeft(dirTravel dir){

@@ -84,7 +84,7 @@ class SensorMast
    /**
    * @brief   calculates the angle the servo is at based on last command
    * @param   None
-   * @return  -90 to 90 degrees for heading
+   * @return  heading in radians from x-axis: CCW is Positive
    */
    int getServoAngle();
    /**
@@ -93,6 +93,12 @@ class SensorMast
    * @return  None
    */
    void center();
+   /**
+   * @brief   makes an LED light up when the robot is in proximity of the candle (the mast flame vantage-point)
+   * @param   None--calls the IR reading
+   * @return  None--performs an action
+   */
+   void indicateNear();
    
   private:
     int _servoPin, _ultraPin, _flamePin, _digUltraPin;
