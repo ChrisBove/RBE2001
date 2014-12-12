@@ -50,6 +50,7 @@ void CannonControl::locateFlame(){
   }
   if(servoPos >= servoMax){
     flameFound = true;
+    drawBackTrue = true;
   }
 }
 

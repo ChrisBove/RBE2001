@@ -60,6 +60,12 @@ class CannonControl
    long oldPosition = 0;
    long newPosition;
    
+   bool locateFlameTure = false;
+   bool drawBackTrue = false;
+   bool giveSlackTrue = false;
+   bool shootCannonTrue = false;
+   bool AIMTrue = false;
+   
    bool flameFound = false;
 };
 #endif
