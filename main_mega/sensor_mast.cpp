@@ -35,7 +35,9 @@ void SensorMast::setupMast() {
 void SensorMast::service() {
   getAnalogDistance();
   getFlameReading();
-  setServoSpin();
+  
+  if (shouldMove)
+    setServoSpin(); // rotate mast if we should
 }
 
 int SensorMast::getAnalogDistance() {
@@ -121,3 +123,11 @@ void SensorMast::indicateWin(){
   digitalWrite(_LED_WIN, HIGH);   // turn the LED on (HIGH is the voltage level) Is called in the condition that the flame is extinguished, operates with no boolean
   }
   
+void SensorMast::freeze() {
+  shouldMove = false;
+  servo.write(servoPos);
+}
+
+void SensorMast::unFreeze() {
+  shouldMove = true;
+}

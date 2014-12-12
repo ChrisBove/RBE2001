@@ -8,6 +8,7 @@
 // 3rd party libraries
 #include <Servo.h>
 #include <Encoder.h>
+#include <LiquidCrystal.h>
 
 // user-defined libraries, contained in root
 #include "navigator.h"
