@@ -16,7 +16,7 @@
 #include "cannon_control.h"
 //#include "vfh.h"
 #include "lcd.h"
-#include "cliff.h"
+#include "virtual_bumper.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define LEFT_MOTOR_PIN    10
@@ -25,12 +25,15 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
+<<<<<<< HEAD
 #define GRIPPER_PIN  8
 #define SERVO_PIN    7
 #define MOTOR_PIN    6
 #define FLAME_PIN    A2
 #define LeftLight       10
 #define RightLight      11
+=======
+>>>>>>> origin/master
 #define LED_indicator    5 // PROBABLY WRONG
 #define LED_WIN          6 // PROBABLY WRONG
 
@@ -41,7 +44,7 @@ SonicAssembler assembler;
 CannonControl cannonControl(GRIPPER_PIN, SERVO_PIN, MOTOR_PIN, FLAME_PIN);
 //VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
-CliffDetector cliffDetect(RightLight, LeftLight);
+VirtualBumper virtualBumper();
 
 
 Navigator::Navigator() {
@@ -68,12 +71,61 @@ void Navigator::service() {
   cannonControl.service();
   
   // TODO - add a function that now calls the state machine for Navigator
-  
+  chooseAction();
   // TODO - check for flame presence
   
   // do some navigation
+
+//  driveTrain.halt();
+}
+
+void Navigator::chooseAction() {
+  // check conditions necessary for switching controls on the state machine
   
+  switch (state) {
   
+    case LOCATE_CANDLE:
+      
+      if(sensorMast.isFire()) {
+        state = SPIN_TO_CANDLE;
+        driveTrain.halt();
+      }
+      break;
+    case SPIN_TO_CANDLE:
+      
+      
+      // if done turning to candle
+        // state = GET_CLOSE_TO_CANDLE
+        // driveTrain.halt();
+      break;
+    
+    case GET_CLOSE_TO_CANDLE:
+      
+      
+      break;
+    
+    case CALC_POSITION:
+      
+      
+      break;
+    
+    case EXTINGUISH:
+      
+      
+      break;
+      
+    case RETURN:
+      
+      
+      break;
+  }
+}
+
+void Navigator::doBumper() {
+  // bumper controls robot's motion
+}
+
+void Navigator::doVFH(){
   // stuff consequetive readings into an array
   /*
   // every 5 degrees of servo rotation, take a reading
@@ -110,15 +162,4 @@ void Navigator::service() {
 //  Serial.print(sensorMast.getDistance());
 //  Serial.print("\t ");
 //  Serial.println(sensorMast.getServoAngle());
-
-//  delay(10);
-  driveTrain.halt();
-//  driveTrain.moveInDir(0);
-
-
-
 }
-
-
-
-// TODO
