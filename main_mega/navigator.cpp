@@ -13,7 +13,7 @@
 #include "drive_train.h"
 #include "sensor_mast.h"
 #include "sonic_assembler.h"
-#include "vfh.h"
+//#include "vfh.h"
 #include "lcd.h"
 #include "cliff.h"
 
@@ -33,7 +33,7 @@
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
 SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
-VFH vfh; //&myGrid, &myHist);
+//VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
 CliffDetector cliffDetect(RightLight, LeftLight);
 
@@ -48,8 +48,8 @@ void Navigator::setupNavigator() {
   sensorMast.setupMast();
   my_lcd.setupLCD();
   
-  myGrid = vfh.grid_init(50, 1);
-  myHist = vfh.hist_init(2, 20, 10, 5);
+//  myGrid = vfh.grid_init(50, 1);
+//  myHist = vfh.hist_init(2, 20, 10, 5);
   
   lastServoPos = sensorMast.getServoAngle();
   measureCount = 0;
