@@ -40,6 +40,8 @@ class CannonControl
    
    void shootCannon();
    
+   void service();
+   
    private:
    
    Servo winch;
@@ -49,22 +51,25 @@ class CannonControl
    const int flameLimit = 100;
    
    int _gripperPin, _servoPin, _motorPin, _flamePin, _encoderPin1, _encoderPin2;
+   int threshold = 1000;
    int flameVal = 1000;
    int currentFlameVal;
    int currentFlamePos;
    int servoPos;
-   int servoMin = 40;
-   int servoMax = 100;
+   int servoMin = 100;
+   int servoMax = 160;
    int counter = 0;
    
    long oldPosition = 0;
    long newPosition;
    
-   bool locateFlameTure = false;
+   bool locateFlameTrue = true;
    bool drawBackTrue = false;
+   bool drawBackCont = true;
    bool giveSlackTrue = false;
    bool shootCannonTrue = false;
    bool AIMTrue = false;
+   bool cont = true;
    
    bool flameFound = false;
 };

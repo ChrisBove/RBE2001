@@ -22,7 +22,7 @@ class SensorMast
    * @param   pins of servo motor, ultrasonic sensor, and flame sensor
    * @return  sensor mast object
    */
-   SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin);
+   SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin, int LED_indicator, int LED_WIN);
    /**
    * @brief   attaches motors
    * @param   None
@@ -90,7 +90,7 @@ class SensorMast
    /**
    * @brief   calculates the angle the servo is at based on last command
    * @param   None
-   * @return  heading in radians from x-axis: CCW is Positive
+   * @return  heading in degrees from x-axis: CCW is Positive, 90 is forward
    */
    int getServoAngle();
    /**
@@ -105,9 +105,15 @@ class SensorMast
    * @return  None--performs an action
    */
    void indicateNear();
+/**
+   * @brief   makes an LED light up when the candle has been extinguished (will only be called during the CANNON STATE)
+   * @param   None--calls the IR reading
+   * @return  None--performs an action
+   */
+   void indicateWin();
    
   private:
-    int _servoPin, _ultraPin, _flamePin, _digUltraPin;
+    int _servoPin, _ultraPin, _flamePin, _digUltraPin, _LED_indicator, _LED_WIN;
     int reading; // stores distance in inches
     int distance; // stores distance from ultrasonic in cm
     int flameVal; // stores value for flame sensor

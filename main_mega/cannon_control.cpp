@@ -12,7 +12,7 @@
 #include <Servo.h>  // import libraries
 #include <Encoder.h>
 
-#define ENCODER_PIN_1 10
+#define ENCODER_PIN_1 18
 #define ENCODER_PIN_2 23
 
   Encoder canEnc(ENCODER_PIN_1, ENCODER_PIN_2);
@@ -29,8 +29,9 @@ CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int fla
 
 void CannonControl::setupCannon(){
   winch.attach(_motorPin);
-  hinge.attach(_servoPin, 1000, 2000);
+  hinge.attach(_servoPin);
   grip.attach(_gripperPin);
+  grip.write(90);
 }
 
 void CannonControl::checkFlame(){
@@ -38,6 +39,7 @@ void CannonControl::checkFlame(){
   if(flameVal >= currentFlameVal){
     flameVal = currentFlameVal;
     currentFlamePos = servoPos;
+    //Serial.println(flameVal);
   }
 }
 
@@ -46,11 +48,17 @@ void CannonControl::locateFlame(){
   {
     hinge.write(servoPos);
     checkFlame();
-    delay(100); 
+    servoPos++;
   }
   if(servoPos >= servoMax){
-    flameFound = true;
+    if(flameVal <= threshold){
+      flameFound = true;
+    }
+    if(flameFound){
+    locateFlameTrue = false;
     drawBackTrue = true;
+    //AIM();
+    }
   }
 }
 
@@ -58,31 +66,65 @@ void CannonControl::AIM(){
   if(flameFound){
   hinge.write(currentFlamePos);
   }
+  else{
+    AIMTrue = false;
+    shootCannonTrue = true;
+}
 }
 
 void CannonControl::drawBack(){
-  newPosition = canEnc.read();
-  if(counter <= 100){
+  //newPosition = -canEnc.read();
+  if(newPosition <= 1010 && drawBackCont){
+    newPosition = -canEnc.read();
+    winch.write(120);
     if(newPosition != oldPosition){
     oldPosition = newPosition;
-    counter = oldPosition + counter;
-    winch.write(120);
+    Serial.println(newPosition);
   }
   }
-  if(counter >= 100){
-    winch.write(90);
+  else{
+    //winch.write(90);
     grip.write(180);
+    drawBackTrue = false;
+    AIMTrue = true;
   }
 }
 
 void CannonControl::giveSlack(){
-  newPosition = canEnc.read();
-  if(oldPosition >= 0 && newPosition != oldPosition){
+  newPosition = -canEnc.read();
+  if(newPosition >= 0){
+    winch.write(60);
+  if(newPosition != oldPosition){
     oldPosition = newPosition;
-    winch.write(80);
+    Serial.println(newPosition);
   }
+  }
+  else{
+    giveSlackTrue = false;
+    AIMTrue = true;
+}
 }
 
 void CannonControl::shootCannon(){
   grip.write(90);
+  shootCannonTrue = false;
+  locateFlameTrue = true;
+}
+
+void CannonControl::service(){
+  if(locateFlameTrue){
+    locateFlame();
+  }
+  if(drawBackTrue){
+    drawBack();
+  }
+  if(giveSlackTrue){
+    giveSlack();
+  }
+  if(AIMTrue){
+    AIM();
+  }
+  if(shootCannonTrue){
+    shootCannon();
+  }
 }

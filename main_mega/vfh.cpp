@@ -214,7 +214,10 @@ VFH::hist_t * VFH::hist_init(int alpha, double threshold, double density_a,
 	hist = (hist_t *)malloc(sizeof(hist_t));
 
 	/* Is there enough memory for the histogram? */
-	if (NULL == hist) return NULL;
+	if (NULL == hist) {
+          Serial.println("Not enough memory for histogram!");
+          return NULL;
+        }
 
 	/* Initialize the histogram parameters. */
 	hist->alpha = alpha;
@@ -225,7 +228,10 @@ VFH::hist_t * VFH::hist_init(int alpha, double threshold, double density_a,
 	hist->densities = (int *)malloc(hist->sectors * sizeof(int));
 
 	/* And is there enough memory for the densities array? */
-	if (NULL == hist->densities) return NULL;
+	if (NULL == hist->densities) {
+          Serial.println("Not enough memory for density array");
+          return NULL;
+        }
 
 	/* Initialize all densities to 0. */
 	for (i = 0; i < hist->sectors; ++i) {

@@ -13,8 +13,8 @@
 #include "drive_train.h"
 #include "sensor_mast.h"
 #include "sonic_assembler.h"
-#include "vfh.h"
 #include "cannon_control.h"
+//#include "vfh.h"
 #include "lcd.h"
 #include "cliff.h"
 
@@ -31,23 +31,17 @@
 #define FLAME_PIN    A2
 #define LeftLight       10
 #define RightLight      11
-
-// globals:
-VFH::grid_t * myGrid;
-VFH::hist_t * myHist;
+#define LED_indicator    5 // PROBABLY WRONG
+#define LED_WIN          6 // PROBABLY WRONG
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
-SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
+SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
-VFH vfh(); //&myGrid, &myHist);
 CannonControl cannonControl(GRIPPER_PIN, SERVO_PIN, MOTOR_PIN, FLAME_PIN);
-VFH vfh; //&myGrid, &myHist);
+//VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
 CliffDetector cliffDetect(RightLight, LeftLight);
-
-//myGrid = vfh.grid_init(50,10);
-//myHist = vfh.hist_init(2, 20, 10, 5);
 
 
 Navigator::Navigator() {
@@ -60,24 +54,69 @@ void Navigator::setupNavigator() {
   sensorMast.setupMast();
   cannonControl.setupCannon();
   my_lcd.setupLCD();
+  
+//  myGrid = vfh.grid_init(50, 1);
+//  myHist = vfh.hist_init(2, 20, 10, 5);
+  
+  lastServoPos = sensorMast.getServoAngle();
+  measureCount = 0;
 }
 
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
-  cannonControl.drawBack();
+  cannonControl.service();
+  
+  // TODO - add a function that now calls the state machine for Navigator
+  
+  // TODO - check for flame presence
+  
+  // do some navigation
+  
+  
+  // stuff consequetive readings into an array
+  /*
+  // every 5 degrees of servo rotation, take a reading
+  int pos = sensorMast.getServoAngle();
+  if (abs(lastServoPos - pos) >=5) {
+    lastServoPos = pos;
+    assembler.assembleInArray(measureCount, sensorMast.getServoAngle(), sensorMast.getDistance());
+    measureCount ++;
+  }
+  
+  // if we have spun 90 degrees, stuff those measurements into the grid and process.
+  if (measureCount >= 18) { //assembler.arraySize-1) {
+    for (int i = 0; i < assembler.arraySize; i ++) {
+      if (assembler.measure[i].distance != 0)
+        vfh.grid_update(myGrid, driveTrain.getX(), driveTrain.getY(), assembler.measure[i]);
+    }
+    vfh.hist_update(myHist, myGrid);
+    Serial.println(vfh.calculate_direction(myHist, 90));
+    measureCount = 0;
+    assembler.clearArray();
+  }
+  */ 
+  
+//  if (readings 
 //  Serial.print("Grid update: ");
-//  Serial.print(vfh.grid_update(&myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance())) );
+//  Serial.print(vfh.grid_update(myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance())) );
 ////  Serial.print("\t Hist update: ");
-//  vfh.hist_update(&myHist, &myGrid);
+//  vfh.hist_update(myHist, myGrid);
 //  Serial.print("\t Dir: ");
 //  
-//  Serial.println(vfh.calculate_direction(&myHist, 90));
+//  Serial.println(vfh.calculate_direction(myHist, 90));
   
 //  Serial.println(sensorMast.getServoAngle());
+//  Serial.print(sensorMast.getDistance());
+//  Serial.print("\t ");
+//  Serial.println(sensorMast.getServoAngle());
+
 //  delay(10);
   driveTrain.halt();
 //  driveTrain.moveInDir(0);
+
+
+
 }
 
 
