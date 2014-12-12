@@ -104,47 +104,42 @@ void Navigator::service() {
 //  Serial.println(sensorMast.getServoAngle());
 
 //  delay(10);
-  driveTrain.halt();
+//  driveTrain.halt();
 //  driveTrain.moveInDir(0);
-<<<<<<< HEAD
+
 checkFlame();
-=======
 
 
->>>>>>> master
 }
 
 void Navigator::checkFlame()
 {
   if (sensorMast.isFire()==true)
-  { /** 
+  {
  
-     if(DriveTrain.getHeading()< sensorMast.getServoAngle())
-     {
-       Change get servo to a float or a double instead of an int?
-       move mast in direction
+     if(driveTrain.getHeadingDeg()< sensorMast.getServoAngle())
+     { 
+       sensorMast.center();
+       sensorMast.freeze();
+       driveTrain.moveMotors(20, -20);
    
       }
-    else if(DriveTrain.getHeading()< sensorMast.getServoAngle())
-    {
-   move mast in direction
-   }
+    else if(driveTrain.getHeadingDeg()> sensorMast.getServoAngle())
+     {  
+       sensorMast.center();
+       sensorMast.freeze();
+      driveTrain.moveMotors(-20, 20);
+      
+     }
  
    else 
    {
    sensorMast.freeze();
    }
-
-**/
-    sensorMast.freeze();
-    //return true;
+    
   }
-//  
-//  else 
-//  {
-//    return false;
-//  }
-//  
+
+  
 }
 
 // TODO
