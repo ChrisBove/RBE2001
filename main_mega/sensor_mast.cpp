@@ -113,8 +113,7 @@ void SensorMast::indicateNear(){
   { 
   digitalWrite(_LED_indicator, HIGH);   // turn the LED on (HIGH is the voltage level)
   }
-  if (isFire())
-  {
+  else {
   digitalWrite(_LED_indicator, LOW);    // turn the LED off by making the voltage LOW
   } 
 }
