@@ -27,10 +27,10 @@ class VirtualBumper {
    
    /**
    * @brief   Runs all service routines
-   * @param   None
+   * @param   distance from ultra sonic, angle from ultrasonic in degrees
    * @return  None
    */
-   void service();
+   void service(int distance, int angle);
    /**
    * @brief   returns the direction of an obstacle by checking the sensors
    * @param   None
