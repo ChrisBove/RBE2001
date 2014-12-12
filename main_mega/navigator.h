@@ -33,7 +33,7 @@ class Navigator {
    void service();
    /** @brief  checks to see if there is a flame and stops the servo
    * @param   None
-   * @return  None
+   * @return  NONE
    */
    
    void checkFlame();

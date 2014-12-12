@@ -76,16 +76,39 @@ checkFlame();
 =======
 
 
-
 >>>>>>> master
 }
 
 void Navigator::checkFlame()
 {
   if (sensorMast.isFire()==true)
-  {
+  { /** 
+ 
+     if(DriveTrain.getHeading()* equation< sensorMast.getServoAngle())
+     {
+       move mast in direction
+   
+      }
+    else if(DriveTrain.getHeading()* equation< sensorMast.getServoAngle())
+    {
+   move mast in direction
+   }
+ 
+   else 
+   {
+   sensorMast.freeze();
+   }
+
+**/
     sensorMast.freeze();
+    //return true;
   }
+//  
+//  else 
+//  {
+//    return false;
+//  }
+//  
 }
 
 // TODO
