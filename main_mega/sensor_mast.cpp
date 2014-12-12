@@ -14,11 +14,13 @@
 
 Servo servo;
 
-SensorMast::SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin) {
+SensorMast::SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin, int LED_indicator, int LED_WIN) {
   _servoPin = servoPin;
   _ultraPin = ultraPin;
   _flamePin = flamePin;
   _digUltraPin = digUltraPin;
+  _LED_indicator = LED_indicator;
+  _LED_WIN = LED_WIN;
 }
 
 void SensorMast::setupMast() {
@@ -26,6 +28,8 @@ void SensorMast::setupMast() {
   // see http://makezine.com/2014/04/23/arduinos-servo-library-angles-microseconds-and-optional-command-parameters/
   center(); // center the servo
   pinMode(_digUltraPin, INPUT);
+  pinMode(_LED_indicator, OUTPUT);  
+
 }
 
 void SensorMast::service() {
@@ -101,3 +105,19 @@ int SensorMast::getServoAngle() {
 //  int angle = -1*(servoPos - 90); // this is old // take pos, turn into +- angle from center, CCW pos, CW negative
   return servoPos * (PI/180.0); // this is radians
 }
+
+void SensorMast::indicateNear(){
+  if (isFire())
+  { 
+  digitalWrite(_LED_indicator, HIGH);   // turn the LED on (HIGH is the voltage level)
+  }
+  if (isFire())
+  {
+  digitalWrite(_LED_indicator, LOW);    // turn the LED off by making the voltage LOW
+  } 
+}
+
+void SensorMast::indicateWin(){
+  digitalWrite(_LED_WIN, HIGH);   // turn the LED on (HIGH is the voltage level) Is called in the condition that the flame is extinguished, operates with no boolean
+  }
+  

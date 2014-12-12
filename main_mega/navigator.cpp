@@ -25,6 +25,8 @@
 #define DIG_ULTRA_PIN     22
 #define LeftLight       10
 #define RightLight      11
+#define LED_indicator    5 // PROBABLY WRONG
+#define LED_WIN          6 // PROBABLY WRONG
 
 // globals:
 VFH::grid_t * myGrid;
@@ -32,7 +34,7 @@ VFH::hist_t * myHist;
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
-SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN);
+SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
 CliffDetector cliffDetect(RightLight, LeftLight);
 VFH vfh(); //&myGrid, &myHist);
@@ -66,6 +68,9 @@ void Navigator::service() {
 //  delay(10);
   driveTrain.halt();
 //  driveTrain.moveInDir(0);
+
+
+
 }
 
 
