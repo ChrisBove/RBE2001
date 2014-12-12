@@ -44,13 +44,13 @@ class SonicAssembler {
    void clearArray();
    /**
    * @brief   Takes angle of reading and distance reading to stuff into a vecor stored in an array
-   * @param   angle in radians, int distance inches
+   * @param   index to store, angle in radians, int distance inches
    * @return  range measure data type with angle with 90 degree heading and distance
    */
-   void assembleInArray(int angle, int distance);
+   void assembleInArray(int index, int angle, int distance);
    
-   
-   VFH::range_measure measure[180]; // stores measurements for the grid
+   static const int arraySize = 19;
+   VFH::range_measure measure[arraySize]; // stores measurements for the grid
    
   private:
   
