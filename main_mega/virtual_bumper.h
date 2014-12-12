@@ -21,7 +21,8 @@ class VirtualBumper {
    VirtualBumper(int leftIR, int rightIR);
    
    // defines directions of obstacles
-   enum dir { LEFT, CENTER, RIGHT};
+   enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, R_AND_L};
+   enum SIDE {L, R};
    
    /**
    * @brief   Runs all service routines
@@ -34,7 +35,13 @@ class VirtualBumper {
    * @param   None
    * @return  None
    */
-   dir obstacle();
+   DIR obstacle();
+   /**
+   * @brief   returns true if an obstacle is found within a threshold for the IR sensor
+   * @param   side of IR to check 
+   * @return  true if obstacle found within threshold
+   */
+   bool seeObstacle(SIDE side);
    
    
   private:

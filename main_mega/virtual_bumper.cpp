@@ -14,4 +14,6 @@
    _rightIR = rightIR;
  }
  
- 
+ VirtualBumper::DIR VirtualBumper::obstacle() {
+   
+ }
