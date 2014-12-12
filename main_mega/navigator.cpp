@@ -112,19 +112,19 @@ checkFlame();
 
 }
 
-void Navigator::checkFlame()
+void Navigator::centerFlame()
 {
   if (sensorMast.isFire()==true)
   {
  
-     if(driveTrain.getHeadingDeg()< sensorMast.getServoAngle())
+     if(driveTrain.getHeadingDeg()+13< sensorMast.getServoAngle())
      { 
        sensorMast.center();
        sensorMast.freeze();
        driveTrain.moveMotors(20, -20);
    
       }
-    else if(driveTrain.getHeadingDeg()> sensorMast.getServoAngle())
+    else if(driveTrain.getHeadingDeg()+13> sensorMast.getServoAngle())
      {  
        sensorMast.center();
        sensorMast.freeze();
