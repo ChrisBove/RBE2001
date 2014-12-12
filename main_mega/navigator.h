@@ -10,6 +10,7 @@
 #define navigator_h
 
 #include "Arduino.h"
+#include "vfh.h"
 
 class Navigator {
   public:
@@ -37,7 +38,14 @@ class Navigator {
    
   private:
    
-   Navigate state;
+   Navigate state; // state to keep
+   
+   // global pointers
+   VFH::grid * myGrid;
+   VFH::hist * myHist;
+   
+   VFH::grid theGrid; // grid for VFH
+   VFH::hist theHist; // histogram for VFH
   
 };
 
