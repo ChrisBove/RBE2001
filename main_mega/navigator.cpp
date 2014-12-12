@@ -124,18 +124,22 @@ void Navigator::centerFlame()
        driveTrain.moveMotors(20, -20);
    
       }
-    else if(driveTrain.getHeadingDeg()+13> sensorMast.getServoAngle())
+     else 
      {  
+       if(driveTrain.getHeadingDeg()+13> sensorMast.getServoAngle())
+       {  
        sensorMast.center();
        sensorMast.freeze();
       driveTrain.moveMotors(-20, 20);
       
+       }
+       
+       else 
+       {
+       sensorMast.freeze();
+       }
      }
- 
-   else 
-   {
-   sensorMast.freeze();
-   }
+   
     
   }
 
