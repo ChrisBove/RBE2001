@@ -58,13 +58,21 @@ void Navigator::service() {
   
   // TODO - check for flame presence
   
-  Serial.print("Grid update: ");
-  Serial.print(vfh.grid_update(myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance())) );
-//  Serial.print("\t Hist update: ");
-  vfh.hist_update(myHist, myGrid);
-  Serial.print("\t Dir: ");
+  // stuff consequetive readings into an array
+  Serial.print(sensorMast.getDistance());
+  Serial.print("\t ");
+  Serial.println(sensorMast.getServoAngle());
   
-  Serial.println(vfh.calculate_direction(myHist, 90));
+  // every 5 degrees of servo rotation, take a reading
+  // 
+//  if (readings 
+//  Serial.print("Grid update: ");
+//  Serial.print(vfh.grid_update(myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance())) );
+////  Serial.print("\t Hist update: ");
+//  vfh.hist_update(myHist, myGrid);
+//  Serial.print("\t Dir: ");
+//  
+//  Serial.println(vfh.calculate_direction(myHist, 90));
   
 //  Serial.println(sensorMast.getServoAngle());
 //  delay(10);

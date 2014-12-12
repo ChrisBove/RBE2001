@@ -46,6 +46,8 @@ class Navigator {
    
    VFH::grid theGrid; // grid for VFH
    VFH::hist theHist; // histogram for VFH
+   
+   int lastServoPos = 90;
   
 };
 
