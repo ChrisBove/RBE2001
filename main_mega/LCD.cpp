@@ -21,6 +21,7 @@ LCD::LCD() {
 
 void LCD::setupLCD() {
   lcd.begin(16, 2);
+  printLocationNow(0, 0, 0);
 }
 
 void LCD::service() {
@@ -30,20 +31,28 @@ void LCD::service() {
   }
 }
 
-void LCD::printLocationNow(float x, float y, float dir) {
-  updateLocation(x, y, dir);
+void LCD::printLocationNow(float x, float y, float z) {
+  updateLocation(x, y, z);
   refresh();
 }
 
-void LCD::updateLocation(float x, float y, float dir) {
+void LCD::updateLocation(float x, float y, float z) {
   xPos = x;
   yPos = y;
-  angle = dir;
+  zPos = z;
 }
 
 void LCD::refresh() {
-  lcd.setCursor(0, 1);
-  char tempString[8];
-  sprintf(tempString, "%02f:%02f:%02f", xPos, yPos, angle);
-  lcd.print(tempString);
+  lcd.setCursor(0, 0);
+  lcd.print("X:");
+  lcd.print(xPos);
+  lcd.setCursor(0,1);
+  lcd.print("Y:");
+  lcd.print(yPos);
+  lcd.setCursor(9,1);
+  lcd.print("Z:");
+  lcd.print(zPos);
+//  char tempString[11];
+//  sprintf(tempString, "%03d:%03d:%03d", xPos, yPos, angle);
+//  lcd.print(tempString);
 }
