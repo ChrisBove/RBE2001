@@ -19,16 +19,26 @@ class VirtualBumper {
    * @return  virtual bumper object
    */
    VirtualBumper(int leftIR, int rightIR);
+   
+   // defines directions of obstacles
+   enum dir { LEFT, CENTER, RIGHT};
+   
    /**
    * @brief   Runs all service routines
    * @param   None
    * @return  None
    */
    void service();
+   /**
+   * @brief   returns the direction of an obstacle by checking the sensors
+   * @param   None
+   * @return  None
+   */
+   dir obstacle();
    
    
   private:
-   
+   int _leftIR, _rightIR;
   
 };
 

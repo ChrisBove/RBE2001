@@ -10,5 +10,8 @@
  #include "virtual_bumper.h"
  
  VirtualBumper::VirtualBumper(int leftIR, int rightIR) {
-   
+   _leftIR = leftIR;
+   _rightIR = rightIR;
  }
+ 
+ 
