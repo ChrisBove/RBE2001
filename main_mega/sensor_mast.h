@@ -22,7 +22,7 @@ class SensorMast
    * @param   pins of servo motor, ultrasonic sensor, and flame sensor
    * @return  sensor mast object
    */
-   SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin);
+   SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin, int LED_indicator, int LED_WIN);
    /**
    * @brief   attaches motors
    * @param   None
@@ -82,6 +82,12 @@ class SensorMast
    */
    void freeze();
    /**
+   * @brief   re-enables servo rotation
+   * @param   None
+   * @return  None
+   */
+   void unFreeze();
+   /**
    * @brief   calculates the angle the servo is at based on last command
    * @param   None
    * @return  heading in radians from x-axis: CCW is Positive
@@ -99,9 +105,15 @@ class SensorMast
    * @return  None--performs an action
    */
    void indicateNear();
+/**
+   * @brief   makes an LED light up when the candle has been extinguished (will only be called during the CANNON STATE)
+   * @param   None--calls the IR reading
+   * @return  None--performs an action
+   */
+   void indicateWin();
    
   private:
-    int _servoPin, _ultraPin, _flamePin, _digUltraPin;
+    int _servoPin, _ultraPin, _flamePin, _digUltraPin, _LED_indicator, _LED_WIN;
     int reading; // stores distance in inches
     int distance; // stores distance from ultrasonic in cm
     int flameVal; // stores value for flame sensor
@@ -114,6 +126,8 @@ class SensorMast
     int servoDir = 0; // 0 is CW, 1 is CCW
     int maxCW = 23;
     int maxCCW = 180;
+    
+    bool shouldMove = true; // controls if the mast should move
 };
 
 #endif
