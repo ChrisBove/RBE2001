@@ -84,12 +84,13 @@ void Navigator::checkFlame()
   if (sensorMast.isFire()==true)
   { /** 
  
-     if(DriveTrain.getHeading()* equation< sensorMast.getServoAngle())
+     if(DriveTrain.getHeading()< sensorMast.getServoAngle())
      {
+       Change get servo to a float or a double instead of an int?
        move mast in direction
    
       }
-    else if(DriveTrain.getHeading()* equation< sensorMast.getServoAngle())
+    else if(DriveTrain.getHeading()< sensorMast.getServoAngle())
     {
    move mast in direction
    }
