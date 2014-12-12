@@ -82,6 +82,12 @@ class SensorMast
    */
    void freeze();
    /**
+   * @brief   re-enables servo rotation
+   * @param   None
+   * @return  None
+   */
+   void unFreeze();
+   /**
    * @brief   calculates the angle the servo is at based on last command
    * @param   None
    * @return  heading in radians from x-axis: CCW is Positive
@@ -114,6 +120,8 @@ class SensorMast
     int servoDir = 0; // 0 is CW, 1 is CCW
     int maxCW = 23;
     int maxCCW = 180;
+    
+    bool shouldMove = true; // controls if the mast should move
 };
 
 #endif

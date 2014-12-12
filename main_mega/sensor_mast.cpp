@@ -31,7 +31,9 @@ void SensorMast::setupMast() {
 void SensorMast::service() {
   getAnalogDistance();
   getFlameReading();
-  setServoSpin();
+  
+  if (shouldMove)
+    setServoSpin(); // rotate mast if we should
 }
 
 int SensorMast::getAnalogDistance() {
@@ -100,4 +102,13 @@ int SensorMast::getServoAngle() {
   // make it into radians, with heading at pos. x-axis
 //  int angle = -1*(servoPos - 90); // this is old // take pos, turn into +- angle from center, CCW pos, CW negative
   return servoPos * (PI/180.0); // this is radians
+}
+
+void SensorMast::freeze() {
+  shouldMove = false;
+  servo.write(servoPos);
+}
+
+void SensorMast::unFreeze() {
+  shouldMove = true;
 }
