@@ -6,14 +6,21 @@
  ********************************************************************************************************
  */
  
- #include "Arduino.h"
- #include "virtual_bumper.h"
+#include "Arduino.h"
+#include "virtual_bumper.h"
+#include "cliff.h"
  
- VirtualBumper::VirtualBumper(int leftIR, int rightIR) {
-   _leftIR = leftIR;
-   _rightIR = rightIR;
- }
- 
- VirtualBumper::DIR VirtualBumper::obstacle() {
-   
- }
+#define LEFT_CLIFF       10
+#define RIGHT_CLIFF      11
+#define LEFT_IR          4
+#define RIGHT_IR         3
+
+CliffDetector cliffDetect(RIGHT_CLIFF, LEFT_CLIFF);
+
+VirtualBumper::VirtualBumper() {
+  
+}
+
+VirtualBumper::DIR VirtualBumper::obstacle() {
+  
+}

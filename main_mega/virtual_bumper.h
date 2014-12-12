@@ -10,15 +10,16 @@
 #define virtual_bumper_h
 
 #include "Arduino.h"
+#include "cliff.h"
 
 class VirtualBumper {
   public:
    /**
    * @brief   Class constructor for virtual bumper
-   * @param   left IR pin, right IR pin
+   * @param   None
    * @return  virtual bumper object
    */
-   VirtualBumper(int leftIR, int rightIR);
+   VirtualBumper();
    
    // defines directions of obstacles
    enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, R_AND_L};
