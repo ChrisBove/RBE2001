@@ -21,6 +21,7 @@ LCD::LCD() {
 
 void LCD::setupLCD() {
   lcd.begin(16, 2);
+  printLocationNow(0, 0, 0);
 }
 
 void LCD::service() {
