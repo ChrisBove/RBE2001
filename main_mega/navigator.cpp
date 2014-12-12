@@ -107,7 +107,7 @@ void Navigator::service() {
 //  driveTrain.halt();
 //  driveTrain.moveInDir(0);
 
-checkFlame();
+centerFlame();
 
 
 }
