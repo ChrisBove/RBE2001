@@ -38,9 +38,27 @@ class Navigator {
    */
    
    void centerFlame();
+   /**
+   * @brief   makes decision on what the next robot action should be
+   * @param   None
+   * @return  None
+   */
+   void chooseAction();
+   /**
+   * @brief   Services VFH
+   * @param   None
+   * @return  None
+   */
+   void doVFH();
+   /**
+   * @brief   Services bumper
+   * @param   None
+   * @return  None
+   */
+   void doBumper();
    
    // defines possible states of navigation
-   enum Navigate { FIND_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
+   enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
    
   private:
    

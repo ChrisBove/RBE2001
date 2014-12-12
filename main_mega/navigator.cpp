@@ -60,12 +60,61 @@ void Navigator::service() {
   sensorMast.service();
   
   // TODO - add a function that now calls the state machine for Navigator
-  
+  chooseAction();
   // TODO - check for flame presence
   
   // do some navigation
+
+//  driveTrain.halt();
+}
+
+void Navigator::chooseAction() {
+  // check conditions necessary for switching controls on the state machine
   
+  switch (state) {
   
+    case LOCATE_CANDLE:
+      
+      if(sensorMast.isFire()) {
+        state = SPIN_TO_CANDLE;
+        driveTrain.halt();
+      }
+      break;
+    case SPIN_TO_CANDLE:
+      centerFlame();
+      
+      // if done turning to candle
+        // state = GET_CLOSE_TO_CANDLE
+        // driveTrain.halt();
+      break;
+    
+    case GET_CLOSE_TO_CANDLE:
+      
+      
+      break;
+    
+    case CALC_POSITION:
+      
+      
+      break;
+    
+    case EXTINGUISH:
+      
+      
+      break;
+      
+    case RETURN:
+      
+      
+      break;
+  }
+}
+
+void Navigator::doBumper() {
+  // bumper controls robot's motion
+}
+
+void Navigator::doVFH(){
   // stuff consequetive readings into an array
   /*
   // every 5 degrees of servo rotation, take a reading
@@ -103,13 +152,6 @@ void Navigator::service() {
 //  Serial.print("\t ");
 //  Serial.println(sensorMast.getServoAngle());
 
-//  delay(10);
-//  driveTrain.halt();
-//  driveTrain.moveInDir(0);
-
-centerFlame();
-
-
 }
 
 void Navigator::centerFlame()
@@ -130,20 +172,13 @@ void Navigator::centerFlame()
        {  
        sensorMast.center();
        sensorMast.freeze();
-      driveTrain.moveMotors(-20, 20);
-      
+       driveTrain.moveMotors(-20, 20);
        }
-       
        else 
        {
        sensorMast.freeze();
        }
      }
-   
-    
-  }
-
-  
+  } 
 }
 
-// TODO
