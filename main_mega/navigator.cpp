@@ -46,10 +46,11 @@ void Navigator::setupNavigator() {
   sensorMast.setupMast();
   my_lcd.setupLCD();
   
-  myGrid = vfh.grid_init(50,10);
+  myGrid = vfh.grid_init(50, 1);
   myHist = vfh.hist_init(2, 20, 10, 5);
   
   lastServoPos = sensorMast.getServoAngle();
+  measureCount = 0;
 }
 
 void Navigator::service() {
@@ -60,8 +61,11 @@ void Navigator::service() {
   
   // TODO - check for flame presence
   
-  // stuff consequetive readings into an array
+  // do some navigation
   
+  
+  // stuff consequetive readings into an array
+  /*
   // every 5 degrees of servo rotation, take a reading
   int pos = sensorMast.getServoAngle();
   if (abs(lastServoPos - pos) >=5) {
@@ -71,7 +75,7 @@ void Navigator::service() {
   }
   
   // if we have spun 90 degrees, stuff those measurements into the grid and process.
-  if (measureCount >= assembler.arraySize-1) {
+  if (measureCount >= 18) { //assembler.arraySize-1) {
     for (int i = 0; i < assembler.arraySize; i ++) {
       if (assembler.measure[i].distance != 0)
         vfh.grid_update(myGrid, driveTrain.getX(), driveTrain.getY(), assembler.measure[i]);
@@ -81,7 +85,8 @@ void Navigator::service() {
     measureCount = 0;
     assembler.clearArray();
   }
-  // 
+  */ 
+  
 //  if (readings 
 //  Serial.print("Grid update: ");
 //  Serial.print(vfh.grid_update(myGrid, driveTrain.getX(), driveTrain.getY(), assembler.assemble(sensorMast.getServoAngle(), sensorMast.getDistance())) );
@@ -92,9 +97,9 @@ void Navigator::service() {
 //  Serial.println(vfh.calculate_direction(myHist, 90));
   
 //  Serial.println(sensorMast.getServoAngle());
-  Serial.print(sensorMast.getDistance());
-  Serial.print("\t ");
-  Serial.println(sensorMast.getServoAngle());
+//  Serial.print(sensorMast.getDistance());
+//  Serial.print("\t ");
+//  Serial.println(sensorMast.getServoAngle());
 
 //  delay(10);
   driveTrain.halt();
