@@ -32,6 +32,17 @@ class Navigator {
    * @return  None
    */
    void service();
+   /** @brief  checks to see if there is a flame and centers the robut to the flame
+   * @param   None
+   * @return  if ended or not
+   */
+   
+   bool centerFlame();
+   /** @brief  goes to the flame
+   * @param   None
+   * @return  if ended or not
+   */
+   bool goToFlame();
    /**
    * @brief   makes decision on what the next robot action should be
    * @param   None
@@ -54,6 +65,14 @@ class Navigator {
    // defines possible states of navigation
    enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
    
+   /**
+   * @brief   combines robot position and IR sensor ranges to provide X, Y, Z, theta coordinates of the candle
+   * @param   No? 
+   * @return  None: sends LCD output
+   */
+   void candle_Position(); 
+ 
+ 
   private:
    
    Navigate state; // state to keep
@@ -66,7 +85,8 @@ class Navigator {
 //   VFH::hist theHist; // histogram for VFH
    
    int lastServoPos = 90;
-   int measureCount = 0; 
+   int measureCount = 0;
+   int fireCount=0;
   
 };
 

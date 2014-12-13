@@ -91,6 +91,7 @@ int SensorMast::getServoAngle() {
   return servoPos; // angle in degrees
 }
 
+
 void SensorMast::indicateNear(){
   if (isFire())
   { 
@@ -112,4 +113,5 @@ void SensorMast::freeze() {
 
 void SensorMast::unFreeze() {
   shouldMove = true;
+
 }

@@ -24,8 +24,8 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
-#define LED_indicator    5 // PROBABLY WRONG
-#define LED_WIN          6 // PROBABLY WRONG
+#define LED_indicator    25 
+#define LED_WIN          27 
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
@@ -80,7 +80,13 @@ void Navigator::chooseAction() {
       break;
     case SPIN_TO_CANDLE:
       
-      
+      if (centerFlame()){
+        driveTrain.halt();
+       
+        state = GET_CLOSE_TO_CANDLE;
+       
+        Serial.println("Done");
+      }
       // if done turning to candle
         // state = GET_CLOSE_TO_CANDLE
         // driveTrain.halt();
@@ -88,6 +94,13 @@ void Navigator::chooseAction() {
     
     case GET_CLOSE_TO_CANDLE:
       
+      if (goToFlame()){
+        driveTrain.halt();
+        state = CALC_POSITION;
+       
+        Serial.println("Done");
+      }
+       
       
       break;
     
@@ -107,6 +120,48 @@ void Navigator::chooseAction() {
       break;
   }
 }
+
+void Navigator::candle_Position(){
+  float x_coord = driveTrain.getX();
+  float y_coord = driveTrain.getY();
+  float head = driveTrain.getHeading(); 
+  float d = virtualBumper.getDistance()+6.5; 
+  
+  float aim; 
+  float x_ref; 
+  float y_ref; 
+//now the x-y coordinates after the switch from "get close" to "extinguish" procedure
+  
+  if ( 2*PI>= head > 1.5*PI){
+    aim = head - 2*PI;
+    x_ref = d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else if (1.5*PI >= head > PI){
+    aim = -1*(head - PI);
+    x_ref = -d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else if (PI >= head > 0.5*PI){
+    aim = head - 0.5*PI; 
+    x_ref = -d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else{
+    x_ref = d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+//Find the z-coordinate: talk to chris E for the extraction function.
+//  float c_z = 11.5 + d*tan(cannon.giveAngle());
+
+//-------------------------------------------------------------------
+  float c_x = x_coord + x_ref;
+  float c_y = y_coord + y_ref; 
+  float c_z = 0.00;
+  my_lcd.printLocationNow(c_x, c_y, c_z);
+}
+
+
 
 void Navigator::doBumper() {
   // bumper controls robot's motion
@@ -149,4 +204,68 @@ void Navigator::doVFH(){
 //  Serial.print(sensorMast.getDistance());
 //  Serial.print("\t ");
 //  Serial.println(sensorMast.getServoAngle());
+
 }
+
+bool Navigator::centerFlame()
+{ 
+  if (sensorMast.isFire())
+  { 
+     if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
+       { 
+         sensorMast.center();
+         sensorMast.freeze();
+         driveTrain.moveMotors(20, -20);
+         if (sensorMast.isFire() && fireCount==1)
+         {
+           Serial.println( fireCount);
+           return true;  
+         }
+         fireCount++;
+       }
+     if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
+       {  
+         sensorMast.center();
+         sensorMast.freeze();
+         driveTrain.moveMotors(-20, 20);
+         if (sensorMast.isFire() && fireCount==1)
+         {
+           return true;
+         }
+         fireCount++;
+       }
+      if(102< sensorMast.getServoAngle()&& 104> sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
+       {
+         sensorMast.freeze();
+         return true;
+       } 
+  } 
+  else
+  {
+    return false;
+  }
+  return false;
+}
+
+bool Navigator::goToFlame()
+{ driveTrain.moveMotors(20, 21);
+
+if (sensorMast.isFire()==false)
+{
+  driveTrain.halt();
+  centerFlame();
+  Serial.println(virtualBumper.getAnalogDistance());
+}
+
+if ( virtualBumper.getAnalogDistance()<8)
+{
+  
+  driveTrain.halt();
+  return true;
+}
+return false;
+ 
+  
+  
+}
+

@@ -343,3 +343,50 @@ int DriveTrain::forwardABit() {
       break;
   }
 }
+
+
+int DriveTrain::getHeadingDeg() {
+  return (transformed.x *(180.0/PI));
+}
+
+
+//****-------sensor-controlled rotation and translation-------*******//
+//bool DriveTrain::backupX(int reverse){
+//  float strtX = getX();
+//  float strtY = getY();
+//  bool new_command = true; 
+//  
+//  float finalX = sqrt(strtX^2); 
+//  float finalY = sqrt(); 
+//  moveMotors(-40,-40);    
+//  new_command = false; 
+//  
+//  if (){
+//    halt();
+//
+//}
+//}
+
+bool DriveTrain::rotateX(float spin){
+  if (new_command){
+    target = spin + getHeading();
+      new_command = false;
+  }
+  
+  if (spin < 0){
+  moveMotors(25,-25); 
+  }
+  else if (spin > 0){
+  moveMotors(-25,25);
+  }
+  
+  float twist = getHeading();
+  if ((target-0.2) <= twist && twist <= (target+0.2)){
+    halt();
+    new_command = true; 
+    return true; 
+  }
+  return false; 
+}
+
+

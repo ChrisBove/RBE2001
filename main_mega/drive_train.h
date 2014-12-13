@@ -174,6 +174,29 @@ class DriveTrain
    * @return  float of heading: radians from X-axis (CCW is positive)
    */
     float getHeading();
+    /**
+   * @brief   gets heading of robot position
+   * @param   None
+   * @return  int of heading: Deg from X-axis (CCW is positive)
+   */
+    int getHeadingDeg();
+    
+     
+   /**
+   * @brief   commands the robot to backup a specified number of inches, controlled by _____ sensor readings
+   * @param   number of inches desired to reverse
+   * @return  Boolean indicating if the translation has been accomplished
+   */     
+   bool backupX(int reverse);
+   
+   /**
+   * @brief   commands the robot to rotate a specified number of radians, controlled by heading IMU readings
+   * @param   number of radians desired to spin
+   * @return  Boolean indicating if the rotation has been accomplished
+   */
+   bool rotateX(float spin);
+   
+    
     
   private:
   
@@ -231,7 +254,10 @@ class DriveTrain
    * @return  None
    */
     void transform();    
-    
+   
+   
+   bool new_command = true; //This flags whether the position-controlled functions are operating under initial commands
+   float target = 0; 
 };
 
 #endif
