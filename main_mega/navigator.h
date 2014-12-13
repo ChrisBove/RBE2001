@@ -72,7 +72,8 @@ class Navigator {
 //   VFH::hist theHist; // histogram for VFH
    
    int lastServoPos = 90;
-   int measureCount = 0; 
+   int measureCount = 0;
+   int fireCount=0;
   
 };
 

@@ -82,9 +82,10 @@ void Navigator::chooseAction() {
       break;
     case SPIN_TO_CANDLE:
       
-      if (centerFlame()==true){
+      if (centerFlame()){
         state = GET_CLOSE_TO_CANDLE;
-        
+       
+        Serial.println("Done");
       }
       // if done turning to candle
         // state = GET_CLOSE_TO_CANDLE
@@ -92,7 +93,7 @@ void Navigator::chooseAction() {
       break;
     
     case GET_CLOSE_TO_CANDLE:
-      
+      driveTrain.halt();
       
       break;
     
@@ -159,36 +160,45 @@ void Navigator::doVFH(){
 
 bool Navigator::centerFlame()
 { 
-  if (sensorMast.isFire()==true)
-  {
- 
+  if (sensorMast.isFire())
+  { 
      if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
-     { 
+       { 
        sensorMast.center();
        sensorMast.freeze();
        driveTrain.moveMotors(20, -20);
-       
-       return true;
-   
-      }
-     else 
-     {  
-       if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
-       {  
-       sensorMast.center();
-       sensorMast.freeze();
-       driveTrain.moveMotors(-20, 20);
-      
-       return true;
-       }
-       else 
+       if (sensorMast.isFire() && fireCount==1)
        {
-       sensorMast.freeze();
-       return true;
+         Serial.println( fireCount);
+         return true;  
        }
-     }
+       fireCount++;
+       }
+     if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
+       {  
+         sensorMast.center();
+         sensorMast.freeze();
+         driveTrain.moveMotors(-20, 20);
+         if (sensorMast.isFire() && fireCount==1)
+         {
+           return true;
+         }
+         
+         fireCount++;
+       }
+       if(103== sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
+       {
+         
+         sensorMast.freeze();
+         return true;
+       }
+       
   } 
   
-  else false;
+  else
+  {
+    return false;
+  }
+  return false;
 }
 
