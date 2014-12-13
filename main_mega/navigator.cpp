@@ -24,8 +24,8 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
-#define LED_indicator    5 // PROBABLY WRONG
-#define LED_WIN          6 // PROBABLY WRONG
+#define LED_indicator    12 
+#define LED_WIN          13 
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
@@ -142,7 +142,10 @@ void Navigator::candle_Position(){
     x_ref = d*cos(aim);
     y_ref = d*sin(aim);
   }
-//Find the z-coordinate: talk to chris E for the extraction function. 
+//Find the z-coordinate: talk to chris E for the extraction function.
+  float d2 = cannon.getdistance(); 
+  float c_z = //height// + d2*sin(cannon.getangle());
+
 //-------------------------------------------------------------------
   float c_x = x_coord + x_ref;
   float c_y = y_coord + y_ref; 
