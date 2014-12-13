@@ -23,7 +23,7 @@ class VirtualBumper {
    VirtualBumper(int ultraPin, int digUltraPin);
    
    // defines directions of obstacles
-   enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, R_AND_L};
+   enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, L_AND_R, NONE, ALL};
    enum SIDE {L, R};
    
    /**

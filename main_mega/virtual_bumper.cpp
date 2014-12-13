@@ -34,12 +34,28 @@ void VirtualBumper::service() {
 }
 
 VirtualBumper::DIR VirtualBumper::obstacle() {
-  // create a state with all the sensor binary information
-  // return the direction associated with that state
-//  char state = seeObstacle + 
-//  if (side == SIDE::right) {
-//    
-//  }
+  // save sensor states
+  bool right = seeObstacleIR(R);
+  bool left = seeObstacleIR(L);
+  bool center = seeObstacleUS();
+  
+  // check the sensor states and declare obstacle locations
+  if (!right && !left && !center)
+    return NONE;
+  if (right && !left && !center)
+    return RIGHT;
+  if (!right && left && !center)
+    return LEFT;
+  if (!right && !left && center)
+    return CENTER;
+  if (right && left && !center)
+    return L_AND_R;
+  if (right && !left && center)
+    return CENTER_R;
+  if (!right && left && center)
+    return CENTER_L;
+  if (right && left && center)
+    return ALL;
 }
 
 bool VirtualBumper::seeObstacleIR(SIDE side) {
