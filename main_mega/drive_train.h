@@ -187,7 +187,7 @@ class DriveTrain
    * @param   number of inches desired to reverse
    * @return  Boolean indicating if the translation has been accomplished
    */     
-   bool backupX(int reverse);
+   bool backupX(float inches);
    
    /**
    * @brief   commands the robot to rotate a specified number of radians, controlled by heading IMU readings
@@ -258,6 +258,11 @@ class DriveTrain
    
    bool new_command = true; //This flags whether the position-controlled functions are operating under initial commands
    float target = 0; 
+   
+   bool new_pos_command = true;
+   float pos_target_x = 0;
+   float pos_target_y = 0;
+   const float pos_error = 1;
 };
 
 #endif
