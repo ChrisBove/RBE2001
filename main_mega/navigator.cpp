@@ -217,8 +217,9 @@ if (sensorMast.isFire()==false)
   Serial.println(sensorMast.getAnalogDistance());
 }
 
-if ( sensorMast.getAnalogDistance()==6)
+if ( sensorMast.getAnalogDistance()<8)
 {
+  
   driveTrain.halt();
   return true;
 }
