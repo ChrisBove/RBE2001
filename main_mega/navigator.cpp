@@ -212,10 +212,10 @@ if (sensorMast.isFire()==false)
 {
   driveTrain.halt();
   centerFlame();
-  Serial.println(sensorMast.getAnalogDistance());
+  Serial.println(virtualBumper.getAnalogDistance());
 }
 
-if ( sensorMast.getAnalogDistance()<8)
+if ( virtualBumper.getAnalogDistance()<8)
 {
   
   driveTrain.halt();
