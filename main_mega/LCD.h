@@ -33,16 +33,16 @@ class LCD {
    void setupLCD();
    /**
    * @brief   takes in the position and immediately prints it
-   * @param   float x coordinates, float y coordinates, and heading
+   * @param   float x coordinates, float y coordinates, and float z coordinates
    * @return  None
    */
-   void printLocationNow(float x, float y, float dir);
+   void printLocationNow(float x, float y, float z);
    /**
    * @brief   takes in the position and saves it
-   * @param   float x coordinates, float y coordinates, and heading
+   * @param   float x coordinates, float y coordinates, and float z coordinates
    * @return  None
    */
-   void updateLocation(float x, float y, float dir);
+   void updateLocation(float x, float y, float z);
    /**
    * @brief   prints current location
    * @param   None
@@ -55,7 +55,7 @@ class LCD {
    
    float xPos = 0;
    float yPos = 0;
-   float angle = 0;
+   float zPos = 0;
   
 };
 

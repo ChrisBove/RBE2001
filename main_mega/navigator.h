@@ -10,6 +10,7 @@
 #define navigator_h
 
 #include "Arduino.h"
+#include "vfh.h"
 
 class Navigator {
   public:
@@ -31,13 +32,41 @@ class Navigator {
    * @return  None
    */
    void service();
+   /**
+   * @brief   makes decision on what the next robot action should be
+   * @param   None
+   * @return  None
+   */
+   void chooseAction();
+   /**
+   * @brief   Services VFH
+   * @param   None
+   * @return  None
+   */
+   void doVFH();
+   /**
+   * @brief   Services bumper
+   * @param   None
+   * @return  None
+   */
+   void doBumper();
    
    // defines possible states of navigation
-   enum Navigate { FIND_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
+   enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
    
   private:
    
-   Navigate state;
+   Navigate state; // state to keep
+   
+   // global pointers
+//   VFH::grid * myGrid;
+//   VFH::hist * myHist;
+   
+//   VFH::grid theGrid; // grid for VFH
+//   VFH::hist theHist; // histogram for VFH
+   
+   int lastServoPos = 90;
+   int measureCount = 0; 
   
 };
 
