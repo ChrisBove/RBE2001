@@ -115,7 +115,8 @@ class VirtualBumper {
    
    bool stillOnCliff = false; // remains true until a cliff event has fully past
    bool stillBumped = false; // remains true until a bumper event has fully past
-  
+   
+   bool backupDone = false; // true if backup has completed and a reversal can begin
 };
 
 #endif

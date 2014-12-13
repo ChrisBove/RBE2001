@@ -121,23 +121,41 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
     case RIGHT:
       stillOnCliff = true;
       // backup
-      if(drive.rotateX(1.57))// rotate left by 90 degrees, +1.57 radians 
-      // if done moving, update stillOnCliff and onCliff
-        stillOnCliff = false;
+      if (!backupDone) // if not done
+        backupDone = drive.backupX(4); // backup 4 inches
+      if (backupDone) {
+        if(drive.rotateX(1.57)) {// rotate left by 90 degrees, +1.57 radians 
+          // if done moving, update stillOnCliff and onCliff
+          stillOnCliff = false;
+          backupDone = false;
+        }
+      }
       break;
     
     case LEFT:
       stillOnCliff = true;
       // backup
-      if(drive.rotateX(-1.57))// rotate right by 90 degrees, -1.57 radians
-        stillOnCliff = false;
+      if (!backupDone) // if not done
+        backupDone = drive.backupX(4); // backup 4 inches
+      if (backupDone) {
+        if(drive.rotateX(-1.57)) {// rotate right by 90 degrees, -1.57 radians
+          stillOnCliff = false;
+          backupDone = false;
+        }
+      }
       break;
       
     case L_AND_R:
       stillOnCliff = true;
       // backup
-      if(drive.rotateX(PI))// rotate left by 180, +PI radians
-        stillOnCliff = false;
+      if (!backupDone) // if not done
+        backupDone = drive.backupX(4); // backup 4 inches
+      if (backupDone) {
+        if(drive.rotateX(PI)) {// rotate left by 180, +PI radians
+          stillOnCliff = false;
+          backupDone = false;
+        }
+      }
       break;
       
     default:
