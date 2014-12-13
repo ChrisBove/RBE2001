@@ -14,11 +14,9 @@
 
 Servo servo;
 
-SensorMast::SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin, int LED_indicator, int LED_WIN) {
+SensorMast::SensorMast(int servoPin, int flamePin, int LED_indicator, int LED_WIN) {
   _servoPin = servoPin;
-  _ultraPin = ultraPin;
   _flamePin = flamePin;
-  _digUltraPin = digUltraPin;
   _LED_indicator = LED_indicator;
   _LED_WIN = LED_WIN;
 }
@@ -27,31 +25,15 @@ void SensorMast::setupMast() {
   servo.attach(_servoPin); 
   // see http://makezine.com/2014/04/23/arduinos-servo-library-angles-microseconds-and-optional-command-parameters/
   center(); // center the servo
-  pinMode(_digUltraPin, INPUT);
   pinMode(_LED_indicator, OUTPUT);  
 
 }
 
 void SensorMast::service() {
-  getAnalogDistance();
   getFlameReading();
   
   if (shouldMove)
     setServoSpin(); // rotate mast if we should
-}
-
-int SensorMast::getAnalogDistance() {
-  reading = 1+analogRead(_ultraPin)/2; // divide by 2: 4.9mV/2cm
-  return reading;
-}
-
-int SensorMast::getDigitalDistance() {
-  distance = pulseIn(_digUltraPin, HIGH)/58; // 
-  return distance;
-}
-
-int SensorMast::getDistance() {
-  return reading;
 }
 
 int SensorMast::getFlameReading() {

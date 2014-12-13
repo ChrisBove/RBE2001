@@ -15,7 +15,7 @@
 #include "sonic_assembler.h"
 //#include "vfh.h"
 #include "lcd.h"
-#include "cliff.h"
+#include "virtual_bumper.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define LEFT_MOTOR_PIN    10
@@ -24,18 +24,16 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
-#define LeftLight       10
-#define RightLight      11
 #define LED_indicator    5 // PROBABLY WRONG
 #define LED_WIN          6 // PROBABLY WRONG
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
-SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN, LED_indicator, LED_WIN);
+SensorMast sensorMast(MAST_SERVO_PIN, RED_FLAME_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
 //VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
-CliffDetector cliffDetect(RightLight, LeftLight);
+VirtualBumper virtualBumper(ULTRA_PIN, DIG_ULTRA_PIN);
 
 
 Navigator::Navigator() {
