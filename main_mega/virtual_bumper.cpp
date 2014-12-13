@@ -85,9 +85,43 @@ int VirtualBumper::getDistance() {
 
 void VirtualBumper::steerMe(DriveTrain& drive) {
   // check if we have hit a cliff - if so, backup and spin for a bit
-  
-  // otherwise, move forward unless there is an object on our bumper
-  
+  DIR dir = obstacle();
+  switch (dir) {
+    case NONE:
+      // otherwise, move forward unless there is an object on our bumper
+      break;
+    
+    case RIGHT:
+      
+      break;
+    
+    case LEFT:
+      
+      break;
+    case CENTER:
+      
+      break;
+    
+    case CENTER_R:
+      
+      break;
+    
+    case CENTER_L:
+      
+      break;
+    
+    case L_AND_R:
+      
+      break;
+      
+    case ALL:
+      
+      break;
+    
+    default:
+      
+      break;
+  }
   
 }
 
