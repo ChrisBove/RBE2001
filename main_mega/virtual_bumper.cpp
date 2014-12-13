@@ -33,6 +33,24 @@ void VirtualBumper::service() {
   // if angle is within forward direction, use the distance to update obstacle for forward direction
 }
 
+VirtualBumper::DIR VirtualBumper::cliffObstacle() {
+  // save sensor states
+  bool right = cliffDetect.fallingR();
+  bool left = cliffDetect.fallingL();
+  
+  // check the sensor states and declare obstacle locations
+  if (!right && !left )
+    return NONE;
+  if (right && !left)
+    return RIGHT;
+  if (!right && left )
+    return LEFT;
+  if (right && left )
+    return L_AND_R;
+  // otherwise
+    return ALL;
+}
+
 VirtualBumper::DIR VirtualBumper::obstacle() {
   // save sensor states
   bool right = seeObstacleIR(R);
@@ -56,6 +74,8 @@ VirtualBumper::DIR VirtualBumper::obstacle() {
     return CENTER_L;
   if (right && left && center)
     return ALL;
+  // otherwise
+  return ALL;
 }
 
 bool VirtualBumper::seeObstacleIR(SIDE side) {
@@ -89,6 +109,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
   switch (dir) {
     case NONE:
       // otherwise, move forward unless there is an object on our bumper
+      
       break;
     
     case RIGHT:

@@ -46,6 +46,12 @@ class VirtualBumper {
    */
    DIR obstacle();
    /**
+   * @brief   returns the direction of a cliff obstacle by checking the cliff sensors
+   * @param   None
+   * @return  None
+   */
+   DIR cliffObstacle();
+   /**
    * @brief   returns true if an obstacle is found within a threshold for the IR sensor
    * @param   side of IR to check 
    * @return  true if obstacle found within threshold
