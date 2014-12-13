@@ -343,3 +343,8 @@ int DriveTrain::forwardABit() {
       break;
   }
 }
+
+
+int DriveTrain::getHeadingDeg() {
+  return (transformed.x *(180.0/PI));
+}

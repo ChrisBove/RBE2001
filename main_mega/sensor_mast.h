@@ -98,7 +98,7 @@ class SensorMast
     int _servoPin, _flamePin, _LED_indicator, _LED_WIN;
     int flameVal; // stores value for flame sensor
     
-    const int flameThreshold = 850; // flame less than this
+    const int flameThreshold = 825; // flame less than this
     
     const int servoCenter = 103; // center position of servo
     const int servoStep = 1;
