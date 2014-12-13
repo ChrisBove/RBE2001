@@ -83,6 +83,8 @@ void Navigator::chooseAction() {
     case SPIN_TO_CANDLE:
       
       if (centerFlame()){
+        driveTrain.halt();
+       
         state = GET_CLOSE_TO_CANDLE;
        
         Serial.println("Done");
@@ -93,7 +95,14 @@ void Navigator::chooseAction() {
       break;
     
     case GET_CLOSE_TO_CANDLE:
-      driveTrain.halt();
+      
+      if (goToFlame()){
+        driveTrain.halt();
+        state = CALC_POSITION;
+       
+        Serial.println("Done");
+      }
+       
       
       break;
     
@@ -164,15 +173,15 @@ bool Navigator::centerFlame()
   { 
      if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
        { 
-       sensorMast.center();
-       sensorMast.freeze();
-       driveTrain.moveMotors(20, -20);
-       if (sensorMast.isFire() && fireCount==1)
-       {
-         Serial.println( fireCount);
-         return true;  
-       }
-       fireCount++;
+         sensorMast.center();
+         sensorMast.freeze();
+         driveTrain.moveMotors(20, -20);
+         if (sensorMast.isFire() && fireCount==1)
+         {
+           Serial.println( fireCount);
+           return true;  
+         }
+         fireCount++;
        }
      if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
        {  
@@ -183,22 +192,39 @@ bool Navigator::centerFlame()
          {
            return true;
          }
-         
          fireCount++;
        }
-       if(103== sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
+      if(102< sensorMast.getServoAngle()&& 104> sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
        {
-         
          sensorMast.freeze();
          return true;
-       }
-       
+       } 
   } 
-  
   else
   {
     return false;
   }
   return false;
+}
+
+bool Navigator::goToFlame()
+{ driveTrain.moveMotors(20, 21);
+
+if (sensorMast.isFire()==false)
+{
+  driveTrain.halt();
+  centerFlame();
+  Serial.println(sensorMast.getAnalogDistance());
+}
+
+if ( sensorMast.getAnalogDistance()==6)
+{
+  driveTrain.halt();
+  return true;
+}
+return false;
+ 
+  
+  
 }
 

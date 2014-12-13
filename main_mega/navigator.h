@@ -34,10 +34,15 @@ class Navigator {
    void service();
    /** @brief  checks to see if there is a flame and centers the robut to the flame
    * @param   None
-   * @return  NONE
+   * @return  if ended or not
    */
    
    bool centerFlame();
+   /** @brief  goes to the flame
+   * @param   None
+   * @return  if ended or not
+   */
+   bool goToFlame();
    /**
    * @brief   makes decision on what the next robot action should be
    * @param   None
