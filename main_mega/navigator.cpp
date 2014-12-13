@@ -13,6 +13,7 @@
 #include "drive_train.h"
 #include "sensor_mast.h"
 #include "sonic_assembler.h"
+#include "cannon_control.h"
 //#include "vfh.h"
 #include "lcd.h"
 #include "virtual_bumper.h"
@@ -22,15 +23,20 @@
 #define RIGHT_MOTOR_PIN   11
 #define MAST_SERVO_PIN    9
 #define RED_FLAME_PIN     0
-#define ULTRA_PIN        1
+#define ULTRA_PIN         1
 #define DIG_ULTRA_PIN     22
-#define LED_indicator    25 
-#define LED_WIN          27 
+#define GRIPPER_PIN       8
+#define SERVO_PIN         7
+#define MOTOR_PIN         6
+#define FLAME_PIN         A2
+#define LED_indicator     25 
+#define LED_WIN           27 
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
 SensorMast sensorMast(MAST_SERVO_PIN, RED_FLAME_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
+CannonControl cannonControl(GRIPPER_PIN, SERVO_PIN, MOTOR_PIN, FLAME_PIN);
 //VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
 VirtualBumper virtualBumper(ULTRA_PIN, DIG_ULTRA_PIN);
@@ -44,6 +50,7 @@ void Navigator::setupNavigator() {
   driveTrain.setupDriveTrain(); // attach motors in drivetrain
   driveTrain.halt();         // stop the drivetrain motors
   sensorMast.setupMast();
+  cannonControl.setupCannon();
   my_lcd.setupLCD();
   
 //  myGrid = vfh.grid_init(50, 1);
@@ -56,9 +63,10 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
+  cannonControl.service();
   
   // TODO - add a function that now calls the state machine for Navigator
-  chooseAction();
+  //chooseAction();
   // TODO - check for flame presence
   
   // do some navigation
@@ -80,13 +88,7 @@ void Navigator::chooseAction() {
       break;
     case SPIN_TO_CANDLE:
       
-      if (centerFlame()){
-        driveTrain.halt();
-       
-        state = GET_CLOSE_TO_CANDLE;
-       
-        Serial.println("Done");
-      }
+      
       // if done turning to candle
         // state = GET_CLOSE_TO_CANDLE
         // driveTrain.halt();
@@ -94,13 +96,6 @@ void Navigator::chooseAction() {
     
     case GET_CLOSE_TO_CANDLE:
       
-      if (goToFlame()){
-        driveTrain.halt();
-        state = CALC_POSITION;
-       
-        Serial.println("Done");
-      }
-       
       
       break;
     
@@ -204,68 +199,4 @@ void Navigator::doVFH(){
 //  Serial.print(sensorMast.getDistance());
 //  Serial.print("\t ");
 //  Serial.println(sensorMast.getServoAngle());
-
 }
-
-bool Navigator::centerFlame()
-{ 
-  if (sensorMast.isFire())
-  { 
-     if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
-       { 
-         sensorMast.center();
-         sensorMast.freeze();
-         driveTrain.moveMotors(20, -20);
-         if (sensorMast.isFire() && fireCount==1)
-         {
-           Serial.println( fireCount);
-           return true;  
-         }
-         fireCount++;
-       }
-     if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
-       {  
-         sensorMast.center();
-         sensorMast.freeze();
-         driveTrain.moveMotors(-20, 20);
-         if (sensorMast.isFire() && fireCount==1)
-         {
-           return true;
-         }
-         fireCount++;
-       }
-      if(102< sensorMast.getServoAngle()&& 104> sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
-       {
-         sensorMast.freeze();
-         return true;
-       } 
-  } 
-  else
-  {
-    return false;
-  }
-  return false;
-}
-
-bool Navigator::goToFlame()
-{ driveTrain.moveMotors(20, 21);
-
-if (sensorMast.isFire()==false)
-{
-  driveTrain.halt();
-  centerFlame();
-  Serial.println(virtualBumper.getAnalogDistance());
-}
-
-if ( virtualBumper.getAnalogDistance()<8)
-{
-  
-  driveTrain.halt();
-  return true;
-}
-return false;
- 
-  
-  
-}
-
