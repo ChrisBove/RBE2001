@@ -44,6 +44,10 @@ class CannonControl
    
    int giveAngle();
    
+   void resetCannon();
+   
+   void slackComp();
+   
    private:
    
    Servo winch;
@@ -58,12 +62,13 @@ class CannonControl
    int currentFlameVal;
    int currentFlamePos;
    int servoPos;
-   int servoMin = 100;
+   int servoMin = 90;
    int servoMax = 160;
    int counter = 0;
    int gripClosed = 0;
    int aimCount = 0;
    int cannonStartNum = 0;
+   int num = 0;
    
    long oldPosition = 0;
    long newPosition;

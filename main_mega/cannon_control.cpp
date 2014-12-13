@@ -26,13 +26,19 @@ CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int fla
   _encoderPin2 = ENCODER_PIN_2;
 }
 
+void CannonControl::resetCannon(){
+  flameFound = false;
+  servoPos = 0;
+  currentFlameVal = 1000;
+  slackComp();
+}
 
 void CannonControl::setupCannon(){
   winch.attach(_motorPin);
   hinge.attach(_servoPin);
   grip.attach(_gripperPin);
   grip.write(90);
-  servoPos = servoMin;
+  //servoPos = servoMin;
 }
 
 void CannonControl::checkFlame(){
@@ -45,7 +51,7 @@ void CannonControl::checkFlame(){
 }
 
 void CannonControl::locateFlame(){
-  flameFound = false;
+  //flameFound = false;
 //  if(cannonStart){
 //    servoPos = servoMin;
 //    cannonStart = false;
@@ -92,7 +98,7 @@ void CannonControl::AIM(){
 void CannonControl::drawBack(){
   //newPosition = -canEnc.read();
   //hinge.write(servoMax);
-  if(newPosition <= 1000 && drawBackCont){
+  if(newPosition <= 1010 && drawBackCont){
     newPosition = -canEnc.read();
     winch.write(120);
     if(newPosition != oldPosition){
@@ -112,9 +118,16 @@ void CannonControl::drawBack(){
   }
 }
 
+void CannonControl::slackComp(){
+  if(num <= 5){
+    winch.write(120);
+    num ++;
+  }
+}
+
 void CannonControl::giveSlack(){
   //newPosition = -canEnc.read();
-  if(newPosition >= 0){
+  if(newPosition >= 70){
     newPosition = -canEnc.read();
     winch.write(60);
   if(newPosition != oldPosition){
@@ -122,7 +135,7 @@ void CannonControl::giveSlack(){
     Serial.println(newPosition);
   }
   }
-  if(newPosition < 0){
+  if(newPosition < 70){
     winch.write(90);
     giveSlackTrue = false;
     AIMTrue = true;
@@ -136,13 +149,14 @@ void CannonControl::shootCannon(){
   }
   else{
   shootCannonTrue = false;
-  servoPos = servoMin;
-  locateFlameTrue = true;
+  //resetCannon();
+//  servoPos = 0;
+  //locateFlameTrue = true;
   }
 }
 
-int CannonControl::giveAngle(){ //19cm high
-   return currentFlamePos;
+int CannonControl::giveAngle(){ //19cm high 20 cm out, 28 degrees at max, 1.777 ratio
+   return currentFlamePos/5.71;
 }
 
 void CannonControl::service(){
