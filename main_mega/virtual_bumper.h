@@ -49,6 +49,7 @@ class VirtualBumper {
    * @param   side of IR to check 
    * @return  true if obstacle found within threshold
    */
+   bool seeObstacle(SIDE side);
    
    // Ultrasonic functions
    /**
@@ -69,9 +70,6 @@ class VirtualBumper {
    * @return  int distance in inches
    */
    int getDistance();
-   
-   
-   bool seeObstacle(SIDE side);
    
    
   private:
