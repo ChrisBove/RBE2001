@@ -17,9 +17,6 @@
 
 CliffDetector cliffDetect(RIGHT_CLIFF, LEFT_CLIFF);
 
-// 2.3V for 10cm object, 2.75V for 8cm object, 3.15V for 6cm and below 6 cm obstacles voltage again decreases
-const int threshold = 563; // object if greater than this threshold
-
 VirtualBumper::VirtualBumper(int ultraPin, int digUltraPin) {
   _ultraPin = ultraPin;
   _digUltraPin = digUltraPin;
@@ -32,7 +29,7 @@ void VirtualBumper::setupBumper() {
 
 void VirtualBumper::service() {
   // read all sensors
-  getAnalogDistance();
+//  getAnalogDistance();
   // if angle is within forward direction, use the distance to update obstacle for forward direction
 }
 
@@ -45,11 +42,15 @@ VirtualBumper::DIR VirtualBumper::obstacle() {
 //  }
 }
 
-bool VirtualBumper::seeObstacle(SIDE side) {
+bool VirtualBumper::seeObstacleIR(SIDE side) {
   if (side == R)
-    return analogRead(LEFT_IR) > threshold;
+    return analogRead(LEFT_IR) > sharpThreshold;
   else
-    return analogRead(RIGHT_IR) > threshold;
+    return analogRead(RIGHT_IR) > sharpThreshold;
+}
+
+bool VirtualBumper::seeObstacleUS() {
+  return getAnalogDistance() < ultraThreshold;
 }
 
 int VirtualBumper::getAnalogDistance() {
@@ -67,5 +68,13 @@ int VirtualBumper::getDistance() {
 }
 
 void VirtualBumper::steerMe(DriveTrain& drive) {
+  // check if we have hit a cliff - if so, backup and spin for a bit
+  
+  // otherwise, move forward unless there is an object on our bumper
+  
+  
+}
+
+void VirtualBumper::wallFollow(DriveTrain& drive) {
   
 }
