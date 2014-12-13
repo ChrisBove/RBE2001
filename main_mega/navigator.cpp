@@ -81,8 +81,11 @@ void Navigator::chooseAction() {
       }
       break;
     case SPIN_TO_CANDLE:
-      centerFlame();
       
+      if (centerFlame()==true){
+        state = SPIN_TO_CANDLE;
+        
+      }
       // if done turning to candle
         // state = GET_CLOSE_TO_CANDLE
         // driveTrain.halt();
@@ -154,31 +157,38 @@ void Navigator::doVFH(){
 
 }
 
-void Navigator::centerFlame()
-{
+bool Navigator::centerFlame()
+{ 
   if (sensorMast.isFire()==true)
   {
  
-     if(driveTrain.getHeadingDeg()+13< sensorMast.getServoAngle())
+     if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
      { 
        sensorMast.center();
        sensorMast.freeze();
        driveTrain.moveMotors(20, -20);
+       
+       return true;
    
       }
      else 
      {  
-       if(driveTrain.getHeadingDeg()+13> sensorMast.getServoAngle())
+       if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
        {  
        sensorMast.center();
        sensorMast.freeze();
        driveTrain.moveMotors(-20, 20);
+      
+       return true;
        }
        else 
        {
        sensorMast.freeze();
+       return true;
        }
      }
   } 
+  
+  else false;
 }
 

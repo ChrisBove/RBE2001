@@ -37,7 +37,7 @@ class Navigator {
    * @return  NONE
    */
    
-   void centerFlame();
+   bool centerFlame();
    /**
    * @brief   makes decision on what the next robot action should be
    * @param   None
