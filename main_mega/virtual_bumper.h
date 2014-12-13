@@ -109,6 +109,12 @@ class VirtualBumper {
    const int sharpThreshold = 563; // object if greater than this threshold at 8cm
    
    const int ultraThreshold = 5; // object if less than 5 inches
+   
+   DIR cliffDir; // stores last direction of cliff obstacle
+   DIR bumperDir; // stores last direction of bumper obstacle
+   
+   bool stillOnCliff = false; // remains true until a cliff event has fully past
+   bool stillBumped = false; // remains true until a bumper event has fully past
   
 };
 
