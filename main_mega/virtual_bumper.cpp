@@ -121,7 +121,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
     case RIGHT:
       stillOnCliff = true;
       // backup
-      // rotate left by 90 degrees, +1.57 radians 
+      drive.rotateX(1.57);// rotate left by 90 degrees, +1.57 radians 
       // if done moving, update stillOnCliff and onCliff
       stillOnCliff = false;
       break;
@@ -129,14 +129,14 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
     case LEFT:
       stillOnCliff = true;
       // backup
-      // rotate right by 90 degrees, -1.57 radians
+      drive.rotateX(-1.57);// rotate right by 90 degrees, -1.57 radians
       stillOnCliff = false;
       break;
       
     case L_AND_R:
       stillOnCliff = true;
       // backup
-      // rotate left by 180, +PI radians
+      drive.rotateX(PI);// rotate left by 180, +PI radians
       stillOnCliff = false;
       break;
       
