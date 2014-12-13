@@ -16,21 +16,28 @@ class VirtualBumper {
   public:
    /**
    * @brief   Class constructor for virtual bumper
-   * @param   None
+   * @param   pin of analog ultrasonic sensor, digital pin of ultrasonic
    * @return  virtual bumper object
    */
-   VirtualBumper();
+   VirtualBumper(int ultraPin, int digUltraPin);
    
    // defines directions of obstacles
    enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, R_AND_L};
    enum SIDE {L, R};
    
    /**
-   * @brief   Runs all service routines
-   * @param   distance from ultra sonic, angle from ultrasonic in degrees
+   * @brief   Attaches pins required. Should be called in main setup
+   * @param   None
    * @return  None
    */
-   void service(int distance, int angle);
+   void setupBumper();
+   
+   /**
+   * @brief   Runs all service routines, reading sensors
+   * @param   None
+   * @return  None
+   */
+   void service();
    /**
    * @brief   returns the direction of an obstacle by checking the sensors
    * @param   None
@@ -42,11 +49,36 @@ class VirtualBumper {
    * @param   side of IR to check 
    * @return  true if obstacle found within threshold
    */
+   
+   // Ultrasonic functions
+   /**
+   * @brief   grabs distance from ultrasonic analog port
+   * @param   None
+   * @return  int distance in inches
+   */
+   int getAnalogDistance();
+   /**
+   * @brief   grabs distance from ultrasonic PW
+   * @param   None
+   * @return  int distance in cm
+   */
+   int getDigitalDistance();
+   /**
+   * @brief   returns reading from analog pin
+   * @param   None
+   * @return  int distance in inches
+   */
+   int getDistance();
+   
+   
    bool seeObstacle(SIDE side);
    
    
   private:
-   int _leftIR, _rightIR;
+   int _leftIR, _rightIR, _ultraPin, _digUltraPin;
+   
+   int reading; // stores distance in inches
+   int distance; // stores distance from ultrasonic in cm
   
 };
 

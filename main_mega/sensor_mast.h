@@ -19,10 +19,10 @@ class SensorMast
   public:
    /**
    * @brief   Class constructor for sensor mast
-   * @param   pins of servo motor, ultrasonic sensor, and flame sensor
+   * @param   pins of servo motor, flame sensor, and LED's
    * @return  sensor mast object
    */
-   SensorMast(int servoPin, int ultraPin, int flamePin, int digUltraPin, int LED_indicator, int LED_WIN);
+   SensorMast(int servoPin, int flamePin, int LED_indicator, int LED_WIN);
    /**
    * @brief   attaches motors
    * @param   None
@@ -37,24 +37,6 @@ class SensorMast
    void service();
    
    
-   /**
-   * @brief   grabs distance from ultrasonic analog port
-   * @param   None
-   * @return  int distance in inches
-   */
-   int getAnalogDistance();
-   /**
-   * @brief   grabs distance from ultrasonic PW
-   * @param   None
-   * @return  int distance in cm
-   */
-   int getDigitalDistance();
-   /**
-   * @brief   returns reading from analog pin
-   * @param   None
-   * @return  int distance in inches
-   */
-   int getDistance();
    /**
    * @brief   grabs flame reading from sensor
    * @param   None
@@ -113,9 +95,7 @@ class SensorMast
    void indicateWin();
    
   private:
-    int _servoPin, _ultraPin, _flamePin, _digUltraPin, _LED_indicator, _LED_WIN;
-    int reading; // stores distance in inches
-    int distance; // stores distance from ultrasonic in cm
+    int _servoPin, _flamePin, _LED_indicator, _LED_WIN;
     int flameVal; // stores value for flame sensor
     
     const int flameThreshold = 850; // flame less than this
