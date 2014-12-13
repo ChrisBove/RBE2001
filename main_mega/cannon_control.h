@@ -42,6 +42,8 @@ class CannonControl
    
    void service();
    
+   int getServoPos();
+   
    private:
    
    Servo winch;

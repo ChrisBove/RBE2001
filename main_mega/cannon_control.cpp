@@ -32,6 +32,7 @@ void CannonControl::setupCannon(){
   hinge.attach(_servoPin);
   grip.attach(_gripperPin);
   grip.write(90);
+  servoPos = servoMin;
 }
 
 void CannonControl::checkFlame(){
