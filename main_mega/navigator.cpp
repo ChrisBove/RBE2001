@@ -39,12 +39,12 @@
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
-SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN, LED_indicator, LED_WIN);
+SensorMast sensorMast(MAST_SERVO_PIN, RED_FLAME_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
 CannonControl cannonControl(GRIPPER_PIN, SERVO_PIN, MOTOR_PIN, FLAME_PIN);
 //VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
-VirtualBumper virtualBumper();
+VirtualBumper virtualBumper(ULTRA_PIN, DIG_ULTRA_PIN);
 
 
 Navigator::Navigator() {
