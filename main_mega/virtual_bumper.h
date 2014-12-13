@@ -23,7 +23,7 @@ class VirtualBumper {
    VirtualBumper(int ultraPin, int digUltraPin);
    
    // defines directions of obstacles
-   enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, R_AND_L};
+   enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, L_AND_R, NONE, ALL};
    enum SIDE {L, R};
    
    /**
@@ -50,7 +50,13 @@ class VirtualBumper {
    * @param   side of IR to check 
    * @return  true if obstacle found within threshold
    */
-   bool seeObstacle(SIDE side);
+   bool seeObstacleIR(SIDE side);
+   /**
+   * @brief   returns true if an obstacle is sensed within a threshold for the ultrasonic sensor
+   * @param   None
+   * @return  true if obstacle found within threshold
+   */
+   bool seeObstacleUS();
    
    // Ultrasonic functions
    /**
@@ -79,6 +85,12 @@ class VirtualBumper {
    * @return  None
    */
    void steerMe(DriveTrain& drive);
+   /**
+   * @brief   Controls the driveTrain to follow walls
+   * @param   None
+   * @return  None
+   */
+   void wallFollow(DriveTrain& drive);
    
    
   private:
@@ -86,6 +98,11 @@ class VirtualBumper {
    
    int reading; // stores distance in inches
    int distance; // stores distance from ultrasonic in cm
+   
+   // 2.3V for 10cm object, 2.75V for 8cm object, 3.15V for 6cm and below 6 cm obstacles voltage again decreases
+   const int sharpThreshold = 563; // object if greater than this threshold at 8cm
+   
+   const int ultraThreshold = 5; // object if less than 5 inches
   
 };
 
