@@ -141,8 +141,9 @@ void CannonControl::shootCannon(){
   }
 }
 
-int giveAngle(){ //19cm high
-   
+int CannonControl::giveAngle(){ //19cm high
+   return currentFlamePos;
+}
 
 void CannonControl::service(){
   if(locateFlameTrue){
