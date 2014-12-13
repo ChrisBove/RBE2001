@@ -125,26 +125,25 @@ void Navigator::candle_Position(){
   float x_coord = driveTrain.getX();
   float y_coord = driveTrain.getY();
   float head = driveTrain.getHeading(); 
-  float d = sensorMast.getDistance()+6.5; 
+  float d = virtualBumper.getDistance()+6.5; 
   
   float aim; 
   float x_ref; 
   float y_ref; 
 //now the x-y coordinates after the switch from "get close" to "extinguish" procedure
-  const float pi = 3.14159;
-  float x;
-  if ( 2*pi>= head > 1.5*pi){
-    aim = head - 2*pi;
+  
+  if ( 2*PI>= head > 1.5*PI){
+    aim = head - 2*PI;
     x_ref = d*cos(aim);
     y_ref = d*sin(aim);
   }
-  else if (1.5*pi >= head > pi){
-    aim = -1*(head - pi);
+  else if (1.5*PI >= head > PI){
+    aim = -1*(head - PI);
     x_ref = -d*cos(aim);
     y_ref = d*sin(aim);
   }
-  else if (pi >= head > 0.5*pi){
-    aim = head - 0.5*pi; 
+  else if (PI >= head > 0.5*PI){
+    aim = head - 0.5*PI; 
     x_ref = -d*cos(aim);
     y_ref = d*sin(aim);
   }
@@ -159,7 +158,7 @@ void Navigator::candle_Position(){
   float c_x = x_coord + x_ref;
   float c_y = y_coord + y_ref; 
   float c_z = 0.00;
-  my_lcd.updateLocation(c_x, c_y, c_z);
+  my_lcd.printLocationNow(c_x, c_y, c_z);
 }
 
 
