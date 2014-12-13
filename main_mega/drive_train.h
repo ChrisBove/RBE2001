@@ -174,6 +174,12 @@ class DriveTrain
    * @return  float of heading: radians from X-axis (CCW is positive)
    */
     float getHeading();
+    /**
+   * @brief   gets heading of robot position
+   * @param   None
+   * @return  int of heading: Deg from X-axis (CCW is positive)
+   */
+    int getHeadingDeg();
     
   private:
   

@@ -29,11 +29,11 @@
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
-SensorMast sensorMast(MAST_SERVO_PIN, ULTRA_PIN, RED_FLAME_PIN, DIG_ULTRA_PIN, LED_indicator, LED_WIN);
+SensorMast sensorMast(MAST_SERVO_PIN, RED_FLAME_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
 //VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
-VirtualBumper virtualBumper();
+VirtualBumper virtualBumper(ULTRA_PIN, DIG_ULTRA_PIN);
 
 
 Navigator::Navigator() {
@@ -80,7 +80,13 @@ void Navigator::chooseAction() {
       break;
     case SPIN_TO_CANDLE:
       
-      
+      if (centerFlame()){
+        driveTrain.halt();
+       
+        state = GET_CLOSE_TO_CANDLE;
+       
+        Serial.println("Done");
+      }
       // if done turning to candle
         // state = GET_CLOSE_TO_CANDLE
         // driveTrain.halt();
@@ -88,6 +94,13 @@ void Navigator::chooseAction() {
     
     case GET_CLOSE_TO_CANDLE:
       
+      if (goToFlame()){
+        driveTrain.halt();
+        state = CALC_POSITION;
+       
+        Serial.println("Done");
+      }
+       
       
       break;
     
@@ -192,4 +205,68 @@ void Navigator::doVFH(){
 //  Serial.print(sensorMast.getDistance());
 //  Serial.print("\t ");
 //  Serial.println(sensorMast.getServoAngle());
+
 }
+
+bool Navigator::centerFlame()
+{ 
+  if (sensorMast.isFire())
+  { 
+     if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
+       { 
+         sensorMast.center();
+         sensorMast.freeze();
+         driveTrain.moveMotors(20, -20);
+         if (sensorMast.isFire() && fireCount==1)
+         {
+           Serial.println( fireCount);
+           return true;  
+         }
+         fireCount++;
+       }
+     if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
+       {  
+         sensorMast.center();
+         sensorMast.freeze();
+         driveTrain.moveMotors(-20, 20);
+         if (sensorMast.isFire() && fireCount==1)
+         {
+           return true;
+         }
+         fireCount++;
+       }
+      if(102< sensorMast.getServoAngle()&& 104> sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
+       {
+         sensorMast.freeze();
+         return true;
+       } 
+  } 
+  else
+  {
+    return false;
+  }
+  return false;
+}
+
+bool Navigator::goToFlame()
+{ driveTrain.moveMotors(20, 21);
+
+if (sensorMast.isFire()==false)
+{
+  driveTrain.halt();
+  centerFlame();
+  Serial.println(virtualBumper.getAnalogDistance());
+}
+
+if ( virtualBumper.getAnalogDistance()<8)
+{
+  
+  driveTrain.halt();
+  return true;
+}
+return false;
+ 
+  
+  
+}
+
