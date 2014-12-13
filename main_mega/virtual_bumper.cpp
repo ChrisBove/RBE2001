@@ -162,35 +162,35 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       case RIGHT:
         stillBumped = true;
         // backup a bit
-        // rotate left 30 degrees, 0.52 radians
+        drive.rotateX(0.52);// rotate left 30 degrees, 0.52 radians
         stillBumped = false;
         break;
       
       case LEFT:
         stillBumped = true;
         // backup a bit
-        // rotate right 30 degrees, -0.52
+        drive.rotateX(-0.52);// rotate right 30 degrees, -0.52
         stillBumped = false;
         break;
         
       case CENTER:
         stillBumped = true;
         // backup a bit
-        // rotate left 90 degrees, 1.57
+        drive.rotateX(1.57);// rotate left 90 degrees, 1.57
         stillBumped = false;
         break;
       
       case CENTER_R:
         stillBumped = true;
         // backup a bit
-        // rotate left 60 degrees, 1.05
+        drive.rotateX(1.05);// rotate left 60 degrees, 1.05
         stillBumped = false;
         break;
       
       case CENTER_L:
         stillBumped = true;
         // backup a bit
-        // rotate right 60 degrees, -1.05
+        drive.rotateX(-1.05);// rotate right 60 degrees, -1.05
         stillBumped = false;
         break;
       
@@ -198,14 +198,14 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
         // that just happened?
         stillBumped = true;
         // backup a bit more
-        // rotate left 90 degrees, 1.57
+        drive.rotateX(1.57);// rotate left 90 degrees, 1.57
         stillBumped = false;
         break;
         
       case ALL:
         // weep quietly
         stillBumped = true;
-        // rotate left 180 degrees, PI radians
+        drive.rotateX(PI);// rotate left 180 degrees, PI radians
         stillBumped = false;
         break;
       
