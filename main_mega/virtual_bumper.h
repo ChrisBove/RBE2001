@@ -46,6 +46,12 @@ class VirtualBumper {
    */
    DIR obstacle();
    /**
+   * @brief   returns the direction of a cliff obstacle by checking the cliff sensors
+   * @param   None
+   * @return  None
+   */
+   DIR cliffObstacle();
+   /**
    * @brief   returns true if an obstacle is found within a threshold for the IR sensor
    * @param   side of IR to check 
    * @return  true if obstacle found within threshold
@@ -103,6 +109,12 @@ class VirtualBumper {
    const int sharpThreshold = 563; // object if greater than this threshold at 8cm
    
    const int ultraThreshold = 5; // object if less than 5 inches
+   
+   DIR cliffDir; // stores last direction of cliff obstacle
+   DIR bumperDir; // stores last direction of bumper obstacle
+   
+   bool stillOnCliff = false; // remains true until a cliff event has fully past
+   bool stillBumped = false; // remains true until a bumper event has fully past
   
 };
 

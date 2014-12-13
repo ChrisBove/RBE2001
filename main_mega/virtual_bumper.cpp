@@ -33,6 +33,24 @@ void VirtualBumper::service() {
   // if angle is within forward direction, use the distance to update obstacle for forward direction
 }
 
+VirtualBumper::DIR VirtualBumper::cliffObstacle() {
+  // save sensor states
+  bool right = cliffDetect.fallingR();
+  bool left = cliffDetect.fallingL();
+  
+  // check the sensor states and declare obstacle locations
+  if (!right && !left )
+    return NONE;
+  if (right && !left)
+    return RIGHT;
+  if (!right && left )
+    return LEFT;
+  if (right && left )
+    return L_AND_R;
+  // otherwise
+    return ALL;
+}
+
 VirtualBumper::DIR VirtualBumper::obstacle() {
   // save sensor states
   bool right = seeObstacleIR(R);
@@ -56,6 +74,8 @@ VirtualBumper::DIR VirtualBumper::obstacle() {
     return CENTER_L;
   if (right && left && center)
     return ALL;
+  // otherwise
+  return ALL;
 }
 
 bool VirtualBumper::seeObstacleIR(SIDE side) {
@@ -85,43 +105,115 @@ int VirtualBumper::getDistance() {
 
 void VirtualBumper::steerMe(DriveTrain& drive) {
   // check if we have hit a cliff - if so, backup and spin for a bit
-  DIR dir = obstacle();
-  switch (dir) {
+  bool onCliff = true;
+  
+  
+  if (!stillOnCliff) // if we are not still servicing a cliff event, check them again
+    cliffDir = cliffObstacle();
+  // otherwise, just remember our last direction
+  switch(cliffDir) {
     case NONE:
-      // otherwise, move forward unless there is an object on our bumper
+      // we're good on cliff stuff, check your bumpers
+      onCliff = false;
+      stillOnCliff = false;
       break;
     
     case RIGHT:
-      
+      stillOnCliff = true;
+      // backup
+      // rotate left by 90 degrees, +1.57 radians 
+      // if done moving, update stillOnCliff and onCliff
+      stillOnCliff = false;
       break;
     
     case LEFT:
-      
+      stillOnCliff = true;
+      // backup
+      // rotate right by 90 degrees, -1.57 radians
+      stillOnCliff = false;
       break;
-    case CENTER:
       
-      break;
-    
-    case CENTER_R:
-      
-      break;
-    
-    case CENTER_L:
-      
-      break;
-    
     case L_AND_R:
-      
+      stillOnCliff = true;
+      // backup
+      // rotate left by 180, +PI radians
+      stillOnCliff = false;
       break;
       
-    case ALL:
-      
-      break;
-    
     default:
-      
+      // shouldn't run
+      onCliff = false;
+      stillOnCliff = false;
       break;
   }
+  
+  // if not on a cliff, then service our bumper stuffs
+  if(!onCliff) {
+    if (!stillBumped)
+      bumperDir = obstacle();
+      
+    switch (bumperDir) {
+      case NONE:
+        // otherwise, move forward unless there is an object on our bumper
+        drive.moveInDir(90); // go forward
+        stillBumped = false;
+        break;
+      
+      case RIGHT:
+        stillBumped = true;
+        // backup a bit
+        // rotate left 30 degrees, 0.52 radians
+        stillBumped = false;
+        break;
+      
+      case LEFT:
+        stillBumped = true;
+        // backup a bit
+        // rotate right 30 degrees, -0.52
+        stillBumped = false;
+        break;
+        
+      case CENTER:
+        stillBumped = true;
+        // backup a bit
+        // rotate left 90 degrees, 1.57
+        stillBumped = false;
+        break;
+      
+      case CENTER_R:
+        stillBumped = true;
+        // backup a bit
+        // rotate left 60 degrees, 1.05
+        stillBumped = false;
+        break;
+      
+      case CENTER_L:
+        stillBumped = true;
+        // backup a bit
+        // rotate right 60 degrees, -1.05
+        stillBumped = false;
+        break;
+      
+      case L_AND_R:
+        // that just happened?
+        stillBumped = true;
+        // backup a bit more
+        // rotate left 90 degrees, 1.57
+        stillBumped = false;
+        break;
+        
+      case ALL:
+        // weep quietly
+        stillBumped = true;
+        // rotate left 180 degrees, PI radians
+        stillBumped = false;
+        break;
+      
+      default:
+        stillBumped = false;
+        break;
+    }
+  } // end if not on cliff
   
 }
 
