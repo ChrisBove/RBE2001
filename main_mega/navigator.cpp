@@ -23,16 +23,14 @@
 #define RIGHT_MOTOR_PIN   11
 #define MAST_SERVO_PIN    9
 #define RED_FLAME_PIN     0
-#define ULTRA_PIN        1
+#define ULTRA_PIN         1
 #define DIG_ULTRA_PIN     22
-#define GRIPPER_PIN  8
-#define SERVO_PIN    7
-#define MOTOR_PIN    6
-#define FLAME_PIN    A2
-#define LeftLight       10
-#define RightLight      11
-#define LED_indicator    5 // PROBABLY WRONG
-#define LED_WIN          6 // PROBABLY WRONG
+#define GRIPPER_PIN       8
+#define SERVO_PIN         7
+#define MOTOR_PIN         6
+#define FLAME_PIN         A2
+#define LED_indicator     25 
+#define LED_WIN           27 
 
 // *************** instantiate class objects **************
 DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left motor inverted, right not
@@ -117,6 +115,48 @@ void Navigator::chooseAction() {
       break;
   }
 }
+
+void Navigator::candle_Position(){
+  float x_coord = driveTrain.getX();
+  float y_coord = driveTrain.getY();
+  float head = driveTrain.getHeading(); 
+  float d = virtualBumper.getDistance()+6.5; 
+  
+  float aim; 
+  float x_ref; 
+  float y_ref; 
+//now the x-y coordinates after the switch from "get close" to "extinguish" procedure
+  
+  if ( 2*PI>= head > 1.5*PI){
+    aim = head - 2*PI;
+    x_ref = d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else if (1.5*PI >= head > PI){
+    aim = -1*(head - PI);
+    x_ref = -d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else if (PI >= head > 0.5*PI){
+    aim = head - 0.5*PI; 
+    x_ref = -d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else{
+    x_ref = d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+//Find the z-coordinate: talk to chris E for the extraction function.
+//  float c_z = 11.5 + d*tan(cannon.giveAngle());
+
+//-------------------------------------------------------------------
+  float c_x = x_coord + x_ref;
+  float c_y = y_coord + y_ref; 
+  float c_z = 0.00;
+  my_lcd.printLocationNow(c_x, c_y, c_z);
+}
+
+
 
 void Navigator::doBumper() {
   // bumper controls robot's motion

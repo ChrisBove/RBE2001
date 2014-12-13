@@ -65,6 +65,14 @@ class Navigator {
    // defines possible states of navigation
    enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
    
+   /**
+   * @brief   combines robot position and IR sensor ranges to provide X, Y, Z, theta coordinates of the candle
+   * @param   No? 
+   * @return  None: sends LCD output
+   */
+   void candle_Position(); 
+ 
+ 
   private:
    
    Navigate state; // state to keep
