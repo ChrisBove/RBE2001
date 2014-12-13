@@ -51,7 +51,7 @@ class CannonControl
    const int flameLimit = 100;
    
    int _gripperPin, _servoPin, _motorPin, _flamePin, _encoderPin1, _encoderPin2;
-   int threshold = 1000;
+   int threshold = 500;
    int flameVal = 1000;
    int currentFlameVal;
    int currentFlamePos;
@@ -59,6 +59,9 @@ class CannonControl
    int servoMin = 100;
    int servoMax = 160;
    int counter = 0;
+   int gripClosed = 0;
+   int aimCount = 0;
+   int cannonStartNum = 0;
    
    long oldPosition = 0;
    long newPosition;
@@ -70,6 +73,7 @@ class CannonControl
    bool shootCannonTrue = false;
    bool AIMTrue = false;
    bool cont = true;
+   bool cannonStart = true;
    
    bool flameFound = false;
 };

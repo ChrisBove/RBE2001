@@ -25,15 +25,12 @@
 #define RED_FLAME_PIN     0
 #define ULTRA_PIN        1
 #define DIG_ULTRA_PIN     22
-<<<<<<< HEAD
 #define GRIPPER_PIN  8
 #define SERVO_PIN    7
 #define MOTOR_PIN    6
 #define FLAME_PIN    A2
 #define LeftLight       10
 #define RightLight      11
-=======
->>>>>>> origin/master
 #define LED_indicator    5 // PROBABLY WRONG
 #define LED_WIN          6 // PROBABLY WRONG
 

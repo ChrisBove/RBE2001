@@ -44,11 +44,22 @@ void CannonControl::checkFlame(){
 }
 
 void CannonControl::locateFlame(){
+  flameFound = false;
+//  if(cannonStart){
+//    servoPos = servoMin;
+//    cannonStart = false;
+//  }
   if(servoPos <= servoMax)
   {
     hinge.write(servoPos);
     checkFlame();
+    if(counter >=3){
     servoPos++;
+    counter = 0;
+    }
+    else{
+      counter ++;
+    }
   }
   if(servoPos >= servoMax){
     if(flameVal <= threshold){
@@ -59,14 +70,19 @@ void CannonControl::locateFlame(){
     drawBackTrue = true;
     //AIM();
     }
+//    else{
+//     servoPos = servoMin;
+//    }
   }
 }
 
 void CannonControl::AIM(){
-  if(flameFound){
-  hinge.write(currentFlamePos);
+  if(flameFound && aimCount <= 100){
+  hinge.write(currentFlamePos - 10);
+  aimCount ++;
   }
   else{
+    aimCount = 0;
     AIMTrue = false;
     shootCannonTrue = true;
 }
@@ -74,7 +90,8 @@ void CannonControl::AIM(){
 
 void CannonControl::drawBack(){
   //newPosition = -canEnc.read();
-  if(newPosition <= 1010 && drawBackCont){
+  //hinge.write(servoMax);
+  if(newPosition <= 1000 && drawBackCont){
     newPosition = -canEnc.read();
     winch.write(120);
     if(newPosition != oldPosition){
@@ -82,33 +99,45 @@ void CannonControl::drawBack(){
     Serial.println(newPosition);
   }
   }
-  else{
-    //winch.write(90);
+  if(newPosition > 1000){
+    drawBackCont = false;
+    winch.write(90);
     grip.write(180);
+    gripClosed ++;
+    if(gripClosed >= 20){
     drawBackTrue = false;
-    AIMTrue = true;
+    giveSlackTrue = true;
+    }
   }
 }
 
 void CannonControl::giveSlack(){
-  newPosition = -canEnc.read();
+  //newPosition = -canEnc.read();
   if(newPosition >= 0){
+    newPosition = -canEnc.read();
     winch.write(60);
   if(newPosition != oldPosition){
     oldPosition = newPosition;
     Serial.println(newPosition);
   }
   }
-  else{
+  if(newPosition < 0){
+    winch.write(90);
     giveSlackTrue = false;
     AIMTrue = true;
 }
 }
 
 void CannonControl::shootCannon(){
+  if (gripClosed >= 0){
   grip.write(90);
+  gripClosed --;
+  }
+  else{
   shootCannonTrue = false;
+  servoPos = servoMin;
   locateFlameTrue = true;
+  }
 }
 
 void CannonControl::service(){
