@@ -42,7 +42,7 @@ class CannonControl
    
    void service();
    
-   int getServoPos();
+   int giveAngle();
    
    private:
    
