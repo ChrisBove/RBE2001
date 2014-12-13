@@ -65,3 +65,7 @@ int VirtualBumper::getDigitalDistance() {
 int VirtualBumper::getDistance() {
   return reading;
 }
+
+void VirtualBumper::steerMe(DriveTrain& drive) {
+  
+}

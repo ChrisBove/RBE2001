@@ -11,6 +11,7 @@
 
 #include "Arduino.h"
 #include "cliff.h"
+#include "drive_train.h"
 
 class VirtualBumper {
   public:
@@ -70,6 +71,14 @@ class VirtualBumper {
    * @return  int distance in inches
    */
    int getDistance();
+   
+   // drivetrain control
+   /**
+   * @brief   Controls the driveTrain to avoid obstacles
+   * @param   None
+   * @return  None
+   */
+   void steerMe(DriveTrain& drive);
    
    
   private:
