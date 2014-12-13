@@ -83,7 +83,7 @@ void Navigator::chooseAction() {
     case SPIN_TO_CANDLE:
       
       if (centerFlame()==true){
-        state = SPIN_TO_CANDLE;
+        state = GET_CLOSE_TO_CANDLE;
         
       }
       // if done turning to candle
