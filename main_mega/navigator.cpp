@@ -108,6 +108,50 @@ void Navigator::chooseAction() {
   }
 }
 
+void Navigator::candle_Position(){
+  float filler_z = 0.01;    //for the meantime 
+
+  float x_coord = driveTrain.getX();
+  float y_coord = driveTrain.getY();
+  float head = driveTrain.getHeading(); 
+  float d = sensorMast.getDistance(); 
+  
+  float aim; 
+  float x_ref; 
+  float y_ref; 
+  
+//now the x-y coordinates after the switch from "get close" to "extinguish" procedure
+  const float pi = 3.14159;
+  float x;
+  if ( 2*pi>= head > 1.5*pi){
+    aim = head - 2*pi;
+    x_ref = d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else if (1.5*pi >= head > pi){
+    aim = -1*(head - pi);
+    x_ref = -d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else if (pi >= head > 0.5*pi){
+    aim = head - 0.5*pi; 
+    x_ref = -d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+  else{
+    x_ref = d*cos(aim);
+    y_ref = d*sin(aim);
+  }
+//Find the z-coordinate: talk to chris E for the extraction function. 
+//-------------------------------------------------------------------
+  float c_x = x_coord + x_ref;
+  float c_y = y_coord + y_ref; 
+  float c_z = filler_z; 
+  my_lcd.updateLocation(c_x, c_y, c_z);
+}
+
+
+
 void Navigator::doBumper() {
   // bumper controls robot's motion
 }
