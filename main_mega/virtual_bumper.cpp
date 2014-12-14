@@ -121,23 +121,41 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
     case RIGHT:
       stillOnCliff = true;
       // backup
-      // rotate left by 90 degrees, +1.57 radians 
-      // if done moving, update stillOnCliff and onCliff
-      stillOnCliff = false;
+      if (!backupDone) // if not done
+        backupDone = drive.backupX(4); // backup 4 inches
+      if (backupDone) {
+        if(drive.rotateX(1.57)) {// rotate left by 90 degrees, +1.57 radians 
+          // if done moving, update stillOnCliff and onCliff
+          stillOnCliff = false;
+          backupDone = false;
+        }
+      }
       break;
     
     case LEFT:
       stillOnCliff = true;
       // backup
-      // rotate right by 90 degrees, -1.57 radians
-      stillOnCliff = false;
+      if (!backupDone) // if not done
+        backupDone = drive.backupX(4); // backup 4 inches
+      if (backupDone) {
+        if(drive.rotateX(-1.57)) {// rotate right by 90 degrees, -1.57 radians
+          stillOnCliff = false;
+          backupDone = false;
+        }
+      }
       break;
       
     case L_AND_R:
       stillOnCliff = true;
       // backup
-      // rotate left by 180, +PI radians
-      stillOnCliff = false;
+      if (!backupDone) // if not done
+        backupDone = drive.backupX(4); // backup 4 inches
+      if (backupDone) {
+        if(drive.rotateX(PI)) {// rotate left by 180, +PI radians
+          stillOnCliff = false;
+          backupDone = false;
+        }
+      }
       break;
       
     default:
@@ -162,51 +180,51 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       case RIGHT:
         stillBumped = true;
         // backup a bit
-        // rotate left 30 degrees, 0.52 radians
-        stillBumped = false;
+        if(drive.rotateX(0.52))// rotate left 30 degrees, 0.52 radians
+          stillBumped = false;
         break;
       
       case LEFT:
         stillBumped = true;
         // backup a bit
-        // rotate right 30 degrees, -0.52
-        stillBumped = false;
+        if(drive.rotateX(-0.52))// rotate right 30 degrees, -0.52
+          stillBumped = false;
         break;
         
       case CENTER:
         stillBumped = true;
         // backup a bit
-        // rotate left 90 degrees, 1.57
-        stillBumped = false;
+        if(drive.rotateX(1.57))// rotate left 90 degrees, 1.57
+          stillBumped = false;
         break;
       
       case CENTER_R:
         stillBumped = true;
         // backup a bit
-        // rotate left 60 degrees, 1.05
-        stillBumped = false;
+        if(drive.rotateX(1.05))// rotate left 60 degrees, 1.05
+          stillBumped = false;
         break;
       
       case CENTER_L:
         stillBumped = true;
         // backup a bit
-        // rotate right 60 degrees, -1.05
-        stillBumped = false;
+        if(drive.rotateX(-1.05))// rotate right 60 degrees, -1.05
+          stillBumped = false;
         break;
       
       case L_AND_R:
         // that just happened?
         stillBumped = true;
         // backup a bit more
-        // rotate left 90 degrees, 1.57
-        stillBumped = false;
+        if(drive.rotateX(1.57))// rotate left 90 degrees, 1.57
+          stillBumped = false;
         break;
         
       case ALL:
         // weep quietly
         stillBumped = true;
-        // rotate left 180 degrees, PI radians
-        stillBumped = false;
+        if(drive.rotateX(PI))// rotate left 180 degrees, PI radians
+          stillBumped = false;
         break;
       
       default:

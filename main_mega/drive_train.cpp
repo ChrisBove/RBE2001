@@ -351,21 +351,29 @@ int DriveTrain::getHeadingDeg() {
 
 
 //****-------sensor-controlled rotation and translation-------*******//
-//bool DriveTrain::backupX(int reverse){
-//  float strtX = getX();
-//  float strtY = getY();
-//  bool new_command = true; 
-//  
-//  float finalX = sqrt(strtX^2); 
-//  float finalY = sqrt(); 
-//  moveMotors(-40,-40);    
-//  new_command = false; 
-//  
-//  if (){
-//    halt();
-//
-//}
-//}
+bool DriveTrain::backupX(float inches){
+  // if this is a new command, set our target
+  if(new_pos_command) {
+    pos_target_x = getX() + ( inches * cos(getHeading() )); // get x coordinate, add to delta x
+    pos_target_y = getY() + ( inches * sin(getHeading() )); // get y, add to delta y
+    new_pos_command = false;
+  }
+  // else, our target is current
+  
+  moveMotors(-30,-30);
+  
+  new_pos_command = false; 
+  
+  bool xInBounds = abs(getX() - pos_target_x) <= pos_error; // in bounds if error is less than posError
+  bool yInBounds = abs(getY() - pos_target_y) <= pos_error; // in bounds if error is less than posError
+  // if both coordinates in bounds,
+  if (xInBounds && yInBounds){
+    halt();
+    new_pos_command = true;
+    return true;
+  }
+  return false;
+}
 
 bool DriveTrain::rotateX(float spin){
   if (new_command){
