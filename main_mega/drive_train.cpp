@@ -93,9 +93,19 @@ void DriveTrain::odometer_thread()
   //  enable_interrupts(0);         /* Ensure we don't lose any odometer counts */
 //  noInterrupts();
   left_ticks = left_encoder.read();
+  // only stop interrupts if there is a need to wipe encoders
+  if (left_ticks != 0) {
+    noInterrupts();
+    left_encoder.write(0);
+    interrupts();
+  }
   right_ticks = -right_encoder.read();
-  right_encoder.write(0);
-  left_encoder.write(0);
+  // only stop interrupts if there is a need to wipe encoders
+  if (right_ticks != 0) {
+    noInterrupts();
+    right_encoder.write(0);
+    interrupts();
+  }
 //    left_count = 0;
 //    right_count = 0;
 //  interrupts();
