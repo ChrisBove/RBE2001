@@ -224,7 +224,7 @@ bool Navigator::centerFlame()
          driveTrain.moveMotors(25, -25);
          if (sensorMast.isFire() && fireCount==1)
          {
-           Serial.println( fireCount);
+//           Serial.println( fireCount);
            return true;  
          }
          fireCount++;
@@ -260,7 +260,7 @@ if (sensorMast.isFire()==false)
 {
   driveTrain.halt();
   centerFlame();
-  Serial.println(virtualBumper.getAnalogDistance());
+//  Serial.println(virtualBumper.getAnalogDistance());
 }
 
 if ( virtualBumper.getAnalogDistance()<8)

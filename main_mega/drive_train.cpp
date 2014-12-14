@@ -365,7 +365,7 @@ int DriveTrain::getHeadingDeg() {
 bool DriveTrain::backupX(float inches){
   // if this is a new command, set our target
   if(new_pos_command) {
-    Serial.println("New command");
+//    Serial.println("New command");
     pos_target_x = getX() + ( inches * sin(getHeading() )); // get x coordinate, add to delta x
     pos_target_y = getY() + ( inches * cos(getHeading() )); // get y, add to delta y
     new_pos_command = false;
@@ -381,7 +381,7 @@ bool DriveTrain::backupX(float inches){
   bool yInBounds = yDif <= pos_error; // in bounds if error is less than posError
   // if both coordinates in bounds,
   if ((xInBounds && yInBounds) || ( sqrt((xDif*xDif) + (yDif*yDif)) >= inches )){
-    Serial.println("backup complete");
+//    Serial.println("backup complete");
     halt();
     new_pos_command = true;
     return true;
