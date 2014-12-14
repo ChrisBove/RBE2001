@@ -78,7 +78,7 @@ void Navigator::chooseAction() {
     case TEST:
       
       if (driveTrain.backupX(4))
-        state = LOCATE_CANDLE;
+        state = CALC_POSITION;
       break;
       
     case LOCATE_CANDLE:

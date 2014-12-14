@@ -354,18 +354,18 @@ int DriveTrain::getHeadingDeg() {
 bool DriveTrain::backupX(float inches){
   // if this is a new command, set our target
   if(new_pos_command) {
-    pos_target_x = getX() + ( inches * cos(getHeading() )); // get x coordinate, add to delta x
-    pos_target_y = getY() + ( inches * sin(getHeading() )); // get y, add to delta y
+    pos_target_x = getX() + ( inches * sin(getHeading() )); // get x coordinate, add to delta x
+    pos_target_y = getY() + ( inches * cos(getHeading() )); // get y, add to delta y
     new_pos_command = false;
   }
   // else, our target is current
   
   moveMotors(-30,-30);
   
-  new_pos_command = false; 
+//  new_pos_command = false; 
   
-  bool xInBounds = abs(getX() - pos_target_x) <= pos_error; // in bounds if error is less than posError
-  bool yInBounds = abs(getY() - pos_target_y) <= pos_error; // in bounds if error is less than posError
+  bool xInBounds = abs(abs(getX()) - abs(pos_target_x)) <= pos_error; // in bounds if error is less than posError
+  bool yInBounds = abs(abs(getY()) - abs(pos_target_y)) <= pos_error; // in bounds if error is less than posError
   // if both coordinates in bounds,
   if (xInBounds && yInBounds){
     halt();
