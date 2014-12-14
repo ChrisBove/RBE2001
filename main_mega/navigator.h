@@ -75,7 +75,7 @@ class Navigator {
  
   private:
    
-   Navigate state = TEST; // state to keep
+   Navigate state = LOCATE_CANDLE; // state to keep
    
    // global pointers
 //   VFH::grid * myGrid;
