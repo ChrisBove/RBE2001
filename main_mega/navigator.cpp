@@ -119,7 +119,14 @@ void Navigator::chooseAction() {
       break;
     
     case EXTINGUISH:
-      
+      cannonControl.service();
+      Serial.println("Putting out candle");
+      if(cannonControl.returnResult()){
+        Serial.println("Candle is out, mission success");
+        state = RETURN;
+        
+        break;
+      }
       
       break;
       

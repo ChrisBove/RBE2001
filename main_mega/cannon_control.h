@@ -48,6 +48,8 @@ class CannonControl
    
    void slackComp();
    
+   bool returnResult();
+   
    private:
    
    Servo winch;
@@ -81,6 +83,7 @@ class CannonControl
    bool AIMTrue = false;
    bool cont = true;
    bool cannonStart = true;
+   bool extinguished = false;
    
    bool flameFound = false;
 };

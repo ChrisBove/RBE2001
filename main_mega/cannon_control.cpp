@@ -77,6 +77,9 @@ void CannonControl::locateFlame(){
     drawBackTrue = true;
     //AIM();
     }
+    if(flameVal >= threshold){
+      extinguished = true;
+    }
 //    else{
 //     servoPos = servoMin;
 //    }
@@ -157,6 +160,10 @@ void CannonControl::shootCannon(){
 
 int CannonControl::giveAngle(){ //19cm high 20 cm out, 28 degrees at max, 1.777 ratio
    return currentFlamePos/5.71;
+}
+
+bool CannonControl::returnResult(){
+  return extinguished;
 }
 
 void CannonControl::service(){
