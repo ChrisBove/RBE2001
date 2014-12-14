@@ -80,9 +80,9 @@ VirtualBumper::DIR VirtualBumper::obstacle() {
 
 bool VirtualBumper::seeObstacleIR(SIDE side) {
   if (side == R)
-    return analogRead(LEFT_IR) > sharpThreshold;
-  else
     return analogRead(RIGHT_IR) > sharpThreshold;
+  else
+    return analogRead(LEFT_IR) > sharpThreshold;
 }
 
 bool VirtualBumper::seeObstacleUS() {
