@@ -86,7 +86,7 @@ bool VirtualBumper::seeObstacleIR(SIDE side) {
 }
 
 bool VirtualBumper::seeObstacleUS() {
-  return getAnalogDistance() < ultraThreshold;
+  return getAnalogDistance() <= ultraThreshold;
 }
 
 int VirtualBumper::getAnalogDistance() {
