@@ -63,7 +63,7 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
-  cannonControl.service();
+//  cannonControl.service();
   
   // function that now calls the state machine for Navigator
   chooseAction();
@@ -74,13 +74,21 @@ void Navigator::chooseAction() {
   // check conditions necessary for switching controls on the state machine
   
   switch (state) {
-  
+    
+    case TEST:
+      
+      if (driveTrain.rotateX(PI))
+        state = CALC_POSITION;
+      break;
+      
     case LOCATE_CANDLE:
       virtualBumper.steerMe(driveTrain);
       
       if(sensorMast.isFire()) {
         state = SPIN_TO_CANDLE;
         driveTrain.halt();
+        sensorMast.indicateNear();
+        Serial.println("Candle found");
       }
       break;
     case SPIN_TO_CANDLE:
@@ -89,7 +97,7 @@ void Navigator::chooseAction() {
        
         state = GET_CLOSE_TO_CANDLE;
        
-        Serial.println("Done");
+        Serial.println("Done spinning");
       }
       
       break;
@@ -99,14 +107,15 @@ void Navigator::chooseAction() {
         driveTrain.halt();
         state = CALC_POSITION;
        
-        Serial.println("Done");
+        Serial.println("Done getting close");
       }
       
       break;
     
     case CALC_POSITION:
-      
-      
+      candle_Position();
+      Serial.println("Done calculating our position");
+      state = EXTINGUISH;
       break;
     
     case EXTINGUISH:
@@ -212,10 +221,10 @@ bool Navigator::centerFlame()
        { 
          sensorMast.center();
          sensorMast.freeze();
-         driveTrain.moveMotors(20, -20);
+         driveTrain.moveMotors(25, -25);
          if (sensorMast.isFire() && fireCount==1)
          {
-           Serial.println( fireCount);
+//           Serial.println( fireCount);
            return true;  
          }
          fireCount++;
@@ -224,7 +233,7 @@ bool Navigator::centerFlame()
        {  
          sensorMast.center();
          sensorMast.freeze();
-         driveTrain.moveMotors(-20, 20);
+         driveTrain.moveMotors(-25, 25);
          if (sensorMast.isFire() && fireCount==1)
          {
            return true;
@@ -251,7 +260,7 @@ if (sensorMast.isFire()==false)
 {
   driveTrain.halt();
   centerFlame();
-  Serial.println(virtualBumper.getAnalogDistance());
+//  Serial.println(virtualBumper.getAnalogDistance());
 }
 
 if ( virtualBumper.getAnalogDistance()<8)

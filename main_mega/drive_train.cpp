@@ -93,9 +93,19 @@ void DriveTrain::odometer_thread()
   //  enable_interrupts(0);         /* Ensure we don't lose any odometer counts */
 //  noInterrupts();
   left_ticks = left_encoder.read();
+  // only stop interrupts if there is a need to wipe encoders
+  if (left_ticks != 0) {
+    noInterrupts();
+    left_encoder.write(0);
+    interrupts();
+  }
   right_ticks = -right_encoder.read();
-  right_encoder.write(0);
-  left_encoder.write(0);
+  // only stop interrupts if there is a need to wipe encoders
+  if (right_ticks != 0) {
+    noInterrupts();
+    right_encoder.write(0);
+    interrupts();
+  }
 //    left_count = 0;
 //    right_count = 0;
 //  interrupts();
@@ -130,6 +140,7 @@ void DriveTrain::odometer_thread()
 
       /* Calculate new orientation */
       current_position.theta += right_minus_left / AXLE_LENGTH;
+      unboundedTheta += right_minus_left / AXLE_LENGTH;
       /* Keep in the range -PI to +PI */
       while(current_position.theta > PI)
         current_position.theta -= (2.0*PI);
@@ -354,20 +365,23 @@ int DriveTrain::getHeadingDeg() {
 bool DriveTrain::backupX(float inches){
   // if this is a new command, set our target
   if(new_pos_command) {
-    pos_target_x = getX() + ( inches * cos(getHeading() )); // get x coordinate, add to delta x
-    pos_target_y = getY() + ( inches * sin(getHeading() )); // get y, add to delta y
+//    Serial.println("New command");
+    pos_target_x = getX() + ( inches * sin(getHeading() )); // get x coordinate, add to delta x
+    pos_target_y = getY() + ( inches * cos(getHeading() )); // get y, add to delta y
     new_pos_command = false;
   }
   // else, our target is current
   
   moveMotors(-30,-30);
   
-  new_pos_command = false; 
-  
-  bool xInBounds = abs(getX() - pos_target_x) <= pos_error; // in bounds if error is less than posError
-  bool yInBounds = abs(getY() - pos_target_y) <= pos_error; // in bounds if error is less than posError
+//  new_pos_command = false; 
+  float xDif = abs(abs(getX()) - abs(pos_target_x));
+  bool xInBounds =  xDif <= pos_error; // in bounds if error is less than posError
+  float yDif = abs(abs(getY()) - abs(pos_target_y));
+  bool yInBounds = yDif <= pos_error; // in bounds if error is less than posError
   // if both coordinates in bounds,
-  if (xInBounds && yInBounds){
+  if ((xInBounds && yInBounds) || ( sqrt((xDif*xDif) + (yDif*yDif)) >= inches )){
+//    Serial.println("backup complete");
     halt();
     new_pos_command = true;
     return true;
@@ -377,8 +391,8 @@ bool DriveTrain::backupX(float inches){
 
 bool DriveTrain::rotateX(float spin){
   if (new_command){
-    target = spin + getHeading();
-      new_command = false;
+    target = spin + unboundedTheta;
+    new_command = false;
   }
   
   if (spin < 0){
@@ -387,9 +401,7 @@ bool DriveTrain::rotateX(float spin){
   else if (spin > 0){
   moveMotors(-25,25);
   }
-  
-  float twist = getHeading();
-  if ((target-0.2) <= twist && twist <= (target+0.2)){
+  if( abs(abs(target) - abs(unboundedTheta)) <= 0.1) {
     halt();
     new_command = true; 
     return true; 

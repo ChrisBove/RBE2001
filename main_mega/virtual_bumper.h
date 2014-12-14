@@ -108,7 +108,7 @@ class VirtualBumper {
    // 2.3V for 10cm object, 2.75V for 8cm object, 3.15V for 6cm and below 6 cm obstacles voltage again decreases
    const int sharpThreshold = 563; // object if greater than this threshold at 8cm
    
-   const int ultraThreshold = 5; // object if less than 5 inches
+   const int ultraThreshold = 7; // object if less than 5 inches
    
    DIR cliffDir; // stores last direction of cliff obstacle
    DIR bumperDir; // stores last direction of bumper obstacle
