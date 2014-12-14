@@ -140,6 +140,7 @@ void DriveTrain::odometer_thread()
 
       /* Calculate new orientation */
       current_position.theta += right_minus_left / AXLE_LENGTH;
+      unboundedTheta += right_minus_left / AXLE_LENGTH;
       /* Keep in the range -PI to +PI */
       while(current_position.theta > PI)
         current_position.theta -= (2.0*PI);
@@ -387,8 +388,9 @@ bool DriveTrain::backupX(float inches){
 
 bool DriveTrain::rotateX(float spin){
   if (new_command){
-    target = spin + getHeading();
-      new_command = false;
+    target = spin + unboundedTheta;
+    Serial.println(target);
+    new_command = false;
   }
   
   if (spin < 0){
@@ -397,9 +399,8 @@ bool DriveTrain::rotateX(float spin){
   else if (spin > 0){
   moveMotors(-25,25);
   }
-  
-  float twist = getHeading();
-  if ((target-0.2) <= twist && twist <= (target+0.2)){
+  Serial.println(unboundedTheta);
+  if( abs(abs(target) - abs(unboundedTheta)) <= 0.1) {
     halt();
     new_command = true; 
     return true; 

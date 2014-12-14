@@ -77,7 +77,7 @@ void Navigator::chooseAction() {
     
     case TEST:
       
-      if (driveTrain.backupX(4))
+      if (driveTrain.rotateX(PI))
         state = CALC_POSITION;
       break;
       
