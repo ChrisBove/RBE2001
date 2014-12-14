@@ -56,7 +56,7 @@ class SensorMast
    * @param   int delay in ms between each step
    * @return  None
    */
-   void setServoSpin(int time = 20);
+   void setServoSpin(int time = 15);
    /**
    * @brief   keeps servo at current location
    * @param   None
