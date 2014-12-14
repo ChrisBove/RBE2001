@@ -114,11 +114,13 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
   switch(cliffDir) {
     case NONE:
       // we're good on cliff stuff, check your bumpers
+      Serial.println("No cliff");
       onCliff = false;
       stillOnCliff = false;
       break;
     
     case RIGHT:
+      Serial.println("right cliff");
       stillOnCliff = true;
       // backup
       if (!backupDone) // if not done
@@ -133,6 +135,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       break;
     
     case LEFT:
+      Serial.println("left cliff");
       stillOnCliff = true;
       // backup
       if (!backupDone) // if not done
@@ -146,6 +149,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       break;
       
     case L_AND_R:
+      Serial.println("both cliff");
       stillOnCliff = true;
       // backup
       if (!backupDone) // if not done
@@ -172,12 +176,14 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       
     switch (bumperDir) {
       case NONE:
+        Serial.println("No obstacle");
         // otherwise, move forward unless there is an object on our bumper
-        drive.moveInDir(90); // go forward
+        drive.moveMotors(30,30); // go forward
         stillBumped = false;
         break;
       
       case RIGHT:
+        Serial.println("Right obstacle");
         stillBumped = true;
         // backup a bit
         if(drive.rotateX(0.52))// rotate left 30 degrees, 0.52 radians
@@ -185,6 +191,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
         break;
       
       case LEFT:
+        Serial.println("left obstacle");
         stillBumped = true;
         // backup a bit
         if(drive.rotateX(-0.52))// rotate right 30 degrees, -0.52
@@ -192,6 +199,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
         break;
         
       case CENTER:
+        Serial.println("center obstacle");
         stillBumped = true;
         // backup a bit
         if(drive.rotateX(1.57))// rotate left 90 degrees, 1.57
@@ -199,6 +207,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
         break;
       
       case CENTER_R:
+        Serial.println("c R obstacle");
         stillBumped = true;
         // backup a bit
         if(drive.rotateX(1.05))// rotate left 60 degrees, 1.05
@@ -206,6 +215,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
         break;
       
       case CENTER_L:
+        Serial.println("c l obstacle");
         stillBumped = true;
         // backup a bit
         if(drive.rotateX(-1.05))// rotate right 60 degrees, -1.05
@@ -213,14 +223,16 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
         break;
       
       case L_AND_R:
+        Serial.println("l and r obstacle");
         // that just happened?
         stillBumped = true;
         // backup a bit more
         if(drive.rotateX(1.57))// rotate left 90 degrees, 1.57
           stillBumped = false;
         break;
-        
+       
       case ALL:
+        Serial.println("all obstacle");
         // weep quietly
         stillBumped = true;
         if(drive.rotateX(PI))// rotate left 180 degrees, PI radians
