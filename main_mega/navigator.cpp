@@ -221,7 +221,7 @@ bool Navigator::centerFlame()
        { 
          sensorMast.center();
          sensorMast.freeze();
-         driveTrain.moveMotors(20, -20);
+         driveTrain.moveMotors(25, -25);
          if (sensorMast.isFire() && fireCount==1)
          {
            Serial.println( fireCount);
@@ -233,7 +233,7 @@ bool Navigator::centerFlame()
        {  
          sensorMast.center();
          sensorMast.freeze();
-         driveTrain.moveMotors(-20, 20);
+         driveTrain.moveMotors(-25, 25);
          if (sensorMast.isFire() && fireCount==1)
          {
            return true;
