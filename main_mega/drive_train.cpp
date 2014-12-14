@@ -389,7 +389,6 @@ bool DriveTrain::backupX(float inches){
 bool DriveTrain::rotateX(float spin){
   if (new_command){
     target = spin + unboundedTheta;
-    Serial.println(target);
     new_command = false;
   }
   
@@ -399,7 +398,6 @@ bool DriveTrain::rotateX(float spin){
   else if (spin > 0){
   moveMotors(-25,25);
   }
-  Serial.println(unboundedTheta);
   if( abs(abs(target) - abs(unboundedTheta)) <= 0.1) {
     halt();
     new_command = true; 
