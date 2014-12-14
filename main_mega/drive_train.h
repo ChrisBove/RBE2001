@@ -262,7 +262,7 @@ class DriveTrain
    bool new_pos_command = true;
    float pos_target_x = 0;
    float pos_target_y = 0;
-   const float pos_error = 1;
+   const float pos_error = 2;
    
    float unboundedTheta = 0;
 };
