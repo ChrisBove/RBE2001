@@ -81,6 +81,8 @@ void Navigator::chooseAction() {
       if(sensorMast.isFire()) {
         state = SPIN_TO_CANDLE;
         driveTrain.halt();
+        sensorMast.indicateNear();
+        Serial.println("Candle found");
       }
       break;
     case SPIN_TO_CANDLE:
@@ -89,7 +91,7 @@ void Navigator::chooseAction() {
        
         state = GET_CLOSE_TO_CANDLE;
        
-        Serial.println("Done");
+        Serial.println("Done spinning");
       }
       
       break;
@@ -99,14 +101,15 @@ void Navigator::chooseAction() {
         driveTrain.halt();
         state = CALC_POSITION;
        
-        Serial.println("Done");
+        Serial.println("Done getting close");
       }
       
       break;
     
     case CALC_POSITION:
-      
-      
+      candle_Position();
+      Serial.println("Done calculating our position");
+      state = EXTINGUISH;
       break;
     
     case EXTINGUISH:
