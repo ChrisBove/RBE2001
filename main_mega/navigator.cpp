@@ -74,7 +74,13 @@ void Navigator::chooseAction() {
   // check conditions necessary for switching controls on the state machine
   
   switch (state) {
-  
+    
+    case TEST:
+      
+      if (driveTrain.backupX(4))
+        state = LOCATE_CANDLE;
+      break;
+      
     case LOCATE_CANDLE:
       virtualBumper.steerMe(driveTrain);
       

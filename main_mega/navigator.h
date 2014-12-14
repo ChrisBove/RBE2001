@@ -63,7 +63,7 @@ class Navigator {
    void doBumper();
    
    // defines possible states of navigation
-   enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN };
+   enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN, TEST};
    
    /**
    * @brief   combines robot position and IR sensor ranges to provide X, Y, Z, theta coordinates of the candle
@@ -75,7 +75,7 @@ class Navigator {
  
   private:
    
-   Navigate state; // state to keep
+   Navigate state = TEST; // state to keep
    
    // global pointers
 //   VFH::grid * myGrid;
