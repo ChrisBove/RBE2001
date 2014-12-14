@@ -76,7 +76,7 @@ void Navigator::chooseAction() {
   switch (state) {
   
     case LOCATE_CANDLE:
-      virtualBumper.steerMe();
+      virtualBumper.steerMe(driveTrain);
       
       if(sensorMast.isFire()) {
         state = SPIN_TO_CANDLE;
