@@ -365,6 +365,7 @@ int DriveTrain::getHeadingDeg() {
 bool DriveTrain::backupX(float inches){
   // if this is a new command, set our target
   if(new_pos_command) {
+    Serial.println("New command");
     pos_target_x = getX() + ( inches * sin(getHeading() )); // get x coordinate, add to delta x
     pos_target_y = getY() + ( inches * cos(getHeading() )); // get y, add to delta y
     new_pos_command = false;
@@ -374,11 +375,13 @@ bool DriveTrain::backupX(float inches){
   moveMotors(-30,-30);
   
 //  new_pos_command = false; 
-  
-  bool xInBounds = abs(abs(getX()) - abs(pos_target_x)) <= pos_error; // in bounds if error is less than posError
-  bool yInBounds = abs(abs(getY()) - abs(pos_target_y)) <= pos_error; // in bounds if error is less than posError
+  float xDif = abs(abs(getX()) - abs(pos_target_x));
+  bool xInBounds =  xDif <= pos_error; // in bounds if error is less than posError
+  float yDif = abs(abs(getY()) - abs(pos_target_y));
+  bool yInBounds = yDif <= pos_error; // in bounds if error is less than posError
   // if both coordinates in bounds,
-  if (xInBounds && yInBounds){
+  if ((xInBounds && yInBounds) || ( sqrt((xDif*xDif) + (yDif*yDif)) >= inches )){
+    Serial.println("backup complete");
     halt();
     new_pos_command = true;
     return true;
