@@ -126,7 +126,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       stillOnCliff = true;
       // backup
       if (!backupDone) // if not done
-        backupDone = drive.backupX(4); // backup 4 inches
+        backupDone = drive.backupX(5); // backup 4 inches
       if (backupDone) {
         if(drive.rotateX(1.57)) {// rotate left by 90 degrees, +1.57 radians 
           // if done moving, update stillOnCliff and onCliff
@@ -141,7 +141,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       stillOnCliff = true;
       // backup
       if (!backupDone) // if not done
-        backupDone = drive.backupX(4); // backup 4 inches
+        backupDone = drive.backupX(5); // backup 4 inches
       if (backupDone) {
         if(drive.rotateX(-1.57)) {// rotate right by 90 degrees, -1.57 radians
           stillOnCliff = false;
@@ -155,7 +155,7 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
       stillOnCliff = true;
       // backup
       if (!backupDone) // if not done
-        backupDone = drive.backupX(4); // backup 4 inches
+        backupDone = drive.backupX(5); // backup 4 inches
       if (backupDone) {
         if(drive.rotateX(PI)) {// rotate left by 180, +PI radians
           stillOnCliff = false;
@@ -173,6 +173,8 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
   
   // if not on a cliff, then service our bumper stuffs
   if(!onCliff) {
+    stillOnCliff = false;
+    backupDone = false;
     if (!stillBumped)
       bumperDir = obstacle();
       
