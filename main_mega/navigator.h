@@ -100,6 +100,9 @@ class Navigator {
    bool isLeft = false;
    bool isFirstReCenter = true;
    int lastFlameVal;
+
+   bool serviceCannon = false;
+  
 };
 
 #endif

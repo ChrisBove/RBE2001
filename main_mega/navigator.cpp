@@ -67,6 +67,10 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
+//  if(serviceCannon){
+//    cannonControl.service();
+//  }
+
   //cannonControl.service();
 //  imu.service();
   
@@ -147,13 +151,15 @@ void Navigator::chooseAction() {
     
     case CALC_POSITION:
       candle_Position();
+      cannonControl.resetCannon();
       Serial.println("Done calculating our position");
       state = EXTINGUISH;
       break;
     
     case EXTINGUISH:
-      cannonControl.service();
+      cannonControl.cannonOP();
 //      Serial.println("Putting out candle");
+//serviceCannon = true;
       if(cannonControl.returnResult()){
         Serial.println("Candle is out, mission success");
         state = RETURN;
@@ -179,8 +185,8 @@ void Navigator::chooseAction() {
 void Navigator::candle_Position(){
   float x_coord = driveTrain.getX();
   float y_coord = driveTrain.getY();
-  float head = driveTrain.getHeading(); 
-  float d = virtualBumper.getDistance()+6.5; 
+  float head = driveTrain.getUnboundedHeading(); 
+  float d = virtualBumper.getDistance()+6.5; // distance + distance from sensor to center of robot
   
   float aim; 
   float x_ref; 
