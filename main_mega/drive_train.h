@@ -175,6 +175,12 @@ class DriveTrain
    */
     float getHeading();
     /**
+   * @brief   gets heading of robot position with the unbounded theta
+   * @param   None
+   * @return  float of heading: radians from X-axis (CCW is positive)
+   */
+    float getUnboundedHeading();
+    /**
    * @brief   gets heading of robot position
    * @param   None
    * @return  int of heading: Deg from X-axis (CCW is positive)
