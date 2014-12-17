@@ -17,6 +17,7 @@
 //#include "vfh.h"
 #include "lcd.h"
 #include "virtual_bumper.h"
+#include "imu_driver.h"
 
 // ************* CONSTANTS AND PINS ***************
 #define LEFT_MOTOR_PIN    10
@@ -40,6 +41,7 @@ CannonControl cannonControl(GRIPPER_PIN, SERVO_PIN, MOTOR_PIN, FLAME_PIN);
 //VFH vfh; //&myGrid, &myHist);
 LCD my_lcd;
 VirtualBumper virtualBumper(ULTRA_PIN, DIG_ULTRA_PIN);
+IMUDriver imu;
 
 
 Navigator::Navigator() {
@@ -52,6 +54,7 @@ void Navigator::setupNavigator() {
   sensorMast.setupMast();
   cannonControl.setupCannon();
   my_lcd.setupLCD();
+  imu.setupIMU();
   
 //  myGrid = vfh.grid_init(50, 1);
 //  myHist = vfh.hist_init(2, 20, 10, 5);

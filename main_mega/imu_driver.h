@@ -22,6 +22,12 @@ class IMUDriver {
    */
    IMUDriver();
    /**
+   * @brief   sets up the IMU
+   * @param   None
+   * @return  None
+   */
+   void setupIMU();
+   /**
    * @brief   Runs all service routines
    * @param   None
    * @return  None

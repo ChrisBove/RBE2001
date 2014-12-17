@@ -6,6 +6,18 @@
  ********************************************************************************************************
  */
  
- #include "imu_driver.h"
+#include "imu_driver.h"
+#include <Wire.h>
+#include <LSM303.h>
+
+LSM303 compass;
+
+IMUDriver::IMUDriver() {
+   
+}
  
- 
+void IMUDriver::setupIMU() {
+  Wire.begin();
+  compass.init();
+  compass.enableDefault();
+}
