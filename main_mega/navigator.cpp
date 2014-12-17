@@ -100,12 +100,20 @@ void Navigator::chooseAction() {
   switch (state) {
     
     case TEST:
+      Serial.println(virtualBumper.getAnalogDistance());
+      if (sensorMast.isFire()) {
+        state = SPIN_TO_CANDLE;
+        driveTrain.halt();
+        sensorMast.indicateNear();
+        isFirstTime = true;
+      }
+      
 //      Serial.println(driveTrain.getUnboundedHeading());
-        Serial.print(driveTrain.getX());
-        Serial.print("\t");
-        Serial.print(driveTrain.getY());
-        Serial.print("\t");
-        Serial.println(driveTrain.getUnboundedHeading());
+//        Serial.print(driveTrain.getX());
+//        Serial.print("\t");
+//        Serial.print(driveTrain.getY());
+//        Serial.print("\t");
+//        Serial.println(driveTrain.getUnboundedHeading());
 //      if (driveTrain.rotateX(PI))
 //        state = CALC_POSITION;
       break;
@@ -203,7 +211,7 @@ void Navigator::candle_Position(){
 //  float x_coord = driveTrain.getX();
 //  float y_coord = driveTrain.getY();
   float head = driveTrain.getUnboundedHeading(); 
-  float d = virtualBumper.getDistance()+6.5; // distance + distance from sensor to center of robot
+  float d = virtualBumper.getAnalogDistance()+6.5; // distance + distance from sensor to center of robot
 //  d = 24;
 //  float aim; 
 //  float x_ref; 
