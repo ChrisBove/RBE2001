@@ -100,9 +100,22 @@ void Navigator::chooseAction() {
   switch (state) {
     
     case TEST:
+      Serial.println(virtualBumper.getAnalogDistance());
+      if (sensorMast.isFire()) {
+        state = SPIN_TO_CANDLE;
+        driveTrain.halt();
+        sensorMast.indicateNear();
+        isFirstTime = true;
+      }
       
-      if (driveTrain.rotateX(PI))
-        state = CALC_POSITION;
+//      Serial.println(driveTrain.getUnboundedHeading());
+//        Serial.print(driveTrain.getX());
+//        Serial.print("\t");
+//        Serial.print(driveTrain.getY());
+//        Serial.print("\t");
+//        Serial.println(driveTrain.getUnboundedHeading());
+//      if (driveTrain.rotateX(PI))
+//        state = CALC_POSITION;
       break;
       
     case LOCATE_CANDLE:
@@ -163,15 +176,27 @@ void Navigator::chooseAction() {
       if(cannonControl.returnResult()){
         Serial.println("Candle is out, mission success");
         state = RETURN;
-        
+        sensorMast.indicateNear();
+        sensorMast.indicateWin();
       }
       
       break;
       
     case RETURN:
-      sensorMast.indicateNear();
-      sensorMast.indicateWin();
-      
+      // if we see fire while returning to home, go put it out.
+      if(sensorMast.isFire() ) {
+        state = SPIN_TO_CANDLE;
+        driveTrain.halt();
+        sensorMast.indicateNear();
+        isFirstTime = true;
+        break;
+      }
+      // if drivetrain is within +- 10in from home, call it quits
+      if ( abs(driveTrain.getX() ) < 10 && abs(driveTrain.getY()) < 10)
+        driveTrain.halt();
+      // else keep roaming until you get back to base.
+      else
+        virtualBumper.steerMe(driveTrain);
       break;
     
     case TILT:
@@ -183,43 +208,51 @@ void Navigator::chooseAction() {
 }
 
 void Navigator::candle_Position(){
-  float x_coord = driveTrain.getX();
-  float y_coord = driveTrain.getY();
+//  float x_coord = driveTrain.getX();
+//  float y_coord = driveTrain.getY();
   float head = driveTrain.getUnboundedHeading(); 
-  float d = virtualBumper.getDistance()+6.5; // distance + distance from sensor to center of robot
-  
-  float aim; 
-  float x_ref; 
-  float y_ref; 
+  float d = virtualBumper.getAnalogDistance()+6.5; // distance + distance from sensor to center of robot
+//  d = 24;
+//  float aim; 
+//  float x_ref; 
+//  float y_ref; 
 //now the x-y coordinates after the switch from "get close" to "extinguish" procedure
-  
-  if ( 2*PI>= head > 1.5*PI){
-    aim = head - 2*PI;
-    x_ref = d*cos(aim);
-    y_ref = d*sin(aim);
-  }
-  else if (1.5*PI >= head > PI){
-    aim = -1*(head - PI);
-    x_ref = -d*cos(aim);
-    y_ref = d*sin(aim);
-  }
-  else if (PI >= head > 0.5*PI){
-    aim = head - 0.5*PI; 
-    x_ref = -d*cos(aim);
-    y_ref = d*sin(aim);
-  }
-  else{
-    x_ref = d*cos(aim);
-    y_ref = d*sin(aim);
-  }
-//Find the z-coordinate: talk to chris E for the extraction function.
-//  float c_z = 11.5 + d*tan(cannon.giveAngle());
 
-//-------------------------------------------------------------------
-  float c_x = x_coord + x_ref;
-  float c_y = y_coord + y_ref; 
-  float c_z = 0.00;
-  my_lcd.printLocationNow(c_x, c_y, c_z);
+  // to get X coord: cos(theta) * d
+  // to get Y coordinate: sin(theta) *d
+  float xPos = cos(head) * d;
+  float yPos = sin(head) *d;
+  // add X and Y to the current position
+  my_lcd.printLocationNow(driveTrain.getX() + xPos, driveTrain.getY() + yPos, 7.89);
+  
+  
+//  if ( 2*PI>= head > 1.5*PI){
+//    aim = head - 2*PI;
+//    x_ref = d*cos(aim);
+//    y_ref = d*sin(aim);
+//  }
+//  else if (1.5*PI >= head > PI){
+//    aim = -1*(head - PI);
+//    x_ref = -d*cos(aim);
+//    y_ref = d*sin(aim);
+//  }
+//  else if (PI >= head > 0.5*PI){
+//    aim = head - 0.5*PI; 
+//    x_ref = -d*cos(aim);
+//    y_ref = d*sin(aim);
+//  }
+//  else{
+//    x_ref = d*cos(aim);
+//    y_ref = d*sin(aim);
+//  }
+////Find the z-coordinate: talk to chris E for the extraction function.
+////  float c_z = 11.5 + d*tan(cannon.giveAngle());
+//
+////-------------------------------------------------------------------
+//  float c_x = x_coord + x_ref;
+//  float c_y = y_coord + y_ref; 
+//  float c_z = 0.00;
+//  my_lcd.printLocationNow(c_x, c_y, c_z);
 }
 
 void Navigator::doBumper() {

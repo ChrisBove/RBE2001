@@ -15,6 +15,8 @@
 #define ENCODER_PIN_1 18
 #define ENCODER_PIN_2 23
 
+const bool shouldDebug = false;
+
    Servo winch;
    Servo hinge;
    Servo grip;
@@ -71,7 +73,7 @@ void CannonControl::locateFlame(){
     checkFlame();
     if(counter >=100){
     servoPosition ++;
-    Serial.println(servoPosition);
+    if(shouldDebug) Serial.println(servoPosition);
     counter = 0;
     }
     else{
@@ -86,7 +88,7 @@ void CannonControl::locateFlame(){
       state = DRAW_BACK;
 //    locateFlameTrue = false;
 //    drawBackTrue = true;
-    Serial.println("Check Flame");
+    if(shouldDebug) Serial.println("Check Flame");
 //    Serial.println(servoPosition);
     //AIM();
     }
@@ -101,12 +103,12 @@ void CannonControl::locateFlame(){
 
 void CannonControl::AIM(){
   if(flameFound && aimCount <= 10000){
-  hinge.write(currentFlamePos - 10);
+  hinge.write(currentFlamePos - 7);
   aimCount ++;
   }
   else{
     aimCount = 0;
-    Serial.println("AIM");
+    if(shouldDebug) Serial.println("AIM");
 //    AIMTrue = false;
 //    shootCannonTrue = true;
 state = SHOOT_CANNON;
@@ -131,7 +133,7 @@ void CannonControl::drawBack(){
     grip.write(180);
     gripClosed ++;
     if(gripClosed >= 1000){
-      Serial.println("draw back");
+      if(shouldDebug) Serial.println("draw back");
 //    drawBackTrue = false;
 //    giveSlackTrue = true;
 state = GIVE_SLACK;
@@ -158,7 +160,7 @@ void CannonControl::giveSlack(){
   }
   if(newPosition < 70){
     winch.write(90);
-    Serial.println("giveslack");
+    if(shouldDebug) Serial.println("giveslack");
 //    giveSlackTrue = false;
 //    giveTugTrue = true;
 state = TUG;
@@ -176,13 +178,13 @@ void CannonControl::giveTug(){
     else{
       counter ++;
     }
-    Serial.println(servoPosition);
+    if(shouldDebug) Serial.println(servoPosition);
   }
   if(servoPosition <= servoMin){
 //    giveTugTrue = false;
 //    AIMTrue = true;
 state = AIM_AT_FLAME;
-    Serial.println("Give Tug");
+    if(shouldDebug) Serial.println("Give Tug");
   }
 }
 
@@ -193,7 +195,7 @@ void CannonControl::shootCannon(){
   }
   else{
     resetCannon();
-    Serial.println("shootcannon");
+    if(shouldDebug) Serial.println("shootcannon");
 //  shootCannonTrue = false;
 state = LOCATE_FLAME;
   }
