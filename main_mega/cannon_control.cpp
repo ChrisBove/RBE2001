@@ -103,7 +103,7 @@ void CannonControl::locateFlame(){
 
 void CannonControl::AIM(){
   if(flameFound && aimCount <= 10000){
-  hinge.write(currentFlamePos - 10);
+  hinge.write(currentFlamePos - 7);
   aimCount ++;
   }
   else{
