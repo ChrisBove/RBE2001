@@ -306,10 +306,10 @@ bool Navigator::centerMore() {
   if (isFirstReCenter) {
     lastFlameVal = myReading;
     if (isLeft)
-      driveTrain.moveMotors(-18, 18);
+      driveTrain.moveMotors(-17, 17);
     else 
-      driveTrain.moveMotors(18, -18);
-    
+      driveTrain.moveMotors(17, -17);
+    isFirstReCenter = false;
   }
   // if the flame val starts increasing, we are moving away from the candle, so stop
   else if(myReading - lastFlameVal  > 0) {
