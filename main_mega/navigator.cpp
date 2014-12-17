@@ -134,7 +134,7 @@ void Navigator::chooseAction() {
        
         state = CALC_POSITION;
        
-        Serial.println("Done spinning");
+        Serial.println("Done spinning more");
       }
       
       break;
@@ -306,9 +306,9 @@ bool Navigator::centerMore() {
   if (isFirstReCenter) {
     lastFlameVal = myReading;
     if (isLeft)
-      driveTrain.moveMotors(-17, 17);
+      driveTrain.moveMotors(-20, 20);
     else 
-      driveTrain.moveMotors(17, -17);
+      driveTrain.moveMotors(20, -20);
     isFirstReCenter = false;
   }
   // if the flame val starts increasing, we are moving away from the candle, so stop
