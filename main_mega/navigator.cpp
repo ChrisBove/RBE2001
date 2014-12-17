@@ -88,6 +88,7 @@ void Navigator::chooseAction() {
         state = SPIN_TO_CANDLE;
         driveTrain.halt();
         sensorMast.indicateNear();
+        isFirstTime = true;
         Serial.println("Candle found");
       }
       break;
@@ -95,7 +96,7 @@ void Navigator::chooseAction() {
       if (centerFlame()){
         driveTrain.halt();
        
-        state = GET_CLOSE_TO_CANDLE;
+        state = CALC_POSITION;
        
         Serial.println("Done spinning");
       }
@@ -120,7 +121,7 @@ void Navigator::chooseAction() {
     
     case EXTINGUISH:
       cannonControl.service();
-      Serial.println("Putting out candle");
+//      Serial.println("Putting out candle");
       if(cannonControl.returnResult()){
         Serial.println("Candle is out, mission success");
         state = RETURN;
@@ -130,7 +131,8 @@ void Navigator::chooseAction() {
       break;
       
     case RETURN:
-      
+      sensorMast.indicateNear();
+      sensorMast.indicateWin();
       
       break;
   }
@@ -219,42 +221,32 @@ void Navigator::doVFH(){
 //  Serial.println(sensorMast.getServoAngle());
 }
 
-bool Navigator::centerFlame()
-{ 
-  if (sensorMast.isFire())
-  { 
-     if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
-       { 
-         sensorMast.center();
-         sensorMast.freeze();
-         driveTrain.moveMotors(25, -25);
-         if (sensorMast.isFire() && fireCount==1)
-         {
-//           Serial.println( fireCount);
-           return true;  
-         }
-         fireCount++;
-       }
-     if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
-       {  
-         sensorMast.center();
-         sensorMast.freeze();
-         driveTrain.moveMotors(-25, 25);
-         if (sensorMast.isFire() && fireCount==1)
-         {
-           return true;
-         }
-         fireCount++;
-       }
-      if(102< sensorMast.getServoAngle()&& 104> sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
-       {
-         sensorMast.freeze();
-         return true;
-       } 
-  } 
-  else
-  {
+bool Navigator::centerFlame() {
+  if (isFirstTime) {
+    // if greater than 90, turn left
+    if(sensorMast.getServoAngle() > 90)
+      driveTrain.moveMotors(-20, 20);
+    else { // not greater than 90, so if perfect halt, otherwise go other direction
+      if(sensorMast.getServoAngle() < 90)
+        driveTrain.moveMotors(20, -20);
+      else
+        driveTrain.halt();
+    }
+    sensorMast.center();
+    sensorMast.freeze();
+    isFirstTime = false;
+    haveSeenNoFire = false;
     return false;
+  }
+  else {
+    if (!haveSeenNoFire) {
+      if(!sensorMast.isFire())
+        haveSeenNoFire = true;
+    }
+    else if (sensorMast.isFire()) {
+      driveTrain.halt();
+      return true;
+    }
   }
   return false;
 }

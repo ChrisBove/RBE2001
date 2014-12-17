@@ -41,6 +41,7 @@ int SensorMast::getFlameReading() {
 }
 
 bool SensorMast::isFire() {
+  getFlameReading();
   return flameVal <= flameThreshold;
 }
 
