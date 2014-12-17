@@ -111,8 +111,20 @@ void Navigator::chooseAction() {
         Serial.println("Candle found");
       }
       break;
+      
     case SPIN_TO_CANDLE:
       if (centerFlame()){
+        driveTrain.halt();
+       
+        state = SPIN_MORE;
+        isFirstReCenter = true;
+        Serial.println("Done spinning");
+      }
+      
+      break;
+    
+    case SPIN_MORE:
+      if (centerMore()){
         driveTrain.halt();
        
         state = CALC_POSITION;
@@ -248,13 +260,18 @@ void Navigator::doVFH(){
 bool Navigator::centerFlame() {
   if (isFirstTime) {
     // if greater than 90, turn left
-    if(sensorMast.getServoAngle() > 90)
+    if(sensorMast.getServoAngle() > sensorMast.getServoCenter()) {
       driveTrain.moveMotors(-20, 20);
+      isLeft = true;
+    }
     else { // not greater than 90, so if perfect halt, otherwise go other direction
-      if(sensorMast.getServoAngle() < 90)
+      if(sensorMast.getServoAngle() < sensorMast.getServoCenter()) {
         driveTrain.moveMotors(20, -20);
-      else
+        isLeft = false;
+      }
+      else {
         driveTrain.halt();
+      }
     }
     sensorMast.center();
     sensorMast.freeze();
@@ -272,6 +289,26 @@ bool Navigator::centerFlame() {
       return true;
     }
   }
+  return false;
+}
+
+bool Navigator::centerMore() {
+  int myReading = sensorMast.getFlameReading();
+  // if its our first time, set this as our first reading
+  if (isFirstReCenter) {
+    lastFlameVal = myReading;
+    if (isLeft)
+      driveTrain.moveMotors(-18, 18);
+    else 
+      driveTrain.moveMotors(18, -18);
+    
+  }
+  // if the flame val starts increasing, we are moving away from the candle, so stop
+  else if(myReading - lastFlameVal  > 0) {
+    driveTrain.halt();
+    return true;
+  }
+  lastFlameVal = myReading;
   return false;
 }
 
