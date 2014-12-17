@@ -21,3 +21,11 @@ void IMUDriver::setupIMU() {
   compass.init();
   compass.enableDefault();
 }
+
+void IMUDriver::service() {
+  compass.read();
+}
+
+bool IMUDriver::isTipped() {
+  return (abs(compass.a.z) < abs(compass.a.y)) || (abs(compass.a.z) < abs(compass.a.x));
+}

@@ -67,6 +67,7 @@ void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
   //cannonControl.service();
+  imu.service();
   
   // function that now calls the state machine for Navigator
   chooseAction();
@@ -75,6 +76,21 @@ void Navigator::service() {
 
 void Navigator::chooseAction() {
   // check conditions necessary for switching controls on the state machine
+  
+  // if we are not currently in tilt
+  if (state != TILT) {
+    // if IMU is tipped, change our state
+    if (imu.isTipped()) {
+      lastState = state;
+      state = TILT;
+    }
+  }
+  // if in tilt state, check to see if we're done tipping
+  else {
+    if (!imu.isTipped()) {
+      state = lastState;
+    }
+  }
   
   switch (state) {
     
@@ -137,6 +153,11 @@ void Navigator::chooseAction() {
       sensorMast.indicateNear();
       sensorMast.indicateWin();
       
+      break;
+    
+    case TILT:
+      driveTrain.halt();
+      sensorMast.freeze();
       break;
   }
 }

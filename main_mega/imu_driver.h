@@ -33,6 +33,12 @@ class IMUDriver {
    * @return  None
    */
    void service();
+   /**
+   * @brief   checks if the robot is getting tipped (z accels less than x or y)
+   * @param   None
+   * @return  True if being tipped
+   */
+   bool isTipped();
    
   private:
     
