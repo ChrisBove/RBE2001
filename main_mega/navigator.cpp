@@ -165,8 +165,8 @@ void Navigator::chooseAction() {
 void Navigator::candle_Position(){
   float x_coord = driveTrain.getX();
   float y_coord = driveTrain.getY();
-  float head = driveTrain.getHeading(); 
-  float d = virtualBumper.getDistance()+6.5; 
+  float head = driveTrain.getUnboundedHeading(); 
+  float d = virtualBumper.getDistance()+6.5; // distance + distance from sensor to center of robot
   
   float aim; 
   float x_ref; 

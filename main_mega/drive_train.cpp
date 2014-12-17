@@ -164,7 +164,11 @@ float DriveTrain::getY() {
 }
 
 float DriveTrain::getHeading() {
-  return transformed.x;
+  return transformed.theta;
+}
+
+float DriveTrain::getUnboundedHeading() {
+  return unboundedTheta;
 }
 
 void DriveTrain::transform(){
@@ -357,7 +361,7 @@ int DriveTrain::forwardABit() {
 
 
 int DriveTrain::getHeadingDeg() {
-  return (transformed.x *(180.0/PI));
+  return (transformed.theta *(180.0/PI));
 }
 
 
