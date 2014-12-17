@@ -93,6 +93,12 @@ class SensorMast
    * @return  None--performs an action
    */
    void indicateWin();
+   /**
+   * @brief   returns the calibrated center of the servo
+   * @param   None
+   * @return  heading in degrees from x-axis: CCW is Positive, 90 is forward
+   */
+   int getServoCenter();
    
   private:
     int _servoPin, _flamePin, _LED_indicator, _LED_WIN;

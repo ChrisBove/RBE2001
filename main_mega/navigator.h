@@ -62,8 +62,15 @@ class Navigator {
    */
    void doBumper();
    
+   /**
+   * @brief   Uses analog IR flame values to get even closer to the true candle center
+   * @param   None
+   * @return  true when centered
+   */
+   bool centerMore();
+   
    // defines possible states of navigation
-   enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN, TEST, TILT};
+   enum Navigate { LOCATE_CANDLE, SPIN_TO_CANDLE, SPIN_MORE, GET_CLOSE_TO_CANDLE, CALC_POSITION, EXTINGUISH, RETURN, TEST, TILT};
    
    /**
    * @brief   combines robot position and IR sensor ranges to provide X, Y, Z, theta coordinates of the candle
@@ -89,6 +96,11 @@ class Navigator {
    int measureCount = 0;
    bool isFirstTime = true;
    bool haveSeenNoFire = false;
+   
+   bool isLeft = false;
+   bool isFirstReCenter = true;
+   int lastFlameVal;
+
    bool serviceCannon = false;
   
 };
