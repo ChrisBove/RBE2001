@@ -234,10 +234,15 @@ bool Navigator::centerFlame() {
     sensorMast.center();
     sensorMast.freeze();
     isFirstTime = false;
+    haveSeenNoFire = false;
     return false;
   }
   else {
-    if (sensorMast.isFire()) {
+    if (!haveSeenNoFire) {
+      if(!sensorMast.isFire())
+        haveSeenNoFire = true;
+    }
+    else if (sensorMast.isFire()) {
       driveTrain.halt();
       return true;
     }
