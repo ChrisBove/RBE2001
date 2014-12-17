@@ -36,6 +36,8 @@ class CannonControl
    
    void giveSlack();
    
+   void giveTug();
+   
    void AIM();
    
    void shootCannon();
@@ -64,7 +66,7 @@ class CannonControl
    int currentFlameVal;
    int currentFlamePos;
    int servoPos;
-   int servoMin = 90;
+   int servoMin = 80;
    int servoMax = 160;
    int counter = 0;
    int gripClosed = 0;
@@ -79,6 +81,7 @@ class CannonControl
    bool drawBackTrue = false;
    bool drawBackCont = true;
    bool giveSlackTrue = false;
+   bool giveTugTrue = false;
    bool shootCannonTrue = false;
    bool AIMTrue = false;
    bool cont = true;

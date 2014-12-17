@@ -63,10 +63,10 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
-  //cannonControl.service();
+  cannonControl.service();
   
   // function that now calls the state machine for Navigator
-  chooseAction();
+  //chooseAction();
 
 }
 

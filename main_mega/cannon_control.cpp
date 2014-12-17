@@ -79,6 +79,7 @@ void CannonControl::locateFlame(){
     locateFlameTrue = false;
     drawBackTrue = true;
     Serial.println("Check Flame");
+    Serial.println(servoPos);
     //AIM();
     }
     if(flameVal >= threshold){
@@ -104,7 +105,7 @@ void CannonControl::AIM(){
 }
 
 void CannonControl::drawBack(){
-  Serial.println("draw back start");
+  //Serial.println("draw back start");
   //newPosition = -canEnc.read();
   //hinge.write(servoMax);
   if(newPosition <= 1010 && drawBackCont){
@@ -149,8 +150,28 @@ void CannonControl::giveSlack(){
     winch.write(90);
     Serial.println("giveslack");
     giveSlackTrue = false;
-    AIMTrue = true;
+    giveTugTrue = true;
 }
+}
+
+void CannonControl::giveTug(){
+  if(servoPos >= servoMin)
+  {
+    hinge.write(servoPos);
+    if(counter >=3){
+    servoPos--;
+    counter = 0;
+    }
+    else{
+      counter ++;
+    }
+    Serial.println(servoPos);
+  }
+  if(servoPos <= servoMin){
+    giveTugTrue = false;
+    AIMTrue = true;
+    Serial.println("Give Tug");
+  }
 }
 
 void CannonControl::shootCannon(){
@@ -182,6 +203,9 @@ void CannonControl::service(){
   }
   if(giveSlackTrue){
     giveSlack();
+  }
+  if(giveTugTrue){
+    giveTug();
   }
   if(AIMTrue){
     AIM();
