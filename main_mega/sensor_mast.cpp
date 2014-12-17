@@ -25,7 +25,8 @@ void SensorMast::setupMast() {
   servo.attach(_servoPin); 
   // see http://makezine.com/2014/04/23/arduinos-servo-library-angles-microseconds-and-optional-command-parameters/
   center(); // center the servo
-  pinMode(_LED_indicator, OUTPUT);  
+  pinMode(_LED_indicator, OUTPUT);
+  pinMode(_LED_WIN, OUTPUT);  
 
 }
 
