@@ -86,7 +86,8 @@ class Navigator {
    
    int lastServoPos = 90;
    int measureCount = 0;
-   int fireCount=0;
+   bool isFirstTime = true;
+   bool haveSeenNoFire = false;
   
 };
 

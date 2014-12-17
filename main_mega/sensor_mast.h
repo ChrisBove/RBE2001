@@ -100,7 +100,7 @@ class SensorMast
     
     const int flameThreshold = 825; // flame less than this
     
-    const int servoCenter = 103; // center position of servo
+    const int servoCenter = 110; // center position of servo
     const int servoStep = 1;
     int servoPos = servoCenter; // position of servo
     int servoDir = 0; // 0 is CW, 1 is CCW
