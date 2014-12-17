@@ -84,7 +84,7 @@ void CannonControl::locateFlame(){
       state = DRAW_BACK;
 //    locateFlameTrue = false;
 //    drawBackTrue = true;
-//    Serial.println("Check Flame");
+    Serial.println("Check Flame");
 //    Serial.println(servoPosition);
     //AIM();
     }
