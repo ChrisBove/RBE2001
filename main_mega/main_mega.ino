@@ -9,6 +9,8 @@
 #include <Servo.h>
 #include <Encoder.h>
 #include <LiquidCrystal.h>
+#include <Wire.h>
+#include <LSM303.h>
 
 // user-defined libraries, contained in root
 #include "navigator.h"
