@@ -88,6 +88,7 @@ void Navigator::chooseAction() {
         state = SPIN_TO_CANDLE;
         driveTrain.halt();
         sensorMast.indicateNear();
+        isFirstTime = true;
         Serial.println("Candle found");
       }
       break;
@@ -219,42 +220,21 @@ void Navigator::doVFH(){
 //  Serial.println(sensorMast.getServoAngle());
 }
 
-bool Navigator::centerFlame()
-{ 
-  if (sensorMast.isFire())
-  { 
-     if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
-       { 
-         sensorMast.center();
-         sensorMast.freeze();
-         driveTrain.moveMotors(25, -25);
-         if (sensorMast.isFire() && fireCount==1)
-         {
-//           Serial.println( fireCount);
-           return true;  
-         }
-         fireCount++;
-       }
-     if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
-       {  
-         sensorMast.center();
-         sensorMast.freeze();
-         driveTrain.moveMotors(-25, 25);
-         if (sensorMast.isFire() && fireCount==1)
-         {
-           return true;
-         }
-         fireCount++;
-       }
-      if(102< sensorMast.getServoAngle()&& 104> sensorMast.getServoAngle()&& sensorMast.isFire() &&fireCount==0)
-       {
-         sensorMast.freeze();
-         return true;
-       } 
-  } 
-  else
-  {
-    return false;
+bool Navigator::centerFlame() {
+  if (isFirstTime) {
+    if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
+      driveTrain.moveMotors(20, -20);
+    if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
+      driveTrain.moveMotors(-20, 20);
+    sensorMast.center();
+    sensorMast.freeze();
+    isFirstTime = false;
+  }
+  else {
+    if (sensorMast.isFire()) {
+      driveTrain.halt();
+      return true;
+    }
   }
   return false;
 }
