@@ -204,7 +204,7 @@ void Navigator::candle_Position(){
 //  float y_coord = driveTrain.getY();
   float head = driveTrain.getUnboundedHeading(); 
   float d = virtualBumper.getDistance()+6.5; // distance + distance from sensor to center of robot
-  d = 24;
+//  d = 24;
 //  float aim; 
 //  float x_ref; 
 //  float y_ref; 
@@ -212,8 +212,8 @@ void Navigator::candle_Position(){
 
   // to get X coord: cos(theta) * d
   // to get Y coordinate: sin(theta) *d
-  float xPos = sin(head) * d;
-  float yPos = cos(head) *d;
+  float xPos = cos(head) * d;
+  float yPos = sin(head) *d;
   // add X and Y to the current position
   my_lcd.printLocationNow(driveTrain.getX() + xPos, driveTrain.getY() + yPos, 7.89);
   

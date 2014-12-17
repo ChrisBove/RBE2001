@@ -370,10 +370,11 @@ bool DriveTrain::backupX(float inches){
   // if this is a new command, set our target
   if(new_pos_command) {
 //    Serial.println("New command");
-    pos_target_x = getX() + ( inches * sin(getHeading() )); // get x coordinate, add to delta x
-    pos_target_y = getY() + ( inches * cos(getHeading() )); // get y, add to delta y
+    pos_target_x = getX() + ( inches * cos(getHeading() )); // get x coordinate, add to delta x
+    pos_target_y = getY() + ( inches * sin(getHeading() )); // get y, add to delta y
     new_pos_command = false;
   }
+  else {
   // else, our target is current
   
   moveMotors(-30,-30);
@@ -389,6 +390,7 @@ bool DriveTrain::backupX(float inches){
     halt();
     new_pos_command = true;
     return true;
+  }
   }
   return false;
 }
