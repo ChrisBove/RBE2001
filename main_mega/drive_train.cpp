@@ -156,15 +156,15 @@ void DriveTrain::odometer_thread()
 }
 
 float DriveTrain::getX() {
-  return transformed.x;
+  return current_position.x; //transformed.x;
 }
 
 float DriveTrain::getY() {
-  return transformed.y;
+  return current_position.y; //transformed.y;
 }
 
 float DriveTrain::getHeading() {
-  return transformed.theta;
+  return current_position.theta; //transformed.theta;
 }
 
 float DriveTrain::getUnboundedHeading() {

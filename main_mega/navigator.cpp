@@ -100,9 +100,14 @@ void Navigator::chooseAction() {
   switch (state) {
     
     case TEST:
-      
-      if (driveTrain.rotateX(PI))
-        state = CALC_POSITION;
+//      Serial.println(driveTrain.getUnboundedHeading());
+        Serial.print(driveTrain.getX());
+        Serial.print("\t");
+        Serial.print(driveTrain.getY());
+        Serial.print("\t");
+        Serial.println(driveTrain.getUnboundedHeading());
+//      if (driveTrain.rotateX(PI))
+//        state = CALC_POSITION;
       break;
       
     case LOCATE_CANDLE:
