@@ -96,7 +96,7 @@ void Navigator::chooseAction() {
       if (centerFlame()){
         driveTrain.halt();
        
-        state = GET_CLOSE_TO_CANDLE;
+        state = CALC_POSITION;
        
         Serial.println("Done spinning");
       }
