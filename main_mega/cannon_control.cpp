@@ -38,6 +38,7 @@ void CannonControl::resetCannon(){
   //slackComp();
   locateFlameTrue = true;
   drawBackCont = true;
+  state = LOCATE_FLAME;
 }
 
 void CannonControl::setupCannon(){
@@ -46,6 +47,7 @@ void CannonControl::setupCannon(){
   grip.attach(_gripperPin);
   grip.write(90);
   servoPosition = servoMin;
+  state = LOCATE_FLAME;
 }
 
 void CannonControl::checkFlame(){
@@ -67,7 +69,7 @@ void CannonControl::locateFlame(){
   {
     hinge.write(servoPosition);
     checkFlame();
-    if(counter >=3){
+    if(counter >=100){
     servoPosition ++;
     Serial.println(servoPosition);
     counter = 0;
@@ -98,7 +100,7 @@ void CannonControl::locateFlame(){
 }
 
 void CannonControl::AIM(){
-  if(flameFound && aimCount <= 100){
+  if(flameFound && aimCount <= 1000){
   hinge.write(currentFlamePos - 10);
   aimCount ++;
   }
@@ -128,7 +130,7 @@ void CannonControl::drawBack(){
     winch.write(90);
     grip.write(180);
     gripClosed ++;
-    if(gripClosed >= 20){
+    if(gripClosed >= 1000){
       Serial.println("draw back");
 //    drawBackTrue = false;
 //    giveSlackTrue = true;
@@ -167,7 +169,7 @@ void CannonControl::giveTug(){
   if(servoPosition >= servoMin)
   {
     hinge.write(servoPosition);
-    if(counter >=3){
+    if(counter >=100){
     servoPosition--;
     counter = 0;
     }

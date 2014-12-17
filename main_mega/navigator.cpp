@@ -139,6 +139,7 @@ void Navigator::chooseAction() {
     
     case CALC_POSITION:
       candle_Position();
+      cannonControl.resetCannon();
       Serial.println("Done calculating our position");
       state = EXTINGUISH;
       break;
