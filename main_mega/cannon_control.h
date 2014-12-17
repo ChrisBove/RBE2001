@@ -18,7 +18,7 @@
 class CannonControl
 {
   public:
-  //enum cannonState {WAIT_FOR_INSTRUCT, FIND_FLAME, DRAW_BACK, GIVE_SLACK, AIM_AT_FLAME, SHOOT_CANNON, CHECK_FLAME};
+  enum CannonS {LOCATE_FLAME, DRAW_BACK, GIVE_SLACK, TUG, AIM_AT_FLAME, SHOOT_CANNON};
   
   CannonControl(int gripperPin, int servoPin, int motorPin, int flamePin);
      /**
@@ -36,11 +36,15 @@ class CannonControl
    
    void giveSlack();
    
+   void giveTug();
+   
    void AIM();
    
    void shootCannon();
    
    void service();
+   
+   void cannonOP();
    
    int giveAngle();
    
@@ -52,9 +56,7 @@ class CannonControl
    
    private:
    
-   Servo winch;
-   Servo hinge;
-   Servo grip;
+   CannonS state = LOCATE_FLAME;
    
    const int flameLimit = 100;
    
@@ -63,8 +65,8 @@ class CannonControl
    int flameVal = 1000;
    int currentFlameVal;
    int currentFlamePos;
-   int servoPos;
-   int servoMin = 90;
+   int servoPosition;
+   int servoMin = 50;
    int servoMax = 160;
    int counter = 0;
    int gripClosed = 0;
@@ -79,6 +81,7 @@ class CannonControl
    bool drawBackTrue = false;
    bool drawBackCont = true;
    bool giveSlackTrue = false;
+   bool giveTugTrue = false;
    bool shootCannonTrue = false;
    bool AIMTrue = false;
    bool cont = true;

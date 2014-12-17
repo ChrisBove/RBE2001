@@ -89,6 +89,7 @@ class Navigator {
    int measureCount = 0;
    bool isFirstTime = true;
    bool haveSeenNoFire = false;
+   bool serviceCannon = false;
   
 };
 
