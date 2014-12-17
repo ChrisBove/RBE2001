@@ -222,13 +222,19 @@ void Navigator::doVFH(){
 
 bool Navigator::centerFlame() {
   if (isFirstTime) {
-    if(driveTrain.getHeadingDeg()+103> sensorMast.getServoAngle())
-      driveTrain.moveMotors(20, -20);
-    if(driveTrain.getHeadingDeg()+103< sensorMast.getServoAngle())
+    // if greater than 90, turn left
+    if(sensorMast.getServoAngle() > 90)
       driveTrain.moveMotors(-20, 20);
+    else { // not greater than 90, so if perfect halt, otherwise go other direction
+      if(sensorMast.getServoAngle() < 90)
+        driveTrain.moveMotors(20, -20);
+      else
+        driveTrain.halt();
+    }
     sensorMast.center();
     sensorMast.freeze();
     isFirstTime = false;
+    return false;
   }
   else {
     if (sensorMast.isFire()) {
