@@ -195,8 +195,8 @@ void Navigator::candle_Position(){
 
   // to get X coord: cos(theta) * d
   // to get Y coordinate: sin(theta) *d
-  float xPos = cos(head) * d;
-  float yPos = sin(head) *d;
+  float xPos = sin(head) * d;
+  float yPos = cos(head) *d;
   // add X and Y to the current position
   my_lcd.printLocationNow(driveTrain.getX() + xPos, driveTrain.getY() + yPos, 0);
   
