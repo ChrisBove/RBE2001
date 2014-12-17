@@ -29,8 +29,11 @@ CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int fla
 void CannonControl::resetCannon(){
   flameFound = false;
   servoPos = 0;
+  flameVal = 1000;
   currentFlameVal = 1000;
-  slackComp();
+  //slackComp();
+  locateFlameTrue = true;
+  drawBackCont = true;
 }
 
 void CannonControl::setupCannon(){
@@ -75,7 +78,11 @@ void CannonControl::locateFlame(){
     if(flameFound){
     locateFlameTrue = false;
     drawBackTrue = true;
+    Serial.println("Check Flame");
     //AIM();
+    }
+    if(flameVal >= threshold){
+      extinguished = true;
     }
 //    else{
 //     servoPos = servoMin;
@@ -90,12 +97,14 @@ void CannonControl::AIM(){
   }
   else{
     aimCount = 0;
+    Serial.println("AIM");
     AIMTrue = false;
     shootCannonTrue = true;
 }
 }
 
 void CannonControl::drawBack(){
+  Serial.println("draw back start");
   //newPosition = -canEnc.read();
   //hinge.write(servoMax);
   if(newPosition <= 1010 && drawBackCont){
@@ -103,7 +112,7 @@ void CannonControl::drawBack(){
     winch.write(120);
     if(newPosition != oldPosition){
     oldPosition = newPosition;
-    Serial.println(newPosition);
+    //Serial.println(newPosition);
   }
   }
   if(newPosition > 1000){
@@ -112,6 +121,7 @@ void CannonControl::drawBack(){
     grip.write(180);
     gripClosed ++;
     if(gripClosed >= 20){
+      Serial.println("draw back");
     drawBackTrue = false;
     giveSlackTrue = true;
     }
@@ -132,11 +142,12 @@ void CannonControl::giveSlack(){
     winch.write(60);
   if(newPosition != oldPosition){
     oldPosition = newPosition;
-    Serial.println(newPosition);
+    //Serial.println(newPosition);
   }
   }
   if(newPosition < 70){
     winch.write(90);
+    Serial.println("giveslack");
     giveSlackTrue = false;
     AIMTrue = true;
 }
@@ -148,15 +159,18 @@ void CannonControl::shootCannon(){
   gripClosed --;
   }
   else{
+    resetCannon();
+    Serial.println("shootcannon");
   shootCannonTrue = false;
-  //resetCannon();
-//  servoPos = 0;
-  //locateFlameTrue = true;
   }
 }
 
 int CannonControl::giveAngle(){ //19cm high 20 cm out, 28 degrees at max, 1.777 ratio
    return currentFlamePos/5.71;
+}
+
+bool CannonControl::returnResult(){
+  return extinguished;
 }
 
 void CannonControl::service(){
