@@ -163,15 +163,27 @@ void Navigator::chooseAction() {
       if(cannonControl.returnResult()){
         Serial.println("Candle is out, mission success");
         state = RETURN;
-        
+        sensorMast.indicateNear();
+        sensorMast.indicateWin();
       }
       
       break;
       
     case RETURN:
-      sensorMast.indicateNear();
-      sensorMast.indicateWin();
-      
+      // if we see fire while returning to home, go put it out.
+      if(sensorMast.isFire() ) {
+        state = SPIN_TO_CANDLE;
+        driveTrain.halt();
+        sensorMast.indicateNear();
+        isFirstTime = true;
+        break;
+      }
+      // if drivetrain is within +- 10in from home, call it quits
+      if ( abs(driveTrain.getX() ) < 10 && abs(driveTrain.getY()) < 10)
+        driveTrain.halt();
+      // else keep roaming until you get back to base.
+      else
+        virtualBumper.steerMe(driveTrain);
       break;
     
     case TILT:
