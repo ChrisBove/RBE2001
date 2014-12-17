@@ -67,6 +67,10 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
+//  if(serviceCannon){
+//    cannonControl.service();
+//  }
+
   //cannonControl.service();
 //  imu.service();
   
@@ -135,13 +139,15 @@ void Navigator::chooseAction() {
     
     case CALC_POSITION:
       candle_Position();
+      cannonControl.resetCannon();
       Serial.println("Done calculating our position");
       state = EXTINGUISH;
       break;
     
     case EXTINGUISH:
-      cannonControl.service();
+      cannonControl.cannonOP();
 //      Serial.println("Putting out candle");
+//serviceCannon = true;
       if(cannonControl.returnResult()){
         Serial.println("Candle is out, mission success");
         state = RETURN;
