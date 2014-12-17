@@ -82,7 +82,7 @@ class Navigator {
  
   private:
    
-   Navigate state = TEST; // state to keep
+   Navigate state = LOCATE_CANDLE; // state to keep
    Navigate lastState = state; // last state to handle tilt case
    
    // global pointers
