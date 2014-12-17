@@ -131,7 +131,8 @@ void Navigator::chooseAction() {
       break;
       
     case RETURN:
-      
+      sensorMast.indicateNear();
+      sensorMast.indicateWin();
       
       break;
   }
