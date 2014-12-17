@@ -63,10 +63,12 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
-  cannonControl.service();
-  
+//  if(serviceCannon){
+//    cannonControl.service();
+//  }
+
   // function that now calls the state machine for Navigator
-  //chooseAction();
+  chooseAction();
 
 }
 
@@ -120,8 +122,9 @@ void Navigator::chooseAction() {
       break;
     
     case EXTINGUISH:
-      cannonControl.service();
+      cannonControl.cannonOP();
 //      Serial.println("Putting out candle");
+//serviceCannon = true;
       if(cannonControl.returnResult()){
         Serial.println("Candle is out, mission success");
         state = RETURN;

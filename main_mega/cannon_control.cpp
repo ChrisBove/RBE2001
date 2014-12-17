@@ -15,6 +15,10 @@
 #define ENCODER_PIN_1 18
 #define ENCODER_PIN_2 23
 
+   Servo winch;
+   Servo hinge;
+   Servo grip;
+
   Encoder canEnc(ENCODER_PIN_1, ENCODER_PIN_2);
 
 CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int flamePin) {
@@ -28,7 +32,7 @@ CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int fla
 
 void CannonControl::resetCannon(){
   flameFound = false;
-  servoPos = 0;
+  servoPosition = 0;
   flameVal = 1000;
   currentFlameVal = 1000;
   //slackComp();
@@ -41,14 +45,14 @@ void CannonControl::setupCannon(){
   hinge.attach(_servoPin);
   grip.attach(_gripperPin);
   grip.write(90);
-  //servoPos = servoMin;
+  servoPosition = servoMin;
 }
 
 void CannonControl::checkFlame(){
   currentFlameVal = analogRead(_flamePin);
   if(flameVal >= currentFlameVal){
     flameVal = currentFlameVal;
-    currentFlamePos = servoPos;
+    currentFlamePos = servoPosition;
     //Serial.println(flameVal);
   }
 }
@@ -56,37 +60,39 @@ void CannonControl::checkFlame(){
 void CannonControl::locateFlame(){
   //flameFound = false;
 //  if(cannonStart){
-//    servoPos = servoMin;
+//    servoPosition = servoMin;
 //    cannonStart = false;
 //  }
-  if(servoPos <= servoMax)
+  if(servoPosition <= servoMax)
   {
-    hinge.write(servoPos);
+    hinge.write(servoPosition);
     checkFlame();
     if(counter >=3){
-    servoPos++;
+    servoPosition ++;
+    Serial.println(servoPosition);
     counter = 0;
     }
     else{
       counter ++;
     }
   }
-  if(servoPos >= servoMax){
+  if(servoPosition >= servoMax){
     if(flameVal <= threshold){
       flameFound = true;
     }
     if(flameFound){
-    locateFlameTrue = false;
-    drawBackTrue = true;
-    Serial.println("Check Flame");
-    Serial.println(servoPos);
+      state = DRAW_BACK;
+//    locateFlameTrue = false;
+//    drawBackTrue = true;
+//    Serial.println("Check Flame");
+//    Serial.println(servoPosition);
     //AIM();
     }
     if(flameVal >= threshold){
       extinguished = true;
     }
 //    else{
-//     servoPos = servoMin;
+//     servoPosition = servoMin;
 //    }
   }
 }
@@ -99,8 +105,9 @@ void CannonControl::AIM(){
   else{
     aimCount = 0;
     Serial.println("AIM");
-    AIMTrue = false;
-    shootCannonTrue = true;
+//    AIMTrue = false;
+//    shootCannonTrue = true;
+state = SHOOT_CANNON;
 }
 }
 
@@ -108,7 +115,7 @@ void CannonControl::drawBack(){
   //Serial.println("draw back start");
   //newPosition = -canEnc.read();
   //hinge.write(servoMax);
-  if(newPosition <= 1010 && drawBackCont){
+  if(newPosition <= 1210 && drawBackCont){
     newPosition = -canEnc.read();
     winch.write(120);
     if(newPosition != oldPosition){
@@ -116,15 +123,16 @@ void CannonControl::drawBack(){
     //Serial.println(newPosition);
   }
   }
-  if(newPosition > 1000){
+  if(newPosition > 1200){
     drawBackCont = false;
     winch.write(90);
     grip.write(180);
     gripClosed ++;
     if(gripClosed >= 20){
       Serial.println("draw back");
-    drawBackTrue = false;
-    giveSlackTrue = true;
+//    drawBackTrue = false;
+//    giveSlackTrue = true;
+state = GIVE_SLACK;
     }
   }
 }
@@ -149,27 +157,29 @@ void CannonControl::giveSlack(){
   if(newPosition < 70){
     winch.write(90);
     Serial.println("giveslack");
-    giveSlackTrue = false;
-    giveTugTrue = true;
+//    giveSlackTrue = false;
+//    giveTugTrue = true;
+state = TUG;
 }
 }
 
 void CannonControl::giveTug(){
-  if(servoPos >= servoMin)
+  if(servoPosition >= servoMin)
   {
-    hinge.write(servoPos);
+    hinge.write(servoPosition);
     if(counter >=3){
-    servoPos--;
+    servoPosition--;
     counter = 0;
     }
     else{
       counter ++;
     }
-    Serial.println(servoPos);
+    Serial.println(servoPosition);
   }
-  if(servoPos <= servoMin){
-    giveTugTrue = false;
-    AIMTrue = true;
+  if(servoPosition <= servoMin){
+//    giveTugTrue = false;
+//    AIMTrue = true;
+state = AIM_AT_FLAME;
     Serial.println("Give Tug");
   }
 }
@@ -182,7 +192,8 @@ void CannonControl::shootCannon(){
   else{
     resetCannon();
     Serial.println("shootcannon");
-  shootCannonTrue = false;
+//  shootCannonTrue = false;
+state = LOCATE_FLAME;
   }
 }
 
@@ -212,5 +223,35 @@ void CannonControl::service(){
   }
   if(shootCannonTrue){
     shootCannon();
+  }
+}
+
+void CannonControl::cannonOP(){
+  switch (state) {
+    
+    case LOCATE_FLAME:
+    locateFlame();
+    break;
+    
+    case DRAW_BACK:
+    drawBack();
+    break;
+    
+    case GIVE_SLACK:
+    giveSlack();
+    break;
+    
+    case TUG:
+    giveTug();
+    break;
+    
+    case AIM_AT_FLAME:
+    AIM();
+    break;
+    
+    case SHOOT_CANNON:
+    shootCannon();
+    break;
+    
   }
 }
