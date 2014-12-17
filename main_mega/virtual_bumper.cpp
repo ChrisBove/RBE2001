@@ -12,7 +12,7 @@
  
 #define LEFT_CLIFF       10
 #define RIGHT_CLIFF      11
-#define LEFT_IR          4
+#define LEFT_IR          5
 #define RIGHT_IR         3
 
 const bool shouldPrint = false;
