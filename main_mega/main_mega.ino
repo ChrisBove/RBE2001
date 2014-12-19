@@ -1,6 +1,19 @@
 /*
-  This program runs on the Arduino Mega to control robot
-  functions.
+
+ Description:
+    This code is written for the RBE 2002 B14 Final Project Robot. 
+    main_mega is the .ino file associated with the specific code for running this robot on a Mega.
+    
+    See the navigator class for robot functions.
+    
+    Pins are as defined below this comment block.
+    
+  Authors: Christopher Bove, Christopher Ellen, Sami Neeno, and Daniel Pongratz
+  
+  Date last modified: 12-19-2014
+  
+  NOTE:  This code requires use of Arduino 1.5.8 or higher in order to compile.
+  
   
 */
 
@@ -20,28 +33,11 @@ Navigator lola;
 
 
 void setup() {
-  Serial.begin(115200);
-  lola.setupNavigator();
+  Serial.begin(115200); // start serial comm
+  lola.setupNavigator(); // setup procedures.
   Serial.println("Setup complete.");
 }
 
 void loop() {
-  lola.service();
-  // put your main code here, to run repeatedly:
-//  driveTrain.forward();
-////  driveTrain.turn(0, 180);
-//  delay(1000);
-//  driveTrain.reverse();
-//  delay(1000);
-//  driveTrain.halt();
-
-//  Serial.print("PW: ");
-//  Serial.print(sensorMast.getDigitalDistance());
-//  Serial.print("\t Analog: ");
-//  Serial.println(sensorMast.getAnalogDistance());
-  
-//  Serial.println(sensorMast.getFlameReading());
-  
-//  sensorMast.setServoSpin();
-//  sensorMast.center();
+  lola.service(); // service the navigator
 }
