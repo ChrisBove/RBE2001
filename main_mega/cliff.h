@@ -15,8 +15,8 @@ class CliffDetector {
   public:
    /**
    * @brief   Constructor for cliff class
-   * @param   none
-   * @return  cliff object(int LeftLightPin, int RightLightPin)
+   * @param   (int LeftLightPin, int RightLightPin analog pins
+   * @return  cliff object
    */
    CliffDetector(int LeftLightPin, int RightLightPin);
    /**

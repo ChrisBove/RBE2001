@@ -23,9 +23,6 @@
 #include "vfh.h"
 #include "Arduino.h"
 
-/* PI value. */
-//#define PI 3.1415926535
-
 /* These parameters are there to help me remember them, basically. */
 
 /* Parameters for the grid. */

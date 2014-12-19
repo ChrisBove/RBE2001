@@ -24,7 +24,7 @@ class VirtualBumper {
    
    // defines directions of obstacles
    enum DIR { LEFT, CENTER, RIGHT, CENTER_L, CENTER_R, L_AND_R, NONE, ALL};
-   enum SIDE {L, R};
+   enum SIDE {L, R}; // side of IR range sensor
    
    /**
    * @brief   Attaches pins required. Should be called in main setup
@@ -100,7 +100,7 @@ class VirtualBumper {
    
    
   private:
-   int _leftIR, _rightIR, _ultraPin, _digUltraPin;
+   int _leftIR, _rightIR, _ultraPin, _digUltraPin; // pins for all the sensors
    
    int reading; // stores distance in inches
    int distance; // stores distance from ultrasonic in cm

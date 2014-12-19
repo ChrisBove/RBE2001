@@ -27,5 +27,6 @@ void IMUDriver::service() {
 }
 
 bool IMUDriver::isTipped() {
+  // true if we've got more x or y accels than z
   return (abs(compass.a.z) < abs(compass.a.y)) || (abs(compass.a.z) < abs(compass.a.x));
 }
