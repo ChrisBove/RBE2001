@@ -15,9 +15,10 @@
 #define LEFT_IR          5
 #define RIGHT_IR         3
 
-const bool shouldPrint = false;
+const bool shouldPrint = false; // if we should print debug statements
 
-CliffDetector cliffDetect(RIGHT_CLIFF, LEFT_CLIFF);
+
+CliffDetector cliffDetect(RIGHT_CLIFF, LEFT_CLIFF); // cliff detector to use in bumper
 
 VirtualBumper::VirtualBumper(int ultraPin, int digUltraPin) {
   _ultraPin = ultraPin;
@@ -26,7 +27,6 @@ VirtualBumper::VirtualBumper(int ultraPin, int digUltraPin) {
 
 void VirtualBumper::setupBumper() {
   pinMode(_digUltraPin, INPUT);
-  
 }
 
 void VirtualBumper::service() {
@@ -97,7 +97,7 @@ int VirtualBumper::getAnalogDistance() {
 }
 
 int VirtualBumper::getDigitalDistance() {
-  distance = pulseIn(_digUltraPin, HIGH)/58; // 
+  distance = pulseIn(_digUltraPin, HIGH)/58; // convert for digital factor
   return distance;
 }
 
@@ -108,7 +108,6 @@ int VirtualBumper::getDistance() {
 void VirtualBumper::steerMe(DriveTrain& drive) {
   // check if we have hit a cliff - if so, backup and spin for a bit
   bool onCliff = true;
-  
   
   if (!stillOnCliff) // if we are not still servicing a cliff event, check them again
     cliffDir = cliffObstacle();
@@ -252,5 +251,5 @@ void VirtualBumper::steerMe(DriveTrain& drive) {
 }
 
 void VirtualBumper::wallFollow(DriveTrain& drive) {
-  
+  // not implemented
 }
