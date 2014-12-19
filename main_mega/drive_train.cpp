@@ -28,7 +28,7 @@ DriveTrain::DriveTrain(int leftPin, int rightPin, bool leftInverted, bool rightI
   _leftPin = leftPin;
   _rightPin = rightPin;
   
-  // following sets offsets, but it is not fully implemented
+  // sets offsets for inverted motors
   if (leftInverted)
     leftInversion = -1;
   if (rightInverted)
@@ -37,15 +37,15 @@ DriveTrain::DriveTrain(int leftPin, int rightPin, bool leftInverted, bool rightI
 }
 
 void DriveTrain::setupDriveTrain() {
-  left.attach(_leftPin, 1000, 2000);
+  left.attach(_leftPin, 1000, 2000);  // limit PWM vals
   right.attach(_rightPin, 1000, 2000);
-  initialize_odometry();
+  initialize_odometry(); // init odom
 }
 
 void DriveTrain::service() {
-  odometer_thread();
-  if (update_pos)
-    transform();
+  odometer_thread(); // run odometry thread
+//  if (update_pos) // if time to update pose, do a transform
+//    transform();
 }
 
 // pass in values between -90 and 90
@@ -77,6 +77,10 @@ void DriveTrain::initialize_odometry()
 
 void DriveTrain::odometer_thread()
 {
+  
+  // Encoder localization functions modified from:
+  //   odometer.c - Copyright (C) 2000, Dafydd Walters
+  
   float dist_left;
   float dist_right;
   int left_ticks;
@@ -90,8 +94,6 @@ void DriveTrain::odometer_thread()
   MUL_COUNT  = PI * WHEEL_DIAMETER / PULSES_PER_REVOLUTION;
   
   
-  //  enable_interrupts(0);         /* Ensure we don't lose any odometer counts */
-//  noInterrupts();
   left_ticks = left_encoder.read();
   // only stop interrupts if there is a need to wipe encoders
   if (left_ticks != 0) {
@@ -106,10 +108,6 @@ void DriveTrain::odometer_thread()
     right_encoder.write(0);
     interrupts();
   }
-//    left_count = 0;
-//    right_count = 0;
-//  interrupts();
-//    enable_interrupts(1);
 
   if (left_ticks != 0 || right_ticks != 0) {
     dist_left = (float)left_ticks * MUL_COUNT;
@@ -140,7 +138,7 @@ void DriveTrain::odometer_thread()
 
       /* Calculate new orientation */
       current_position.theta += right_minus_left / AXLE_LENGTH;
-      unboundedTheta += right_minus_left / AXLE_LENGTH;
+      unboundedTheta += right_minus_left / AXLE_LENGTH; // don't bound this one
       /* Keep in the range -PI to +PI */
       while(current_position.theta > PI)
         current_position.theta -= (2.0*PI);
@@ -156,15 +154,15 @@ void DriveTrain::odometer_thread()
 }
 
 float DriveTrain::getX() {
-  return current_position.x; //transformed.x;
+  return current_position.x;
 }
 
 float DriveTrain::getY() {
-  return current_position.y; //transformed.y;
+  return current_position.y;
 }
 
 float DriveTrain::getHeading() {
-  return current_position.theta; //transformed.theta;
+  return current_position.theta;
 }
 
 float DriveTrain::getUnboundedHeading() {
@@ -175,42 +173,6 @@ void DriveTrain::transform(){
   transformed.x = -current_position.y;
   transformed.y = current_position.x;
   transformed.theta = current_position.theta - (PI/2.0);
-}
-
-void DriveTrain::turnLeft(dirTravel dir){
-  if (dir == FORWARD) {
-    moveMotors(10, 50);
-    // left should be slower or backwards
-  }
-  else { // reverse turn right
-    moveMotors(-10, 120);
-  }
-}
-
-void DriveTrain::turnRight(dirTravel dir) {
-  if (dir == FORWARD) {
-    moveMotors(50, 10);
-  }
-  else { // reverse turn left
-    moveMotors(75, 80);
-  }
-}
-
-void DriveTrain::sharpTurnLeft (dirTravel dir) {
-  if (dir == FORWARD)
-    moveMotors(0, 50);
-  // reverse direction is broken
-//  else 
-//    turn(75, 85); // reverse sharp turn RIGHT
-}
-
-void DriveTrain::sharpTurnRight(dirTravel dir) {
-  if (dir == FORWARD)
-    moveMotors(110, 100);
-  // reverse direction is broken
-//  else
-//    turn(105, 120); // reverse sharp turn left
-
 }
 
 void DriveTrain::halt(){
@@ -224,141 +186,6 @@ void DriveTrain::forward() {
 void DriveTrain::reverse() {
   moveMotors(-90, -90); // true reverse!
 }
-
-void DriveTrain::turn(int lval, int rval) {
-  left.write(lval);
-  right.write(rval);
-}
-
-void DriveTrain::setTime() {
-  startTime = millis();
-}
-
-// returns 1 when the turn is done
-bool DriveTrain::turn45(bool isRight) {
-  int timeLapse = millis() - startTime;
-  if (timeLapse <= 550) { // if not gone the time, keep turning
-    if (isRight)
-      turn(110, 110);
-    else
-      turn(70, 70);
-    return false;
-  }
-  else {
-    halt(); // stop when time has expired
-    return true;
-  }
-}
-
-bool DriveTrain::turn180(bool isRight) {
-  int timeLapse = millis() - startTime;
-  if (timeLapse <= 1200) { // if not gone the time, keep turning
-    if (isRight) {
-      turn(110, 110);
-    }
-    else {
-      turn(70, 70);
-    }
-    return false;
-  }
-  else { // stop when time expires
-    halt();
-    return true;
-  }
-}
-
-bool DriveTrain::turnAround(bool isRight) {
-  switch(turnState) {
-      // turn until the line sensors only see white
-      case TURN_OFF_LINE:
-        if (isRight) {
-          moveMotors(110, 110);
-        }
-        else {
-          moveMotors(70, 70);
-        }
-        if ((analogRead(0) < 200) && (analogRead(1) < 200) && (analogRead(2) < 200)) // ALL on white
-          turnState = TURN_TILL_LINE;
-         break;
-       // turn other way until sensors detect black
-       case TURN_TILL_LINE:
-         if (isRight) {
-           moveMotors(110, 110);
-         }
-         else {
-           moveMotors(70, 70);
-         }
-         if ((analogRead(0) > 200) || (analogRead(1) > 200) || (analogRead(2) > 200)) { // any on black
-           turnState = TURN_OFF_LINE;
-           return true; // return that the turn is complete
-         }
-         break;
-  }
-  return false;
-}
-
-bool DriveTrain::backupForTime() {
-  int timeLapse = millis() - startTime;
-  if (timeLapse <= 650) {
-    reverse();
-    return false;
-  }
-  else {
-    halt();
-    return true;
-  }
-}
-
-// not debugged
-int DriveTrain::backupABit() {
-  switch (revState) {
-    case INIT_BACKUP:
-      setTime();
-      revState = BACKUP;
-      break;
-
-    case BACKUP:
-      bool result = backupForTime();
-      if (result) {
-        revState = INIT_BACKUP;
-        return 1;
-      }
-      break;
-  }
-  return 0;
-}
-
-bool DriveTrain::forwardForTime() {
-  int timeLapse = millis() - startTime;
-  if (timeLapse <= 650) {
-    moveMotors(110, 80);
-    return false;
-  }
-  else {
-    halt();
-    return true;
-  }
-}
-
-// not debugged
-int DriveTrain::forwardABit() {
-  switch (forwardState) {
-    case INIT_FORWARD:
-      setTime();
-      forwardState = RUN_FORWARD;
-      return false;
-      break;
-    case RUN_FORWARD:
-      bool result = forwardForTime();
-      if (result) {
-        forwardState = INIT_FORWARD;
-        return true;
-      }
-      return false;
-      break;
-  }
-}
-
 
 int DriveTrain::getHeadingDeg() {
   return (transformed.theta *(180.0/PI));
@@ -375,38 +202,39 @@ bool DriveTrain::backupX(float inches){
     new_pos_command = false;
   }
   else {
-  // else, our target is current
-  
-  moveMotors(-30,-30);
-  
-//  new_pos_command = false; 
-  float xDif = abs(abs(getX()) - abs(pos_target_x));
-  bool xInBounds =  xDif <= pos_error; // in bounds if error is less than posError
-  float yDif = abs(abs(getY()) - abs(pos_target_y));
-  bool yInBounds = yDif <= pos_error; // in bounds if error is less than posError
-  // if both coordinates in bounds,
-  if ((xInBounds && yInBounds) || ( sqrt((xDif*xDif) + (yDif*yDif)) >= inches )){
-//    Serial.println("backup complete");
-    halt();
-    new_pos_command = true;
-    return true;
-  }
+    // else, our target is current
+    
+    moveMotors(-30,-30);
+    
+    float xDif = abs(abs(getX()) - abs(pos_target_x));
+    bool xInBounds =  xDif <= pos_error; // in bounds if error is less than posError
+    float yDif = abs(abs(getY()) - abs(pos_target_y));
+    bool yInBounds = yDif <= pos_error; // in bounds if error is less than posError
+    // if both coordinates in bounds, stop and say we're in bounds
+    if ((xInBounds && yInBounds) || ( sqrt((xDif*xDif) + (yDif*yDif)) >= inches )){
+  //    Serial.println("backup complete");
+      halt();
+      new_pos_command = true;
+      return true;
+    }
   }
   return false;
 }
 
 bool DriveTrain::rotateX(float spin){
+  // if new command, calc target theta
   if (new_command){
     target = spin + unboundedTheta;
     new_command = false;
   }
-  
+  // choose motor direction
   if (spin < 0){
-  moveMotors(25,-25); 
+    moveMotors(25,-25); 
   }
   else if (spin > 0){
-  moveMotors(-25,25);
+    moveMotors(-25,25);
   }
+  // if we are within the bounds, halt and say we're done
   if( abs(abs(target) - abs(unboundedTheta)) <= 0.1) {
     halt();
     new_command = true; 

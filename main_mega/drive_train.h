@@ -49,31 +49,7 @@ class DriveTrain
    */
     void moveInDir(int dir);
     
-     /**
-   * @brief   turns left, either forward or reverse
-   * @param   direction of travel
-   * @return  None
-   */
-    void turnLeft(dirTravel dir);
-         /**
-   * @brief   turns right
-   * @param   direction of travel
-   * @return  None
-   */
-    void turnRight(dirTravel dir);
-         /**
-   * @brief   sharp turn to the left
-   * @param   dir. of travel
-   * @return  None
-   */
-    void sharpTurnLeft(dirTravel dir);
-         /**
-   * @brief   sharp turn to right
-   * @param   dir. of travel
-   * @return  None
-   */
-    void sharpTurnRight(dirTravel dir);
-         /**
+   /**
    * @brief   stops motors
    * @param   none
    * @return  None
@@ -91,70 +67,15 @@ class DriveTrain
    * @return  None
    */
     void reverse();
-         /**
-   * @brief   drives motors (turns) with passed values
-   * @param   left turning value, right turning value
-   * @return  None
-   */
-    void turn(int lval, int rval);
-         /**
-   * @brief   turns 45 degrees on time estimation
-   * @param   true to go right, false to go left
-   * @return  true when turn has completed
-   */
-    bool turn45(bool isRight);
-   /**
-   * @brief   does a 180 based on timing
-   * @param   true to go right, false to go left
-   * @return  true when turn has completed
-   */
-    bool turn180(bool isRight);
-   /**
-   * @brief   sets the clock used for turning time
-   * @param   None
-   * @return  none
-   */
-    void setTime();
-    /**
-   * @brief   backs up using case statements
-   * @param   None
-   * @return  1 when backup completed
-   */
-    int backupABit();
-  /**
-   * @brief   backups for a specified time
-   * @param   None
-   * @return  true if time has elapsed
-   */
-    bool backupForTime();
-  /**
-   * @brief   drives forwards for a time using cases
-   * @param   None
-   * @return  1 when movement completed
-   */
-    int forwardABit();
-   /**
-   * @brief   turns around
-   * @param   true to turn right, false for left
-   * @return  true when turn is completed
-   */
-    bool turnAround(bool isRight);
     
-    // enums for switch states
-    enum ReverseState {INIT_BACKUP, BACKUP};
-    enum ForwardState {INIT_FORWARD, RUN_FORWARD};
-    enum turnAroundState {TURN_OFF_LINE, TURN_TILL_LINE};
-    // variables to hold state
-    turnAroundState turnState = TURN_OFF_LINE;
-    ReverseState revState = INIT_BACKUP;
-    ForwardState forwardState = INIT_FORWARD;
-    
+    // from odometer.c - Copyright (C) 2000, Dafydd Walters
     struct my_position
     {
       float x;        /* inch */
       float y;        /* inch */
       float theta;    /* radian (clockwise from y-axis) */
     };
+    
     
     /**
    * @brief   gets x coordinate of robot position
@@ -207,13 +128,6 @@ class DriveTrain
   private:
   
     bool shouldMove = true; // flag if motors should move
-    
-   /**
-   * @brief   goes froward for a particular time
-   * @param   None
-   * @return  true when movement complete
-   */
-    bool forwardForTime();
   
     // VARIABLES
     Servo left;       // Declare drive motors
@@ -263,14 +177,14 @@ class DriveTrain
    
    
    bool new_command = true; //This flags whether the position-controlled functions are operating under initial commands
-   float target = 0; 
+   float target = 0; // target theta to turn
    
-   bool new_pos_command = true;
-   float pos_target_x = 0;
+   bool new_pos_command = true; // flag for new data
+   float pos_target_x = 0; // target positions for reversals
    float pos_target_y = 0;
-   const float pos_error = 2;
+   const float pos_error = 2; // acceptable error for reversals
    
-   float unboundedTheta = 0;
+   float unboundedTheta = 0; // theta that is not bounded between 0 and PI
 };
 
 #endif
