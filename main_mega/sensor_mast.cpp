@@ -78,7 +78,7 @@ void SensorMast::setServoSpin(int time) {
       servoPos += servoStep;
   }
   servo.write(servoPos);
-  delay(time);
+  delay(time); // wait for servo
 }
 
 void SensorMast::center() {
@@ -118,5 +118,4 @@ void SensorMast::freeze() {
 
 void SensorMast::unFreeze() {
   shouldMove = true;
-
 }

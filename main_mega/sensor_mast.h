@@ -101,7 +101,7 @@ class SensorMast
    int getServoCenter();
    
   private:
-    int _servoPin, _flamePin, _LED_indicator, _LED_WIN;
+    int _servoPin, _flamePin, _LED_indicator, _LED_WIN; // pins that are connected
     int flameVal; // stores value for flame sensor
     
     const int flameThreshold = 600; // flame less than this
@@ -110,8 +110,8 @@ class SensorMast
     const int servoStep = 1;
     int servoPos = servoCenter; // position of servo
     int servoDir = 0; // 0 is CW, 1 is CCW
-    int maxCW = 23;
-    int maxCCW = 180;
+    int maxCW = 23; // max CW position, about 90 degree angle to front of robot
+    int maxCCW = 180; // max CCW position
     
     bool shouldMove = true; // controls if the mast should move
 };
