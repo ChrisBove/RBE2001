@@ -9,7 +9,7 @@
 #include "Arduino.h"
 #include "cannon_control.h"
 
-#include <Servo.h>  // import libraries
+#include <Servo.h>
 #include <Encoder.h>
 
 #define ENCODER_PIN_1 18
@@ -17,7 +17,7 @@
 
 const bool shouldDebug = false;
 
-   Servo winch;
+   Servo winch; 
    Servo hinge;
    Servo grip;
 
@@ -32,7 +32,7 @@ CannonControl::CannonControl(int gripperPin, int servoPin, int motorPin, int fla
   _encoderPin2 = ENCODER_PIN_2;
 }
 
-void CannonControl::resetCannon(){
+void CannonControl::resetCannon(){  // resets key values for repeated operation
   flameFound = false;
   servoPosition = 0;
   flameVal = 1000;
@@ -43,7 +43,7 @@ void CannonControl::resetCannon(){
   state = LOCATE_FLAME;
 }
 
-void CannonControl::setupCannon(){
+void CannonControl::setupCannon(){  // sets up the cannon
   winch.attach(_motorPin);
   hinge.attach(_servoPin);
   grip.attach(_gripperPin);
@@ -52,7 +52,7 @@ void CannonControl::setupCannon(){
   state = LOCATE_FLAME;
 }
 
-void CannonControl::checkFlame(){
+void CannonControl::checkFlame(){   // compares the current values of the flame sensor and adjustes them acodingly
   currentFlameVal = analogRead(_flamePin);
   if(flameVal >= currentFlameVal){
     flameVal = currentFlameVal;
@@ -61,7 +61,7 @@ void CannonControl::checkFlame(){
   }
 }
 
-void CannonControl::locateFlame(){
+void CannonControl::locateFlame(){   // scans for the canndle flame
   //flameFound = false;
 //  if(cannonStart){
 //    servoPosition = servoMin;
@@ -70,7 +70,7 @@ void CannonControl::locateFlame(){
   if(servoPosition <= servoMax)
   {
     hinge.write(servoPosition);
-    checkFlame();
+    checkFlame();  // checks the current flame values and adjust them accordingly
     if(counter >=100){
     servoPosition ++;
     if(shouldDebug) Serial.println(servoPosition);
@@ -80,11 +80,11 @@ void CannonControl::locateFlame(){
       counter ++;
     }
   }
-  if(servoPosition >= servoMax){
+  if(servoPosition >= servoMax){  // when the cannon reaches its max angle determines if the flame was found or not
     if(flameVal <= threshold){
       flameFound = true;
     }
-    if(flameFound){
+    if(flameFound){              // flame was found
       state = DRAW_BACK;
 //    locateFlameTrue = false;
 //    drawBackTrue = true;
@@ -92,7 +92,7 @@ void CannonControl::locateFlame(){
 //    Serial.println(servoPosition);
     //AIM();
     }
-    if(flameVal >= threshold){
+    if(flameVal >= threshold){ // flame was not found
       extinguished = true;
     }
 //    else{
@@ -101,7 +101,7 @@ void CannonControl::locateFlame(){
   }
 }
 
-void CannonControl::AIM(){
+void CannonControl::AIM(){  // rotates the cannon to the correct fireing position
   if(flameFound && aimCount <= 10000){
   hinge.write(currentFlamePos - 7);
   aimCount ++;
@@ -115,7 +115,7 @@ state = SHOOT_CANNON;
 }
 }
 
-void CannonControl::drawBack(){
+void CannonControl::drawBack(){    // winds up the winch
   //Serial.println("draw back start");
   //newPosition = -canEnc.read();
   //hinge.write(servoMax);
@@ -141,14 +141,14 @@ state = GIVE_SLACK;
   }
 }
 
-void CannonControl::slackComp(){
+void CannonControl::slackComp(){  // not implemented
   if(num <= 5){
     winch.write(120);
     num ++;
   }
 }
 
-void CannonControl::giveSlack(){
+void CannonControl::giveSlack(){  // gives the initial slack in the line before fireing
   //newPosition = -canEnc.read();
   if(newPosition >= 70){
     newPosition = -canEnc.read();
@@ -167,7 +167,7 @@ state = TUG;
 }
 }
 
-void CannonControl::giveTug(){
+void CannonControl::giveTug(){  // rotates the hinge servo giving more slack to the line
   if(servoPosition >= servoMin)
   {
     hinge.write(servoPosition);
@@ -189,7 +189,7 @@ state = AIM_AT_FLAME;
 }
 
 void CannonControl::shootCannon(){
-  if (gripClosed >= 0){
+  if (gripClosed >= 0){ // opens the gripper
   grip.write(90);
   gripClosed --;
   }
@@ -201,15 +201,15 @@ state = LOCATE_FLAME;
   }
 }
 
-int CannonControl::giveAngle(){ //19cm high 20 cm out, 28 degrees at max, 1.777 ratio
+int CannonControl::giveAngle(){ // calculates the angle of the cannon
    return currentFlamePos/5.71;
 }
 
-bool CannonControl::returnResult(){
+bool CannonControl::returnResult(){  // returns the current state of the candle
   return extinguished;
 }
 
-void CannonControl::service(){
+void CannonControl::service(){ // not implemented
   if(locateFlameTrue){
     locateFlame();
   }
@@ -259,3 +259,5 @@ void CannonControl::cannonOP(){
     
   }
 }
+
+
