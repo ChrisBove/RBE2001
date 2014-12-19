@@ -55,12 +55,6 @@ class Navigator {
    * @return  None
    */
    void doVFH();
-   /**
-   * @brief   Services bumper
-   * @param   None
-   * @return  None
-   */
-   void doBumper();
    
    /**
    * @brief   Uses analog IR flame values to get even closer to the true candle center
@@ -92,16 +86,16 @@ class Navigator {
 //   VFH::grid theGrid; // grid for VFH
 //   VFH::hist theHist; // histogram for VFH
    
-   int lastServoPos = 90;
-   int measureCount = 0;
-   bool isFirstTime = true;
+   int lastServoPos = 90; //  last servo position
+   int measureCount = 0;  // count of measurements
+   bool isFirstTime = true; // is first time 
    bool haveSeenNoFire = false;
-   
-   bool isLeft = false;
-   bool isFirstReCenter = true;
-   int lastFlameVal;
 
-   bool serviceCannon = false;
+   bool isLeft = false;  // was a left turn
+   bool isFirstReCenter = true; // first time recentering
+   int lastFlameVal; // store last flame value
+
+   bool serviceCannon = false; // should service the cannon
   
 };
 

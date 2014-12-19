@@ -38,14 +38,14 @@ DriveTrain driveTrain(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, true, false); // left mot
 SensorMast sensorMast(MAST_SERVO_PIN, RED_FLAME_PIN, LED_indicator, LED_WIN);
 SonicAssembler assembler;
 CannonControl cannonControl(GRIPPER_PIN, SERVO_PIN, MOTOR_PIN, FLAME_PIN);
-//VFH vfh; //&myGrid, &myHist);
+//VFH vfh;
 LCD my_lcd;
 VirtualBumper virtualBumper(ULTRA_PIN, DIG_ULTRA_PIN);
 //IMUDriver imu;
 
 
 Navigator::Navigator() {
-  // maybe stuff in some pointers to other objects that are passed.
+  
 }
 
 void Navigator::setupNavigator() {
@@ -67,11 +67,6 @@ void Navigator::setupNavigator() {
 void Navigator::service() {
   driveTrain.service();
   sensorMast.service();
-//  if(serviceCannon){
-//    cannonControl.service();
-//  }
-
-  //cannonControl.service();
 //  imu.service();
   
   // function that now calls the state machine for Navigator
@@ -81,6 +76,9 @@ void Navigator::service() {
 
 void Navigator::chooseAction() {
   // check conditions necessary for switching controls on the state machine
+  
+  // our IMU stopped working for setup. For now, we just commented this working code out.
+  
 //  Serial.println(imu.isTipped());
   // if we are not currently in tilt
 //  if (state != TILT) {
@@ -99,6 +97,7 @@ void Navigator::chooseAction() {
   
   switch (state) {
     
+    // this is just a case for unit testing different functions
     case TEST:
       Serial.println(virtualBumper.getAnalogDistance());
       if (sensorMast.isFire()) {
@@ -118,9 +117,11 @@ void Navigator::chooseAction() {
 //        state = CALC_POSITION;
       break;
       
+    // robot roams until finding the candle
     case LOCATE_CANDLE:
-      virtualBumper.steerMe(driveTrain);
+      virtualBumper.steerMe(driveTrain); // stear the drivetrain around obstacles
       
+      // if we see some fire, stop and switch to spin to candle
       if(sensorMast.isFire()) {
         state = SPIN_TO_CANDLE;
         driveTrain.halt();
@@ -129,11 +130,12 @@ void Navigator::chooseAction() {
         Serial.println("Candle found");
       }
       break;
-      
+    
+    // robot spins to face the candle
     case SPIN_TO_CANDLE:
+      // if the centering function is done, spin some more
       if (centerFlame()){
         driveTrain.halt();
-       
         state = SPIN_MORE;
         isFirstReCenter = true;
         Serial.println("Done spinning");
@@ -141,17 +143,18 @@ void Navigator::chooseAction() {
       
       break;
     
+    // spins the robot even closer to flame
     case SPIN_MORE:
       if (centerMore()){
         driveTrain.halt();
        
         state = CALC_POSITION;
-       
         Serial.println("Done spinning more");
       }
       
       break;
     
+    // drives the robot closer to the candle, not implemented
     case GET_CLOSE_TO_CANDLE:
       if (goToFlame()){
         driveTrain.halt();
@@ -162,6 +165,7 @@ void Navigator::chooseAction() {
       
       break;
     
+    // calculates the candle position relative to starting point and prints it
     case CALC_POSITION:
       candle_Position();
       cannonControl.resetCannon();
@@ -169,10 +173,11 @@ void Navigator::chooseAction() {
       state = EXTINGUISH;
       break;
     
+    // extinguishes the candle
     case EXTINGUISH:
       cannonControl.cannonOP();
 //      Serial.println("Putting out candle");
-//serviceCannon = true;
+
       if(cannonControl.returnResult()){
         Serial.println("Candle is out, mission success");
         state = RETURN;
@@ -181,7 +186,8 @@ void Navigator::chooseAction() {
       }
       
       break;
-      
+    
+    // tries to return to the starting location through roaming
     case RETURN:
       // if we see fire while returning to home, go put it out.
       if(sensorMast.isFire() ) {
@@ -199,6 +205,7 @@ void Navigator::chooseAction() {
         virtualBumper.steerMe(driveTrain);
       break;
     
+    // takes over in case we start tipping - stop everything
     case TILT:
       driveTrain.halt();
       sensorMast.freeze();
@@ -212,51 +219,14 @@ void Navigator::candle_Position(){
 //  float y_coord = driveTrain.getY();
   float head = driveTrain.getUnboundedHeading(); 
   float d = virtualBumper.getAnalogDistance()+6.5; // distance + distance from sensor to center of robot
-//  d = 24;
-//  float aim; 
-//  float x_ref; 
-//  float y_ref; 
-//now the x-y coordinates after the switch from "get close" to "extinguish" procedure
 
   // to get X coord: cos(theta) * d
   // to get Y coordinate: sin(theta) *d
   float xPos = cos(head) * d;
   float yPos = sin(head) *d;
-  // add X and Y to the current position
-  my_lcd.printLocationNow(driveTrain.getX() + xPos, driveTrain.getY() + yPos, 7.89);
+  // add X and Y and Z to the current position
+  my_lcd.printLocationNow(driveTrain.getX() + xPos, driveTrain.getY() + yPos, sin(cannonControl.giveAngle()) * d );
   
-  
-//  if ( 2*PI>= head > 1.5*PI){
-//    aim = head - 2*PI;
-//    x_ref = d*cos(aim);
-//    y_ref = d*sin(aim);
-//  }
-//  else if (1.5*PI >= head > PI){
-//    aim = -1*(head - PI);
-//    x_ref = -d*cos(aim);
-//    y_ref = d*sin(aim);
-//  }
-//  else if (PI >= head > 0.5*PI){
-//    aim = head - 0.5*PI; 
-//    x_ref = -d*cos(aim);
-//    y_ref = d*sin(aim);
-//  }
-//  else{
-//    x_ref = d*cos(aim);
-//    y_ref = d*sin(aim);
-//  }
-////Find the z-coordinate: talk to chris E for the extraction function.
-////  float c_z = 11.5 + d*tan(cannon.giveAngle());
-//
-////-------------------------------------------------------------------
-//  float c_x = x_coord + x_ref;
-//  float c_y = y_coord + y_ref; 
-//  float c_z = 0.00;
-//  my_lcd.printLocationNow(c_x, c_y, c_z);
-}
-
-void Navigator::doBumper() {
-  // bumper controls robot's motion
 }
 
 void Navigator::doVFH(){
@@ -370,7 +340,4 @@ if ( virtualBumper.getAnalogDistance()<8)
   return true;
 }
 return false;
- 
-  
-  
 }
