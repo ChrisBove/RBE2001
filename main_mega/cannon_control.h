@@ -93,6 +93,7 @@ class CannonControl
    * @param   None
    * @return  The angle of the cannon
    */
+   void resetCannon();
      /**
    * @brief   resets the cannon's variables
    * @param   None
