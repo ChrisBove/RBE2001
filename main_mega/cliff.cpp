@@ -15,16 +15,17 @@ CliffDetector::CliffDetector(int LeftLightPin, int RightLightPin){
   _RightLightPin = RightLightPin;
 }
 
-int CliffDetector::setHues(){        //This function was developed, but never implemented 
+int CliffDetector::setHues() {        //This function was developed, but never implemented 
    refWhiteHigh = 0; 
+  // calibrate values over some runs
   for(int x=1; x<=50 ; x++){
     sum = analogRead(_LeftLightPin) + analogRead(_RightLightPin);
     //delay(5);
   }
-     refWhiteHigh = (sum/100)+150;   //calibrated at power-up to set high limit of white range, verge of black
-     }
+  refWhiteHigh = (sum/100)+150;   //calibrated at power-up to set high limit of white range, verge of black
+}
 
-bool CliffDetector::fallingR(){
+bool CliffDetector::fallingR() {
   int temp_A = analogRead(_RightLightPin);
   return (temp_A >= blackThresh); 
 }
