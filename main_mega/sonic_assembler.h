@@ -49,7 +49,7 @@ class SonicAssembler {
    */
    void assembleInArray(int index, int angle, int distance);
    
-   static const int arraySize = 19;
+   static const int arraySize = 19; // set size of array for measurements
    VFH::range_measure measure[arraySize]; // stores measurements for the grid
    
   private:
