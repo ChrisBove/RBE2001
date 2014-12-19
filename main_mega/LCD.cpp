@@ -16,7 +16,7 @@
 LiquidCrystal lcd(40, 41, 42, 43, 44, 45);
 
 LCD::LCD() {
-  // initialize
+  // initialize nothing
 }
 
 void LCD::setupLCD() {
@@ -32,8 +32,8 @@ void LCD::service() {
 }
 
 void LCD::printLocationNow(float x, float y, float z) {
-  updateLocation(x, y, z);
-  refresh();
+  updateLocation(x, y, z); // save location
+  refresh(); // refresh display
 }
 
 void LCD::updateLocation(float x, float y, float z) {
@@ -43,6 +43,7 @@ void LCD::updateLocation(float x, float y, float z) {
 }
 
 void LCD::refresh() {
+  // hacky way to do this, but it works.
   lcd.setCursor(0, 0);
   lcd.print("X:");
   lcd.print(xPos);
@@ -52,7 +53,4 @@ void LCD::refresh() {
   lcd.setCursor(9,1);
   lcd.print("Z:");
   lcd.print(zPos);
-//  char tempString[11];
-//  sprintf(tempString, "%03d:%03d:%03d", xPos, yPos, angle);
-//  lcd.print(tempString);
 }

@@ -51,9 +51,9 @@ class LCD {
    void refresh();
    
   private:
-   bool shouldRefresh = true;
+   bool shouldRefresh = true; // flags if the lcd should refresh during services
    
-   float xPos = 0;
+   float xPos = 0; // store location of robot
    float yPos = 0;
    float zPos = 0;
   
